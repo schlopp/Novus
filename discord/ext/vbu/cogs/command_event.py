@@ -14,16 +14,16 @@ class CommandEvent(vbu.Cog):
         if ctx.command is None:
             return
         logger = getattr(
-            getattr(ctx, 'cog', self),
-            'logger',
+            getattr(ctx, "cog", self),
+            "logger",
             self.logger,
         )
         try:
-            content = ctx.message.content.replace('\n', '\\n')[:self.CONTENT_LIMIT]
+            content = ctx.message.content.replace("\n", "\\n")[: self.CONTENT_LIMIT]
         except AttributeError:
             content = ""
         if len(content) > self.CONTENT_LIMIT:
-            content += '...'
+            content += "..."
         invoke_text = "Command invoked"
         if ctx.supports_ephemeral:
             if getattr(ctx, "given_values", None) is not None:
@@ -32,8 +32,12 @@ class CommandEvent(vbu.Cog):
                 invoke_text = "Interaction invoked"
         logger_prefix = f"{invoke_text} ({ctx.command.qualified_name.strip()})"
         if ctx.guild is None:
-            return logger.info(f"{logger_prefix} ~ (G0/C{ctx.channel.id}/U{ctx.author.id}) {'::' if content else ''} {content}".rstrip())
-        logger.info(f"{logger_prefix} ~ (G{ctx.guild.id}/C{ctx.channel.id}/U{ctx.author.id}) {'::' if content else ''} {content}".rstrip())
+            return logger.info(
+                f"{logger_prefix} ~ (G0/C{ctx.channel.id}/U{ctx.author.id}) {'::' if content else ''} {content}".rstrip()
+            )
+        logger.info(
+            f"{logger_prefix} ~ (G{ctx.guild.id}/C{ctx.channel.id}/U{ctx.author.id}) {'::' if content else ''} {content}".rstrip()
+        )
 
     @vbu.Cog.listener("on_command")
     async def on_command_statsd(self, ctx: vbu.Context):

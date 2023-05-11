@@ -89,12 +89,13 @@ class MessageComponents(ComponentHolder):
 
     @classmethod
     def boolean_buttons(
-            cls,
-            yes_id: Optional[str] = None,
-            no_id: Optional[str] = None,
-            *,
-            yes: Optional[Union[str, Tuple[str, Union[str, None]]]] = None,
-            no: Optional[Union[str, Tuple[str, Union[str, None]]]] = None) -> MessageComponents:
+        cls,
+        yes_id: Optional[str] = None,
+        no_id: Optional[str] = None,
+        *,
+        yes: Optional[Union[str, Tuple[str, Union[str, None]]]] = None,
+        no: Optional[Union[str, Tuple[str, Union[str, None]]]] = None,
+    ) -> MessageComponents:
         """
         Return a set of message components with yes/no buttons, ready for use. If provided, the given IDs
         will be used for the buttons. If not, the button custom IDs will be set to the strings
@@ -117,18 +118,36 @@ class MessageComponents(ComponentHolder):
 
         if yes:
             if isinstance(yes, str):
-                yes = ("Yes", yes,)
+                yes = (
+                    "Yes",
+                    yes,
+                )
         elif yes_id:
-            yes = ("Yes", yes_id,)
+            yes = (
+                "Yes",
+                yes_id,
+            )
         else:
-            yes = ("Yes", None,)
+            yes = (
+                "Yes",
+                None,
+            )
         if no:
             if isinstance(no, str):
-                no = ("No", no,)
+                no = (
+                    "No",
+                    no,
+                )
         elif no_id:
-            no = ("No", no_id,)
+            no = (
+                "No",
+                no_id,
+            )
         else:
-            no = ("No", None,)
+            no = (
+                "No",
+                None,
+            )
 
         return cls(
             ActionRow(
@@ -157,8 +176,8 @@ class MessageComponents(ComponentHolder):
 
     @classmethod
     def add_number_buttons(
-            cls, numbers: List[int] = MISSING, *,
-            add_negative: bool = False):
+        cls, numbers: List[int] = MISSING, *, add_negative: bool = False
+    ):
         """
         Creates a message components object with a list of number buttons added.
 
@@ -185,17 +204,41 @@ class MessageComponents(ComponentHolder):
 
         v = cls()
         if add_negative:
-            v.add_component(ActionRow(*[
-                Button(label=f"{i:+d}", custom_id=f"NUMBER {i}", style=ButtonStyle.primary)
-                for i in numbers
-            ]))
-            v.add_component(ActionRow(*[
-                Button(label=f"{-i:+d}", custom_id=f"NUMBER {-i}", style=ButtonStyle.secondary)
-                for i in numbers
-            ]))
+            v.add_component(
+                ActionRow(
+                    *[
+                        Button(
+                            label=f"{i:+d}",
+                            custom_id=f"NUMBER {i}",
+                            style=ButtonStyle.primary,
+                        )
+                        for i in numbers
+                    ]
+                )
+            )
+            v.add_component(
+                ActionRow(
+                    *[
+                        Button(
+                            label=f"{-i:+d}",
+                            custom_id=f"NUMBER {-i}",
+                            style=ButtonStyle.secondary,
+                        )
+                        for i in numbers
+                    ]
+                )
+            )
         else:
-            v.add_component(ActionRow(*[
-                Button(label=str(i), custom_id=f"NUMBER {i}", style=ButtonStyle.primary)
-                for i in numbers
-            ]))
+            v.add_component(
+                ActionRow(
+                    *[
+                        Button(
+                            label=str(i),
+                            custom_id=f"NUMBER {i}",
+                            style=ButtonStyle.primary,
+                        )
+                        for i in numbers
+                    ]
+                )
+            )
         return v

@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from .menu import Menu
     from .converter import Converter
     from ..custom_context import SlashContext
+
     AnyContext = Union[
         SlashContext,
         commands.SlashContext,
@@ -38,13 +39,14 @@ class Option(MenuDisplayable):
     """
 
     def __init__(
-            self,
-            display: Optional[Union[str, Callable[[SlashContext], str]]],
-            component_display: Optional[Union[str, Tuple[str, str]]] = None,
-            converters: Optional[List[Converter]] = None,
-            callback: Optional[Union[Callback, Menu]] = None,
-            cache_callback: Optional[Callback] = None,
-            allow_none: bool = False):
+        self,
+        display: Optional[Union[str, Callable[[SlashContext], str]]],
+        component_display: Optional[Union[str, Tuple[str, str]]] = None,
+        converters: Optional[List[Converter]] = None,
+        callback: Optional[Union[Callback, Menu]] = None,
+        cache_callback: Optional[Callback] = None,
+        allow_none: bool = False,
+    ):
         """
         Attributes
         ----------

@@ -24,8 +24,9 @@ def try_username(bot):
 
 
 class ConnectEvent(vbu.Cog):
-
-    async def send_webhook(self, event_name: str, text: str, username: str, logger: str) -> bool:
+    async def send_webhook(
+        self, event_name: str, text: str, username: str, logger: str
+    ) -> bool:
         """
         Send a webhook to the bot specified event webhook url.
         """

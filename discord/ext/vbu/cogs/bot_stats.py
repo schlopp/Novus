@@ -10,12 +10,11 @@ from . import utils as vbu
 
 
 class BotStats(vbu.Cog):
-
     @commands.command(
         application_command_meta=commands.ApplicationCommandMeta(),
     )
     @commands.defer()
-    @vbu.checks.is_config_set('bot_info', 'enabled')
+    @vbu.checks.is_config_set("bot_info", "enabled")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def info(self, ctx: vbu.Context):
         """
@@ -25,7 +24,9 @@ class BotStats(vbu.Cog):
         # Get the info embed
         bot_info = self.bot.config.get("bot_info", {})
         info_embed = vbu.Embed(
-            description=textwrap.dedent(bot_info.get("content", "")).format(bot=self.bot),
+            description=textwrap.dedent(bot_info.get("content", "")).format(
+                bot=self.bot
+            ),
             use_random_colour=True,
         ).set_author_to_user(
             self.bot.user,
@@ -45,8 +46,8 @@ class BotStats(vbu.Cog):
                 discord.ui.Button(
                     emoji=info.get("emoji") or None,
                     label=label,
-                    url=info['url'],
-                    style=discord.ui.ButtonStyle.link
+                    url=info["url"],
+                    style=discord.ui.ButtonStyle.link,
                 )
             )
         components = discord.ui.MessageComponents.add_buttons_with_rows(*buttons)
@@ -61,7 +62,7 @@ class BotStats(vbu.Cog):
 
     @commands.command()
     @commands.bot_has_permissions(send_messages=True)
-    @vbu.checks.is_config_set('bot_listing_api_keys', 'topgg_token')
+    @vbu.checks.is_config_set("bot_listing_api_keys", "topgg_token")
     async def vote(self, ctx: vbu.Context):
         """
         Gives you a link to vote for the bot.
@@ -69,12 +70,16 @@ class BotStats(vbu.Cog):
 
         bot_user_id = self.bot.user.id
         output_strings = []
-        if self.bot.config.get('bot_listing_api_keys', {}).get("topgg_token"):
+        if self.bot.config.get("bot_listing_api_keys", {}).get("topgg_token"):
             output_strings.append(f"<https://top.gg/bot/{bot_user_id}/vote>")
-        if self.bot.config.get('bot_listing_api_keys', {}).get("discordbotlist_token"):
-            output_strings.append(f"<https://discordbotlist.com/bots/{bot_user_id}/upvote>")
+        if self.bot.config.get("bot_listing_api_keys", {}).get("discordbotlist_token"):
+            output_strings.append(
+                f"<https://discordbotlist.com/bots/{bot_user_id}/upvote>"
+            )
         if not output_strings:
-            return await ctx.send("Despite being enabled, the vote command has no vote links to provide :/")
+            return await ctx.send(
+                "Despite being enabled, the vote command has no vote links to provide :/"
+            )
         return await ctx.send("\n".join(output_strings))
 
     async def get_stats_embed(self) -> typing.Union[discord.Embed, vbu.Embed]:
@@ -85,7 +90,9 @@ class BotStats(vbu.Cog):
         # Get creator info
         try:
             creator_id = self.bot.config["owners"][0]
-            creator = self.bot.get_user(creator_id) or await self.bot.fetch_user(creator_id)
+            creator = self.bot.get_user(creator_id) or await self.bot.fetch_user(
+                creator_id
+            )
         except IndexError:
             creator_id = None
             creator = None
@@ -97,10 +104,13 @@ class BotStats(vbu.Cog):
 
         # Add version info
         novus_meta = metadata.metadata("novus")
-        embed.add_field("Library", (
-            f"Python `{sys.version.split(' ', 1)[0]}`\n"
-            f"[Novus]({novus_meta['Home-page']}) `{novus_meta['Version']}`\n"
-        ))
+        embed.add_field(
+            "Library",
+            (
+                f"Python `{sys.version.split(' ', 1)[0]}`\n"
+                f"[Novus]({novus_meta['Home-page']}) `{novus_meta['Version']}`\n"
+            ),
+        )
 
         # Add guild count
         if self.bot.guilds:
@@ -116,10 +126,16 @@ class BotStats(vbu.Cog):
             embed.add_field("Average WS Latency", f"{(self.bot.latency * 1000):.2f}ms")
 
         # Get topgg data
-        if self.bot.config.get('bot_listing_api_keys', {}).get("topgg_token"):
+        if self.bot.config.get("bot_listing_api_keys", {}).get("topgg_token"):
             params = {"fields": "points,monthlyPoints"}
-            headers = {"Authorization": self.bot.config['bot_listing_api_keys']['topgg_token']}
-            async with self.bot.session.get(f"https://top.gg/api/bots/{self.bot.user.id}", params=params, headers=headers) as r:
+            headers = {
+                "Authorization": self.bot.config["bot_listing_api_keys"]["topgg_token"]
+            }
+            async with self.bot.session.get(
+                f"https://top.gg/api/bots/{self.bot.user.id}",
+                params=params,
+                headers=headers,
+            ) as r:
                 try:
                     data = await r.json()
                 except Exception:
@@ -131,8 +147,10 @@ class BotStats(vbu.Cog):
                 )
 
         # Get discordbotlist data
-        if self.bot.config.get('bot_listing_api_keys', {}).get("discordbotlist_token"):
-            async with self.bot.session.get(f"https://discordbotlist.com/api/v1/bots/{self.bot.user.id}") as r:
+        if self.bot.config.get("bot_listing_api_keys", {}).get("discordbotlist_token"):
+            async with self.bot.session.get(
+                f"https://discordbotlist.com/api/v1/bots/{self.bot.user.id}"
+            ) as r:
                 try:
                     data = await r.json()
                 except Exception:
@@ -140,29 +158,29 @@ class BotStats(vbu.Cog):
             if "upvotes" in data and "metrics" in data:
                 content = {
                     "name": "Bot Votes",
-                    "value": f"[DiscordBotList.com](https://discordbotlist.com/bots/{self.bot.user.id}): {data['metrics'].get('upvotes', 0):,} ({data['upvotes']:,} this month)"
+                    "value": f"[DiscordBotList.com](https://discordbotlist.com/bots/{self.bot.user.id}): {data['metrics'].get('upvotes', 0):,} ({data['upvotes']:,} this month)",
                 }
                 try:
                     current_data = embed.get_field_by_key("Bot Votes")
-                    content['value'] = current_data['value'] + '\n' + content['value']
+                    content["value"] = current_data["value"] + "\n" + content["value"]
                     embed.edit_field_by_key("Bot Votes", **content)
                 except KeyError:
                     embed.add_field(**content)
             elif "upvotes" in data:
                 content = {
                     "name": "Bot Votes",
-                    "value": f"[DiscordBotList.com](https://discordbotlist.com/bots/{self.bot.user.id}): {data['upvotes']:,}"
+                    "value": f"[DiscordBotList.com](https://discordbotlist.com/bots/{self.bot.user.id}): {data['upvotes']:,}",
                 }
                 try:
                     current_data = embed.get_field_by_key("Bot Votes")
-                    content['value'] = current_data['value'] + '\n' + content['value']
+                    content["value"] = current_data["value"] + "\n" + content["value"]
                     embed.edit_field_by_key("Bot Votes", **content)
                 except KeyError:
                     embed.add_field(**content)
 
         return embed
 
-    @commands.command(aliases=['status', 'botinfo'])
+    @commands.command(aliases=["status", "botinfo"])
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def stats(self, ctx: vbu.Context):
         """
@@ -176,5 +194,5 @@ class BotStats(vbu.Cog):
 def setup(bot: vbu.Bot):
     x = BotStats(bot)
     bot.add_cog(x)
-    if bot.config.get('bot_info', {}).get('enabled', False) is False:
-        bot.remove_command('info')
+    if bot.config.get("bot_info", {}).get("enabled", False) is False:
+        bot.remove_command("info")

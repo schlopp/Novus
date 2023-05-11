@@ -37,9 +37,7 @@ if typing.TYPE_CHECKING:
     from .models import BaseComponent
 
 
-__all__ = (
-    "Modal",
-)
+__all__ = ("Modal",)
 
 
 class Modal(ComponentHolder):
@@ -49,19 +47,25 @@ class Modal(ComponentHolder):
     .. versionadded:: 0.0.5
     """
 
-    def __init__(self, *, title: str, custom_id: str = None, components: typing.List[BaseComponent] = None):
+    def __init__(
+        self,
+        *,
+        title: str,
+        custom_id: str = None,
+        components: typing.List[BaseComponent] = None,
+    ):
         self.title = title
         self.custom_id = custom_id or str(uuid.uuid1())
         self.components = components or []
 
     def __repr__(self) -> str:
         attrs = (
-            ('title', self.title),
-            ('custom_id', self.custom_id),
-            ('components', self.components),
+            ("title", self.title),
+            ("custom_id", self.custom_id),
+            ("components", self.components),
         )
-        inner = ' '.join('%s=%r' % t for t in attrs)
-        return f'{self.__class__.__name__}({inner})'
+        inner = " ".join("%s=%r" % t for t in attrs)
+        return f"{self.__class__.__name__}({inner})"
 
     def to_dict(self) -> ModalPayload:
         return {
@@ -73,7 +77,9 @@ class Modal(ComponentHolder):
     @classmethod
     def from_dict(cls, data: ModalPayload):
         new_components = []
-        for i in data['components']:
+        for i in data["components"]:
             v = _component_factory(i)
             new_components.append(v)
-        return cls(title=data['title'], custom_id=data['custom_id'], components=new_components)
+        return cls(
+            title=data["title"], custom_id=data["custom_id"], components=new_components
+        )

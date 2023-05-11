@@ -53,7 +53,7 @@ class Embed(discord.Embed):
             Embed: The embed instance.
         """
 
-        self.colour = random.randint(0, 0xffffff)
+        self.colour = random.randint(0, 0xFFFFFF)
         return self
 
     use_random_color = use_random_colour
@@ -74,7 +74,7 @@ class Embed(discord.Embed):
         super().set_footer(*args, text=text, **kwargs)
         return self
 
-    def set_image(self, url:str) -> Embed:
+    def set_image(self, url: str) -> Embed:
         """
         Sets the image of the embed.
 
@@ -153,12 +153,16 @@ class Embed(discord.Embed):
 
         for index, field in enumerate(self.fields):
             if field.name == key:
-                return {'name': field.name, 'value': field.value, 'inline': field.inline}
+                return {
+                    "name": field.name,
+                    "value": field.value,
+                    "inline": field.inline,
+                }
         raise KeyError("Key not found in embed")
 
     def edit_field_by_index(
-            self, index: int, *, name: str = None, value: str = None,
-            inline: bool = None) -> Embed:
+        self, index: int, *, name: str = None, value: str = None, inline: bool = None
+    ) -> Embed:
         """
         Edit a field in the embed using its index.
 
@@ -180,8 +184,8 @@ class Embed(discord.Embed):
         return self
 
     def edit_field_by_key(
-            self, key: str, *, name: str = None, value: str = None,
-            inline: bool = None) -> Embed:
+        self, key: str, *, name: str = None, value: str = None, inline: bool = None
+    ) -> Embed:
         """
         Edit a field in the embed using its name as a key.
 
@@ -200,7 +204,9 @@ class Embed(discord.Embed):
 
         for index, field in enumerate(self.fields):
             if field.name == key:
-                return self.edit_field_by_index(index, name=name, value=value, inline=inline)
+                return self.edit_field_by_index(
+                    index, name=name, value=value, inline=inline
+                )
         raise KeyError("Key not found in embed")
 
     @classmethod

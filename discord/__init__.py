@@ -10,13 +10,13 @@ A basic wrapper for the Discord API.
 
 """
 
-__title__ = 'discord'
-__author__ = 'Kae Bartlett'
-__license__ = 'MIT'
-__copyright__ = 'Copyright 2015-2021 Rapptz, 2021-present Kae Bartlett'
-__version__ = '0.2.4a'
+__title__ = "discord"
+__author__ = "Kae Bartlett"
+__license__ = "MIT"
+__copyright__ = "Copyright 2015-2021 Rapptz, 2021-present Kae Bartlett"
+__version__ = "0.2.4a"
 
-__path__ = __import__('pkgutil').extend_path(__path__, __name__)
+__path__ = __import__("pkgutil").extend_path(__path__, __name__)
 
 import logging
 from typing import NamedTuple, Literal
@@ -76,7 +76,7 @@ version_info: VersionInfo = VersionInfo(
     major=0,
     minor=2,
     micro=4,
-    releaselevel='alpha',
+    releaselevel="alpha",
     serial=0,
 )
 

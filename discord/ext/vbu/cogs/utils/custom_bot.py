@@ -50,9 +50,11 @@ def get_prefix(bot, message: discord.Message):
     """
 
     # Set our default
-    config_prefix = bot.config.get('default_prefix')
+    config_prefix = bot.config.get("default_prefix")
     if not config_prefix and message.author.id not in bot.owner_ids:
-        return " ".join(random.choices(string.whitespace, k=5))  # random string for a prefix if nothing is set
+        return " ".join(
+            random.choices(string.whitespace, k=5)
+        )  # random string for a prefix if nothing is set
 
     # Default prefix for DMs
     if message.guild is None:
@@ -60,11 +62,9 @@ def get_prefix(bot, message: discord.Message):
 
     # Custom prefix or default prefix
     else:
-        guild_prefix = (
-            bot.guild_settings
-            [message.guild.id]
-            [bot.config.get('guild_settings_prefix_column', 'prefix')]
-        )
+        guild_prefix = bot.guild_settings[message.guild.id][
+            bot.config.get("guild_settings_prefix_column", "prefix")
+        ]
         prefix = guild_prefix or config_prefix
 
     # Fuck iOS devices
@@ -83,10 +83,7 @@ def get_prefix(bot, message: discord.Message):
 
     # Add spaces for words
     possible_word_prefixes = [
-        i
-        for i in prefix
-        if i
-        and not any([o in i for o in string.punctuation])
+        i for i in prefix if i and not any([o in i for o in string.punctuation])
     ]
     prefix.extend([f"{i.strip()} " for i in possible_word_prefixes])
 
@@ -96,8 +93,7 @@ def get_prefix(bot, message: discord.Message):
             managed_role = [
                 i
                 for i in message.guild.roles
-                if i.tags
-                and i.tags.bot_id == bot.user.id
+                if i.tags and i.tags.bot_id == bot.user.id
             ]
         except Exception:
             managed_role = None
@@ -115,9 +111,9 @@ class MinimalBot(commands.AutoShardedBot):
     """
 
     async def create_message_log(
-            self,
-            messages: Union[List[discord.Message], HistoryIterator],
-            ) -> str:
+        self,
+        messages: Union[List[discord.Message], HistoryIterator],
+    ) -> str:
         """
         Creates and returns an HTML log of all of the messages provided.
         This is an API method, and may raise an asyncio HTTP error.
@@ -166,15 +162,17 @@ class MinimalBot(commands.AutoShardedBot):
             for i in message.embeds:
                 embed_data = i.to_dict()
                 if i.timestamp:
-                    embed_data.update({'timestamp': i.timestamp.timestamp()})
+                    embed_data.update({"timestamp": i.timestamp.timestamp()})
                 embeds.append(embed_data)
-            message_data.update({'embeds': embeds})
+            message_data.update({"embeds": embeds})
             data_messages.append(message_data)
 
         # Send data to the API
         data.update({"users": data_authors, "messages": data_messages[::-1]})
         async with aiohttp.ClientSession() as session:
-            async with session.post("https://voxelfox.co.uk/discord/chatlog", json=data) as r:
+            async with session.post(
+                "https://voxelfox.co.uk/discord/chatlog", json=data
+            ) as r:
                 return await r.text()
 
     async def get_context(self, message, *, cls=None) -> Context:
@@ -240,16 +238,19 @@ class Bot(MinimalBot):
     """
 
     def __init__(
-            self,
-            config_file: str = 'config/config.toml',
-            logger: Optional[logging.Logger] = None,
-            activity: discord.BaseActivity = discord.Game(name="Reconnecting..."),
-            status: discord.Status = discord.Status.dnd,
-            case_insensitive: bool = True,
-            intents: Optional[discord.Intents] = None,
-            allowed_mentions: discord.AllowedMentions = discord.AllowedMentions(everyone=False),
-            *args,
-            **kwargs):
+        self,
+        config_file: str = "config/config.toml",
+        logger: Optional[logging.Logger] = None,
+        activity: discord.BaseActivity = discord.Game(name="Reconnecting..."),
+        status: discord.Status = discord.Status.dnd,
+        case_insensitive: bool = True,
+        intents: Optional[discord.Intents] = None,
+        allowed_mentions: discord.AllowedMentions = discord.AllowedMentions(
+            everyone=False
+        ),
+        *args,
+        **kwargs,
+    ):
         """
         Args:
             config_file (str): The path to the :class:`config file<BotConfig>` for the bot.
@@ -267,18 +268,20 @@ class Bot(MinimalBot):
         # Store the config file for later
         self.config: BotConfig
         self.config_file = config_file
-        self.logger = logger or logging.getLogger('bot')
+        self.logger = logger or logging.getLogger("bot")
         self.reload_config()
 
         # Let's work out our intents
         if not intents:
-            if self.config.get('intents', {}):
-                intents = discord.Intents(**self.config.get('intents', {}))
+            if self.config.get("intents", {}):
+                intents = discord.Intents(**self.config.get("intents", {}))
             else:
-                intents = discord.Intents(guilds=True, guild_messages=True, dm_messages=True)
+                intents = discord.Intents(
+                    guilds=True, guild_messages=True, dm_messages=True
+                )
 
         # Get our max messages
-        cached_messages = self.config.get('cached_messages', 1_000)
+        cached_messages = self.config.get("cached_messages", 1_000)
 
         # Run original
         super().__init__(
@@ -295,19 +298,20 @@ class Bot(MinimalBot):
 
         # Set up our default guild settings
         self.DEFAULT_GUILD_SETTINGS = {
-            self.config.get('guild_settings_prefix_column', 'prefix'):
-                self.config.get('default_prefix'),
+            self.config.get("guild_settings_prefix_column", "prefix"): self.config.get(
+                "default_prefix"
+            ),
         }
-        self.DEFAULT_USER_SETTINGS = {
-        }
+        self.DEFAULT_USER_SETTINGS = {}
 
         # Set support guild ID in the utils
         global SUPPORT_GUILD_ID
-        SUPPORT_GUILD_ID = self.config.get('support_guild_id')
+        SUPPORT_GUILD_ID = self.config.get("support_guild_id")
 
         # Aiohttp session
         self.session: aiohttp.ClientSession = AnalyticsClientSession(
-            self, loop=self.loop,
+            self,
+            loop=self.loop,
             headers={"User-Agent": self.user_agent},
         )
 
@@ -319,7 +323,7 @@ class Bot(MinimalBot):
 
         # Allow Statsd connections like this
         self.stats: Type[StatsdConnection] = StatsdConnection
-        self.stats.config = self.config.get('statsd', {})
+        self.stats.config = self.config.get("statsd", {})
 
         # Set embeddify attrs
         Embeddify.bot = self
@@ -338,9 +342,9 @@ class Bot(MinimalBot):
         # Regardless of whether we start statsd or not, I want to add the log handler
         handler = AnalyticsLogHandler(self)
         handler.setLevel(logging.DEBUG)
-        logging.getLogger('discord.http').addHandler(handler)
-        logging.getLogger('discord.webhook.async_').addHandler(handler)
-        logging.getLogger('discord.webhook.sync').addHandler(handler)
+        logging.getLogger("discord.http").addHandler(handler)
+        logging.getLogger("discord.webhook.async_").addHandler(handler)
+        logging.getLogger("discord.webhook.sync").addHandler(handler)
 
         # Here's the storage for cached stuff
         self.guild_settings = collections.defaultdict(
@@ -382,9 +386,7 @@ class Bot(MinimalBot):
             "SELECT * FROM guild_settings WHERE guild_id=0"
         )
         if not default_guild_settings:
-            await db.call(
-                "INSERT INTO guild_settings (guild_id) VALUES (0)"
-            )
+            await db.call("INSERT INTO guild_settings (guild_id) VALUES (0)")
             default_guild_settings = await db.call(
                 "SELECT * FROM guild_settings WHERE guild_id=0"
             )
@@ -395,7 +397,7 @@ class Bot(MinimalBot):
         data = await self._get_all_table_data(db, "guild_settings")
         for row in data:
             for key, value in row.items():
-                self.guild_settings[row['guild_id']][key] = value
+                self.guild_settings[row["guild_id"]][key] = value
 
         # Get default user settings
         default_user_settings = await db.call(
@@ -415,11 +417,12 @@ class Bot(MinimalBot):
         data = await self._get_all_table_data(db, "user_settings")
         for row in data:
             for key, value in row.items():
-                self.user_settings[row['user_id']][key] = value
+                self.user_settings[row["user_id"]][key] = value
 
         # Run the user-added startup methods
         async def fake_cache_setup_method(db):
             pass
+
         for _, cog in self.cogs.items():
             await getattr(cog, "cache_setup", fake_cache_setup_method)(db)
 
@@ -427,10 +430,8 @@ class Bot(MinimalBot):
         await db.disconnect()
 
     async def _run_sql_exit_on_error(
-            self,
-            db: DatabaseWrapper,
-            sql: str,
-            *args) -> Iterable:
+        self, db: DatabaseWrapper, sql: str, *args
+    ) -> Iterable:
         """
         Get data from a table, and exit if we get an error.
         """
@@ -453,10 +454,8 @@ class Bot(MinimalBot):
         return v
 
     async def _get_list_table_data(
-            self,
-            db: DatabaseWrapper,
-            table_name: str,
-            key: str) -> Iterable:
+        self, db: DatabaseWrapper, table_name: str, key: str
+    ) -> Iterable:
         """
         Select all from a table given its name and a `key=key` check.
         """
@@ -480,11 +479,10 @@ class Bot(MinimalBot):
         """
 
         try:
-            assert self.config['support_guild_id']
-            return (
-                self.get_guild(self.config['support_guild_id'])
-                or await self.fetch_guild(self.config['support_guild_id'])
-            )
+            assert self.config["support_guild_id"]
+            return self.get_guild(
+                self.config["support_guild_id"]
+            ) or await self.fetch_guild(self.config["support_guild_id"])
         except Exception:
             return None
 
@@ -549,19 +547,15 @@ class Bot(MinimalBot):
         """
 
         # Make sure there's a token provided
-        topgg_token = (
-            self.config.get('bot_listing_api_keys', {})
-            .get('topgg_token')
-        )
+        topgg_token = self.config.get("bot_listing_api_keys", {}).get("topgg_token")
         if not topgg_token:
             return False
 
         # Try and see whether the user has voted
         url = "https://top.gg/api/bots/{bot.user.id}/check".format(bot=self)
         async with self.session.get(
-                url,
-                params={"userId": user_id},
-                headers={"Authorization": topgg_token}) as r:
+            url, params={"userId": user_id}, headers={"Authorization": topgg_token}
+        ) as r:
             try:
                 data = await r.json()
             except Exception:
@@ -599,10 +593,7 @@ class Bot(MinimalBot):
                 return w
             except discord.InvalidArgument:
                 self.logger.error(
-                    (
-                        "The webhook set in your config is not a valid "
-                        "Discord webhook"
-                    )
+                    ("The webhook set in your config is not a valid " "Discord webhook")
                 )
                 return None
         if url is not None:
@@ -636,13 +627,14 @@ class Bot(MinimalBot):
             return None
 
     async def add_delete_reaction(
-            self,
-            message: discord.Message,
-            valid_users: Tuple[discord.Snowflake] | None = None,
-            *,
-            delete: Tuple[discord.Message] | None = None,
-            timeout: float = 60.0,
-            wait: bool = False) -> None:
+        self,
+        message: discord.Message,
+        valid_users: Tuple[discord.Snowflake] | None = None,
+        *,
+        delete: Tuple[discord.Message] | None = None,
+        timeout: float = 60.0,
+        wait: bool = False,
+    ) -> None:
         """
         Adds a delete reaction to the given message.
 
@@ -708,13 +700,17 @@ class Bot(MinimalBot):
                 return False
             if isinstance(u, discord.Member) is False:
                 return False
-            if getattr(u, 'roles', None) is None:
+            if getattr(u, "roles", None) is None:
                 return False
             if str(r.emoji) != "\N{WASTEBASKET}":
                 return False
-            if u.id in [user.id for user in valid_users] or u.permissions_in(message.channel).manage_messages:
+            if (
+                u.id in [user.id for user in valid_users]
+                or u.permissions_in(message.channel).manage_messages
+            ):
                 return True
             return False
+
         try:
             await self.wait_for("reaction_add", check=check, timeout=timeout)
         except asyncio.TimeoutError:
@@ -751,14 +747,14 @@ class Bot(MinimalBot):
         """
 
         pool = []
-        for data in self.config.get('embed', dict()).get('footer', list()):
+        for data in self.config.get("embed", dict()).get("footer", list()):
             safe_data = data.copy()
-            amount = safe_data.pop('amount')
+            amount = safe_data.pop("amount")
             if amount <= 0:
                 continue
-            text = safe_data.pop('text')
+            text = safe_data.pop("text")
             text = text.format(ctx=self)
-            safe_data['text'] = text
+            safe_data["text"] = text
             for _ in range(amount):
                 pool.append(safe_data.copy())
         if not pool:
@@ -771,14 +767,14 @@ class Bot(MinimalBot):
 
     @property
     def clean_prefix(self):
-        v = self.config.get('default_prefix', '/')
+        v = self.config.get("default_prefix", "/")
         if isinstance(v, str):
             return v
         return v[0]
 
     @property
     def owner_ids(self) -> list:
-        return self.config['owners']
+        return self.config["owners"]
 
     @owner_ids.setter
     def owner_ids(self, _):
@@ -787,7 +783,7 @@ class Bot(MinimalBot):
     @property
     def embeddify(self) -> bool:
         try:
-            return self.config['embed']['enabled']
+            return self.config["embed"]["enabled"]
         except Exception:
             return False
 
@@ -800,10 +796,10 @@ class Bot(MinimalBot):
                 as well as the cogs included with VoxelBotUtils.
         """
 
-        ext = glob.glob('cogs/[!_]*.py')
+        ext = glob.glob("cogs/[!_]*.py")
         extensions = []
-        extensions.extend([f'discord.ext.vbu.cogs.{i}' for i in all_vfl_package_names])
-        extensions.extend([i.replace('\\', '.').replace('/', '.')[:-3] for i in ext])
+        extensions.extend([f"discord.ext.vbu.cogs.{i}" for i in all_vfl_package_names])
+        extensions.extend([i.replace("\\", ".").replace("/", ".")[:-3] for i in ext])
         self.logger.debug("Getting all extensions: " + str(extensions))
         return extensions
 
@@ -813,29 +809,27 @@ class Bot(MinimalBot):
         """
 
         # Unload all the given extensions
-        self.logger.info('Unloading extensions... ')
+        self.logger.info("Unloading extensions... ")
         for i in self.get_extensions():
             try:
                 self.unload_extension(i)
             except Exception as e:
-                self.logger.debug(f' * {i}... failed - {e!s}')
+                self.logger.debug(f" * {i}... failed - {e!s}")
             else:
-                self.logger.info(f' * {i}... success')
+                self.logger.info(f" * {i}... success")
 
         # Now load em up again
-        self.logger.info('Loading extensions... ')
+        self.logger.info("Loading extensions... ")
         for i in self.get_extensions():
             try:
                 self.load_extension(i)
             except Exception as e:
-                self.logger.critical(f' * {i}... failed - {e!s}')
+                self.logger.critical(f" * {i}... failed - {e!s}")
                 raise e
             else:
-                self.logger.info(f' * {i}... success')
+                self.logger.info(f" * {i}... success")
 
-    async def set_default_presence(
-            self,
-            shard_id: Optional[int] = None) -> None:
+    async def set_default_presence(self, shard_id: Optional[int] = None) -> None:
         """
         Sets the default presence for the bot as appears in the
         :class:`config file<BotConfig.presence>`.
@@ -844,10 +838,20 @@ class Bot(MinimalBot):
         # Update presence
         self.logger.info("Setting default bot presence")
         presence = self.config.get("presence", {})  # Get presence object
-        activity_type_str = presence.get("activity_type", "online").lower()  # Get the activity type (str)
-        status = getattr(discord.Status, presence.get("status", "online").lower(), discord.Status.online)  # Get the activity type
-        include_shard_id = presence.get("include_shard_id", False)  # Whether or not to include shard IDs
-        activity_type = getattr(discord.ActivityType, activity_type_str, discord.ActivityType.playing)  # The activity type to use
+        activity_type_str = presence.get(
+            "activity_type", "online"
+        ).lower()  # Get the activity type (str)
+        status = getattr(
+            discord.Status,
+            presence.get("status", "online").lower(),
+            discord.Status.online,
+        )  # Get the activity type
+        include_shard_id = presence.get(
+            "include_shard_id", False
+        )  # Whether or not to include shard IDs
+        activity_type = getattr(
+            discord.ActivityType, activity_type_str, discord.ActivityType.playing
+        )  # The activity type to use
 
         # Update per shard
         for i in self.shard_ids or [0]:
@@ -891,14 +895,18 @@ class Bot(MinimalBot):
 
         # Reset cache items that might need updating
         self._upgrade_chat = None
-        Constants.SUPPORT_GUILD_ID = self.config.get('support_guild_id')
+        Constants.SUPPORT_GUILD_ID = self.config.get("support_guild_id")
 
     async def log_command(
-            self,
-            context: commands.Context | commands.SlashContext | discord.Interaction | commands.Command,
-            *,
-            guild: Optional[discord.Guild] = None,
-            **kwargs):
+        self,
+        context: commands.Context
+        | commands.SlashContext
+        | discord.Interaction
+        | commands.Command,
+        *,
+        guild: Optional[discord.Guild] = None,
+        **kwargs,
+    ):
         """
         Log a command into statsd.
         """
@@ -955,15 +963,19 @@ class Bot(MinimalBot):
         elif isinstance(context, commands.SlashContext):
             interaction = context.interaction
         if interaction:
-            command_stats_tags.update({
-                "user_locale": interaction.user_locale,
-                "user_language": interaction.user_locale.split("-")[0],
-                "guild_locale": interaction.guild_locale,
-            })
+            command_stats_tags.update(
+                {
+                    "user_locale": interaction.user_locale,
+                    "user_language": interaction.user_locale.split("-")[0],
+                    "guild_locale": interaction.guild_locale,
+                }
+            )
             if interaction.guild_locale:
-                command_stats_tags.update({
-                    "guild_language": interaction.guild_locale.split("-")[0],
-                })
+                command_stats_tags.update(
+                    {
+                        "guild_language": interaction.guild_locale.split("-")[0],
+                    }
+                )
 
         # See if we can add the command type
         command_type: str = "unknown"
@@ -973,7 +985,7 @@ class Bot(MinimalBot):
                     discord.ApplicationCommandType.chat_input: "slash",
                     discord.ApplicationCommandType.user: "user_context",
                     discord.ApplicationCommandType.message: "message_context",
-                }[discord.ApplicationCommandType(interaction.data['type'])]
+                }[discord.ApplicationCommandType(interaction.data["type"])]
             else:
                 command_type = "component"
         elif isinstance(context, commands.Context):
@@ -991,15 +1003,15 @@ class Bot(MinimalBot):
             )
 
     async def login(
-            self,
-            token: Optional[str] = None,
-            *args,
-            **kwargs,
-        ):
+        self,
+        token: Optional[str] = None,
+        *args,
+        **kwargs,
+    ):
         """:meta private:"""
 
         try:
-            await super().login(token or self.config['token'], *args, **kwargs)
+            await super().login(token or self.config["token"], *args, **kwargs)
         except discord.HTTPException as e:
             if str(e).startswith("429 Too Many Requests"):
                 headers = {
@@ -1007,15 +1019,18 @@ class Bot(MinimalBot):
                     for i, o in dict(e.response.headers).items()
                     if "rate" in i.lower()
                 }
-                self.logger.critical(f"Cloudflare rate limit reached - {json.dumps(headers)}")
+                self.logger.critical(
+                    f"Cloudflare rate limit reached - {json.dumps(headers)}"
+                )
             raise
 
     async def start(
-            self,
-            token: Optional[str] = None,
-            *args,
-            run_startup_method: bool = True,
-            **kwargs):
+        self,
+        token: Optional[str] = None,
+        *args,
+        run_startup_method: bool = True,
+        **kwargs,
+    ):
         """:meta private:"""
 
         # Say we're starting
@@ -1023,17 +1038,19 @@ class Bot(MinimalBot):
 
         # See if we should run the startup method
         if run_startup_method:
-            if self.config.get('database', {}).get('enabled', False):
+            if self.config.get("database", {}).get("enabled", False):
                 self.logger.info("Running startup method")
                 self.startup_method = self.loop.create_task(self.startup())
             else:
-                self.logger.info("Not running bot startup method due to database being disabled.")
+                self.logger.info(
+                    "Not running bot startup method due to database being disabled."
+                )
         else:
             self.logger.info("Not running bot startup method.")
 
         # And run the original
         self.logger.info("Running original D.py start method.")
-        await super().start(token or self.config['token'], *args, **kwargs)
+        await super().start(token or self.config["token"], *args, **kwargs)
 
     async def close(self, *args, **kwargs):
         """:meta private:"""
@@ -1047,7 +1064,7 @@ class Bot(MinimalBot):
         self.logger.info(f"Bot connected - {self.user} // {self.user.id}")
         self.logger.info("Setting activity to default")
         await self.set_default_presence()
-        self.logger.info('Bot loaded.')
+        self.logger.info("Bot loaded.")
 
     async def launch_shard(self, gateway, shard_id: int, *, initial: bool = False):
         """
@@ -1057,16 +1074,16 @@ class Bot(MinimalBot):
         """
 
         # See if the shard manager is enabled
-        shard_manager_config = self.config.get('shard_manager', {})
-        shard_manager_enabled = shard_manager_config.get('enabled', False)
+        shard_manager_config = self.config.get("shard_manager", {})
+        shard_manager_enabled = shard_manager_config.get("enabled", False)
 
         # It isn't so Dpy can just do its thang
         if not shard_manager_enabled:
             return await super().launch_shard(gateway, shard_id, initial=initial)
 
         # Get the host and port to connect to
-        host = shard_manager_config.get('host', '127.0.0.1')
-        port = shard_manager_config.get('port', 8888)
+        host = shard_manager_config.get("host", "127.0.0.1")
+        port = shard_manager_config.get("port", 8888)
 
         # Connect using our shard manager
         try:
@@ -1086,9 +1103,8 @@ class Bot(MinimalBot):
         """
 
         # If we don't have redis, let's just ignore the shard manager
-        shard_manager_enabled = (
-            self.config.get('shard_manager', {})
-            .get('enabled', False)
+        shard_manager_enabled = self.config.get("shard_manager", {}).get(
+            "enabled", False
         )
         if not shard_manager_enabled:
             return await super().launch_shards()
@@ -1110,9 +1126,11 @@ class Bot(MinimalBot):
         shard_launch_tasks = []
         for shard_id in shard_ids:
             initial = shard_id == shard_ids[0]
-            shard_launch_tasks.append(self.loop.create_task(
-                self.launch_shard(gateway, shard_id, initial=initial)
-            ))
+            shard_launch_tasks.append(
+                self.loop.create_task(
+                    self.launch_shard(gateway, shard_id, initial=initial)
+                )
+            )
 
         # Wait for them all to connect
         await asyncio.wait(shard_launch_tasks)
@@ -1130,10 +1148,10 @@ class Bot(MinimalBot):
         self._reconnect = reconnect
         await self.launch_shards()
 
-        shard_manager_config = self.config.get('shard_manager', {})
-        shard_manager_enabled = shard_manager_config.get('enabled', True)
-        host = shard_manager_config.get('host', '127.0.0.1')
-        port = shard_manager_config.get('port', 8888)
+        shard_manager_config = self.config.get("shard_manager", {})
+        shard_manager_enabled = shard_manager_config.get("enabled", True)
+        host = shard_manager_config.get("host", "127.0.0.1")
+        port = shard_manager_config.get("port", 8888)
         queue = self._AutoShardedClient__queue  # I'm sorry Danny
 
         # Make a shard manager instance if we need to
@@ -1150,12 +1168,16 @@ class Bot(MinimalBot):
                     if item.error.code != 1000:
                         raise item.error
                     if item.error.code == 4014:
-                        raise discord.errors.PrivilegedIntentsRequired(item.shard.id) from None
+                        raise discord.errors.PrivilegedIntentsRequired(
+                            item.shard.id
+                        ) from None
                 return
             elif item.type == discord.shard.EventType.identify:
                 shard_manager = await get_shard_manager()
                 if shard_manager and shard_manager_enabled:
-                    await shard_manager.ask_to_connect(item.shard.id, priority=True)  # Let's assign reidentifies a higher priority
+                    await shard_manager.ask_to_connect(
+                        item.shard.id, priority=True
+                    )  # Let's assign reidentifies a higher priority
                 await item.shard.reidentify(item.error)
                 if shard_manager and shard_manager_enabled:
                     await shard_manager.done_connecting(item.shard.id)

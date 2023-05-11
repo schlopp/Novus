@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from .cog import Cog
     from .errors import CommandError
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 Coro = Coroutine[Any, Any, T]
 MaybeCoro = Union[T, Coro[T]]

@@ -10,7 +10,7 @@ async def is_logged_in(request: Request):
     """
 
     session = await aiohttp_session.get_session(request)
-    if session.new or session.get('logged_in', False) is False:
+    if session.new or session.get("logged_in", False) is False:
         return False
     return True
 
@@ -31,16 +31,19 @@ def requires_login():
 
             # See if we have token info
             session = await aiohttp_session.get_session(request)
-            if session.new or session.get('logged_in', False) is False:
-                before = session.get('redirect_on_login')
-                session['redirect_on_login'] = before or str(request.url)
-                root_url = request.app['config']['login_url'].rstrip('/').split('//')[-1]
-                if request.app['config']['login_url'] in str(request.url):
-                    session['redirect_on_login'] = '/'
-                return HTTPFound(location=request.app['config']['login_url'])
+            if session.new or session.get("logged_in", False) is False:
+                before = session.get("redirect_on_login")
+                session["redirect_on_login"] = before or str(request.url)
+                root_url = (
+                    request.app["config"]["login_url"].rstrip("/").split("//")[-1]
+                )
+                if request.app["config"]["login_url"] in str(request.url):
+                    session["redirect_on_login"] = "/"
+                return HTTPFound(location=request.app["config"]["login_url"])
 
             # We're already logged in
             return await func(request)
 
         return wrapper
+
     return inner_wrapper

@@ -4,10 +4,7 @@ from typing import Optional
 import discord
 
 
-def interaction_filter(
-        *,
-        start: Optional[str] = None,
-        end: Optional[str] = None):
+def interaction_filter(*, start: Optional[str] = None, end: Optional[str] = None):
     """
     A decorator to filter out events with ``custom_id``s that don't start or
     end with a certain string when that ``custom_id`` is split by spaces.
@@ -72,5 +69,7 @@ def interaction_filter(
             elif end:
                 custom_id_list.pop(-1)
             return await func(*args, *custom_id_list)
+
         return wrapper
+
     return inner

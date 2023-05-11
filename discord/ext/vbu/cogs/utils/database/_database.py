@@ -47,11 +47,17 @@ class DatabaseConnection(object):
     pool: asyncpg.pool.Pool = None  # type: ignore
     logger: logging.Logger = logging.getLogger("vbu.database")
     enabled: bool = False
-    __slots__ = ('conn', 'transaction', 'is_active',)
+    __slots__ = (
+        "conn",
+        "transaction",
+        "is_active",
+    )
 
     def __init__(
-            self, connection: asyncpg.Connection = None,
-            transaction: asyncpg.transaction.Transaction = None):
+        self,
+        connection: asyncpg.Connection = None,
+        transaction: asyncpg.transaction.Transaction = None,
+    ):
         self.conn: typing.Optional[asyncpg.Connection] = connection
         self.transaction: typing.Optional[asyncpg.transaction.Transaction] = transaction
         self.is_active: bool = False
@@ -71,8 +77,10 @@ class DatabaseConnection(object):
         modified_config = config.copy()
 
         # See if we even want to create a pool
-        if modified_config.pop('enabled') is False:
-            cls.logger.critical("Database create pool method is being run when the database is disabled")
+        if modified_config.pop("enabled") is False:
+            cls.logger.critical(
+                "Database create pool method is being run when the database is disabled"
+            )
             exit(1)
 
         # Create pool
@@ -93,7 +101,9 @@ class DatabaseConnection(object):
         try:
             conn: asyncpg.Connection = await cls.pool.acquire()
         except AttributeError:
-            raise Exception("Could not open a database connection as the database is disabled in your config.")
+            raise Exception(
+                "Could not open a database connection as the database is disabled in your config."
+            )
         v = cls(conn)
         v.is_active = True
         return v
@@ -131,7 +141,9 @@ class DatabaseConnection(object):
         self.transaction = None
 
     async def __aenter__(self) -> DatabaseConnection:
-        assert not self.is_active, "Can't open a new database connection while currently connected."
+        assert (
+            not self.is_active
+        ), "Can't open a new database connection while currently connected."
         v = await self.get_connection()
         self.conn = v.conn
         self.is_active = True
@@ -157,7 +169,7 @@ class DatabaseConnection(object):
 
         # Check we don't want to describe the table
         if sql.casefold().startswith("describe table "):
-            table_name = sql[len("describe table "):].strip("; ")
+            table_name = sql[len("describe table ") :].strip("; ")
             return await self.__call__(
                 """SELECT column_name, column_default, is_nullable, data_type, character_maximum_length
                 FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name=$1""",
@@ -166,7 +178,7 @@ class DatabaseConnection(object):
 
         # Runs the SQL
         self.logger.debug(f"Running SQL: {sql} {args!s}")
-        if 'select' in sql.casefold() or 'returning' in sql.casefold():
+        if "select" in sql.casefold() or "returning" in sql.casefold():
             x = await self.conn.fetch(sql, *args)
         else:
             await self.conn.execute(sql, *args)
@@ -193,8 +205,13 @@ class DatabaseConnection(object):
         return None
 
     async def copy_records_to_table(
-            self, table_name: str, *, records: typing.List[typing.Any],
-            columns: typing.Tuple[str] = None, timeout: float = None) -> str:
+        self,
+        table_name: str,
+        *,
+        records: typing.List[typing.Any],
+        columns: typing.Tuple[str] = None,
+        timeout: float = None,
+    ) -> str:
         """
         Copies a series of records to a given table.
 
@@ -211,6 +228,5 @@ class DatabaseConnection(object):
         if self.conn is None:
             raise RuntimeError("No connection has been established")
         return await self.conn.copy_records_to_table(
-            table_name=table_name, records=records,
-            columns=columns, timeout=timeout
+            table_name=table_name, records=records, columns=columns, timeout=timeout
         )

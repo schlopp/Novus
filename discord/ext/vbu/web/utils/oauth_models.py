@@ -65,11 +65,13 @@ class OauthUser(object):
     """
 
     def __init__(self, user_data):
-        self.id: int = int(user_data['id'])
+        self.id: int = int(user_data["id"])
         self.username: str = user_data.get("username")
         self._avatar: str = user_data.get("avatar")
         self.discriminator: str = user_data.get("discriminator")
-        self.public_flags: discord.PublicUserFlags = discord.PublicUserFlags._from_value(user_data.get("public_flags", 0))
+        self.public_flags: discord.PublicUserFlags = (
+            discord.PublicUserFlags._from_value(user_data.get("public_flags", 0))
+        )
         self.locale: str = user_data.get("locale")
         self.mfa_enabled: bool = user_data.get("mfa_enabled", False)
 
@@ -101,4 +103,6 @@ class OauthMember(OauthUser):
     def __init__(self, bot, guild_data, user_data):
         super().__init__(user_data)
         self.guild: OauthGuild = OauthGuild(bot, guild_data, self)
-        self.guild_permissions: discord.Permissions = discord.Permissions(guild_data['permissions'])
+        self.guild_permissions: discord.Permissions = discord.Permissions(
+            guild_data["permissions"]
+        )

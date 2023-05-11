@@ -41,7 +41,9 @@ class ContextMixin:
 
     guild: Optional[discord.Guild]
 
-    def get_mentionable_channel(self, channel_id: int, fallback: str = "null") -> Union[discord.TextChannel, AbstractMentionable]:
+    def get_mentionable_channel(
+        self, channel_id: int, fallback: str = "null"
+    ) -> Union[discord.TextChannel, AbstractMentionable]:
         """
         Get the mention string for a given channel ID.
 
@@ -60,7 +62,9 @@ class ContextMixin:
             return x
         return AbstractMentionable(channel_id, fallback, fallback)
 
-    def get_mentionable_role(self, role_id: int, fallback: str = "null") -> Union[discord.Role, AbstractMentionable]:
+    def get_mentionable_role(
+        self, role_id: int, fallback: str = "null"
+    ) -> Union[discord.Role, AbstractMentionable]:
         """
         Get the mention string for a given role ID.
 
@@ -128,7 +132,6 @@ class SlashContext(commands.SlashContext, ContextMixin, Generic[GuildT]):
 
 
 class _NoRequestTyping(object):
-
     async def __aenter__(self):
         pass
 
@@ -137,13 +140,11 @@ class _NoRequestTyping(object):
 
 
 class _FakeStateMessage(discord.Message):
-
     def __init__(self, state):
         self._state = state
 
 
 class PrintContext(Context):
-
     def __init__(self, bot):
         self.message = _FakeStateMessage(bot._connection)
         self.bot = bot
@@ -151,7 +152,7 @@ class PrintContext(Context):
 
     async def send(self, content, *args, **kwargs):
         print(content, args, kwargs)
-        if (file := kwargs.get("file", None)):
+        if file := kwargs.get("file", None):
             if isinstance(file.fp, str):
                 pass
             else:

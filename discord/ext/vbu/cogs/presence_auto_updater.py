@@ -63,6 +63,7 @@ class PresenceAutoUpdater(vbu.Cog):
         async def refresh_token_coro():
             await asyncio.sleep(data["expires_in"] - 60)
             await self.get_app_token(force_refresh=True)
+
         if self._refresh_token_task:
             self._refresh_token_task.cancel()
         self._refresh_token_task = self.bot.loop.create_task(refresh_token_coro())
@@ -83,12 +84,16 @@ class PresenceAutoUpdater(vbu.Cog):
         app_token = await self.get_app_token()
         headers = {
             "Authorization": f"Bearer {app_token}",
-            "Client-Id": self.bot.config.get("presence", {}).get("streaming", {}).get("twitch_client_id"),
+            "Client-Id": self.bot.config.get("presence", {})
+            .get("streaming", {})
+            .get("twitch_client_id"),
         }
         self.logger.info(f"Asking Twitch for the username of {username}")
 
         # Send the request
-        async with self.bot.session.get(self.TWITCH_USERNAME_URL, params={"login": username}, headers=headers) as r:
+        async with self.bot.session.get(
+            self.TWITCH_USERNAME_URL, params={"login": username}, headers=headers
+        ) as r:
             data = await r.json()
         self.logger.debug(f"GET {self.TWITCH_USERNAME_URL} returned {data}")
 
@@ -96,7 +101,9 @@ class PresenceAutoUpdater(vbu.Cog):
         try:
             self.twitch_user_ids[username] = data["data"][0]["id"]
         except KeyError:
-            self.logger.error(f"Failed to get Twitch username from search - {data.get('message') or 'no error message'}")
+            self.logger.error(
+                f"Failed to get Twitch username from search - {data.get('message') or 'no error message'}"
+            )
             raise
         except IndexError:
             self.logger.error("Invalid Twitch username set in config")
@@ -112,7 +119,11 @@ class PresenceAutoUpdater(vbu.Cog):
 
         # See if we should bother doing this
         twitch_data = self.bot.config.get("presence", {}).get("streaming", {})
-        if not twitch_data or "" in twitch_data.values() or not twitch_data.get("twitch_usernames", list()):
+        if (
+            not twitch_data
+            or "" in twitch_data.values()
+            or not twitch_data.get("twitch_usernames", list())
+        ):
             self.logger.warning("Stream presence config is either missing or invalid")
             self.presence_auto_update_loop.cancel()
             return
@@ -139,7 +150,9 @@ class PresenceAutoUpdater(vbu.Cog):
                 "user_id": twitch_user_id,
                 "first": 1,
             }
-            async with self.bot.session.get(self.TWITCH_SEARCH_URL, params=params, headers=headers) as r:
+            async with self.bot.session.get(
+                self.TWITCH_SEARCH_URL, params=params, headers=headers
+            ) as r:
                 data = await r.json()
             self.logger.debug(f"GET {self.TWITCH_SEARCH_URL} returned {data}")
 
@@ -150,7 +163,10 @@ class PresenceAutoUpdater(vbu.Cog):
                 continue  # They aren't
 
             # Yo sick they're live
-            status_to_set = discord.Streaming(name=stream_data["title"], url=f"https://twitch.tv/{stream_data['user_name']}")
+            status_to_set = discord.Streaming(
+                name=stream_data["title"],
+                url=f"https://twitch.tv/{stream_data['user_name']}",
+            )
             break
 
         # See if we need to set to default
@@ -163,7 +179,9 @@ class PresenceAutoUpdater(vbu.Cog):
             # Alright let's set
             await self.bot.set_default_presence()
             self._user_streaming_status = None
-            self.bot.config.setdefault('embed', dict())['footer'] = self._config_embed_footers
+            self.bot.config.setdefault("embed", dict())[
+                "footer"
+            ] = self._config_embed_footers
             self._config_embed_footers = None
             return
 
@@ -172,8 +190,12 @@ class PresenceAutoUpdater(vbu.Cog):
 
             # Let's change the default embed footer
             if self._config_embed_footers is None:
-                self._config_embed_footers = self.bot.config.get('embed', dict()).get('footer', list()).copy()
-                self.bot.config.setdefault('embed', dict())['footer'] = [{"text": "Currently live on Twitch!", "amount": 1}]
+                self._config_embed_footers = (
+                    self.bot.config.get("embed", dict()).get("footer", list()).copy()
+                )
+                self.bot.config.setdefault("embed", dict())["footer"] = [
+                    {"text": "Currently live on Twitch!", "amount": 1}
+                ]
 
             # We currently aren't streaming
             if self._user_streaming_status is None:
@@ -182,17 +204,24 @@ class PresenceAutoUpdater(vbu.Cog):
                 return
 
             # The stream name or URL is different
-            if (status_to_set.name, status_to_set.url) != (self._user_streaming_status.name, self._user_streaming_status.url):
+            if (status_to_set.name, status_to_set.url) != (
+                self._user_streaming_status.name,
+                self._user_streaming_status.url,
+            ):
                 await self.bot.change_presence(activity=status_to_set)
                 self._user_streaming_status = status_to_set
                 if status_to_set.url != self._user_streaming_status.url:
-                    self.bot.dispatch("twitch_stream", vbu.TwitchStream(data=stream_data))
+                    self.bot.dispatch(
+                        "twitch_stream", vbu.TwitchStream(data=stream_data)
+                    )
                 return
 
     @presence_auto_update_loop.before_loop
     async def presence_auto_update_loop_before_loop(self):
         await self.bot.wait_until_ready()
-        await asyncio.sleep(1)  # Let's sleep here so we don't override our on_ready's set default presence
+        await asyncio.sleep(
+            1
+        )  # Let's sleep here so we don't override our on_ready's set default presence
 
 
 def setup(bot: vbu.Bot):

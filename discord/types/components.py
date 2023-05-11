@@ -100,7 +100,11 @@ class Modal(TypedDict):
     components: List[Component]
 
 
-InteractionComponent = Union[Button, SelectMenu, ChannelSelectMenu]  # Components that give an interaction
+InteractionComponent = Union[
+    Button, SelectMenu, ChannelSelectMenu
+]  # Components that give an interaction
 LayoutComponent = Union[ActionRow, Modal]  # Components used to define layouts
-Component = Union[InteractionComponent, LayoutComponent, InputText]  # Components that exist
+Component = Union[
+    InteractionComponent, LayoutComponent, InputText
+]  # Components that exist
 MessageComponents = List[Component]  # Components that can go in a message

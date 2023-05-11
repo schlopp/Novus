@@ -9,8 +9,8 @@ from contextvars import ContextVar
 
 
 __all__ = (
-    'translation',
-    'i18n',
+    "translation",
+    "i18n",
 )
 
 
@@ -23,12 +23,12 @@ def translate_meta(val: str) -> str:
 
 
 def translation(
-        ctx: Union[commands.Context, discord.Interaction, discord.Locale, str],
-        domain: str,
-        *,
-        use_guild: bool = False,
-        **kwargs,
-        ) -> Union[gettext.GNUTranslations, gettext.NullTranslations]:
+    ctx: Union[commands.Context, discord.Interaction, discord.Locale, str],
+    domain: str,
+    *,
+    use_guild: bool = False,
+    **kwargs,
+) -> Union[gettext.GNUTranslations, gettext.NullTranslations]:
     """
     Get a translation table for a given domain with the locale
     stored in a context.
@@ -98,10 +98,11 @@ def translation(
 
 
 def i18n(
-        i18n_name: str = "default",
-        arg_index: Union[int, str] = 1,
-        *,
-        use_guild: bool = False):
+    i18n_name: str = "default",
+    arg_index: Union[int, str] = 1,
+    *,
+    use_guild: bool = False,
+):
     """
     Inject a ``_`` variable into a command's locals to allow for translation.
 
@@ -134,6 +135,7 @@ def i18n(
         wrapper: Callable | Awaitable | Coroutine  # type: ignore
 
         if inspect.iscoroutinefunction(func):
+
             @functools.wraps(func)
             async def wrapper(*args, **kwargs):
                 if isinstance(arg_index, int):
@@ -146,6 +148,7 @@ def i18n(
                 return await func(*args, **kwargs)
 
         else:
+
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 if isinstance(arg_index, int):
@@ -158,4 +161,5 @@ def i18n(
                 return func(*args, **kwargs)
 
         return wrapper
+
     return inner

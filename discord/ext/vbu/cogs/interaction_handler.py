@@ -8,13 +8,14 @@ from discord.ext import commands
 from . import utils as vbu
 
 
-class InteractionHandler(vbu.Cog, command_attrs={'hidden': True, 'add_slash_command': False}):
-
+class InteractionHandler(
+    vbu.Cog, command_attrs={"hidden": True, "add_slash_command": False}
+):
     @vbu.Cog.listener()
     async def on_component_interaction(self, interaction: discord.Interaction):
         if not interaction.custom_id.startswith("RUNCOMMAND"):
             return
-        command_name = interaction.custom_id[len("RUNCOMMAND "):]
+        command_name = interaction.custom_id[len("RUNCOMMAND ") :]
         command = self.bot.get_command(command_name)
         ctx = await self.bot.get_slash_context(interaction=interaction)
         ctx.invoked_with = command_name
@@ -23,8 +24,13 @@ class InteractionHandler(vbu.Cog, command_attrs={'hidden': True, 'add_slash_comm
 
     @classmethod
     def build_command_output_string(
-            cls,
-            command: Union[discord.ApplicationCommand, discord.ApplicationCommandOption, discord.ApplicationCommandOptionChoice]) -> str:
+        cls,
+        command: Union[
+            discord.ApplicationCommand,
+            discord.ApplicationCommandOption,
+            discord.ApplicationCommandOptionChoice,
+        ],
+    ) -> str:
 
         # Get options and choices from the command
         options = None
@@ -32,7 +38,9 @@ class InteractionHandler(vbu.Cog, command_attrs={'hidden': True, 'add_slash_comm
         if isinstance(command, discord.ApplicationCommandOption):
             choices = command.choices
             command.choices = []
-        if isinstance(command, (discord.ApplicationCommandOption, discord.ApplicationCommand)):
+        if isinstance(
+            command, (discord.ApplicationCommandOption, discord.ApplicationCommand)
+        ):
             options = command.options
             command.options = []
 
@@ -59,9 +67,13 @@ class InteractionHandler(vbu.Cog, command_attrs={'hidden': True, 'add_slash_comm
         # Indent and return
         return text
 
-    @commands.command(aliases=['addslashcommands', 'addslashcommand', 'addapplicationcommand'])
+    @commands.command(
+        aliases=["addslashcommands", "addslashcommand", "addapplicationcommand"]
+    )
     @commands.is_owner()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True, attach_files=True)
+    @commands.bot_has_permissions(
+        send_messages=True, add_reactions=True, attach_files=True
+    )
     async def addapplicationcommands(self, ctx, guild_id: int = None, *commands: str):
         """
         Adds all of the bot's interaction commands to the global interaction handler.
@@ -88,10 +100,20 @@ class InteractionHandler(vbu.Cog, command_attrs={'hidden': True, 'add_slash_comm
         output = f"Added **{len(added_commands)}** slash commands."
         await ctx.send(output, file=file)
 
-    @commands.command(aliases=['removeslashcommands', 'removeslashcommand', 'removeapplicationcommand'])
+    @commands.command(
+        aliases=[
+            "removeslashcommands",
+            "removeslashcommand",
+            "removeapplicationcommand",
+        ]
+    )
     @commands.is_owner()
-    @commands.bot_has_permissions(send_messages=True, add_reactions=True, attach_files=True)
-    async def removeapplicationcommands(self, ctx, guild_id: int = None, *commands: str):
+    @commands.bot_has_permissions(
+        send_messages=True, add_reactions=True, attach_files=True
+    )
+    async def removeapplicationcommands(
+        self, ctx, guild_id: int = None, *commands: str
+    ):
         """
         Removes the bot's interaction commands from the global interaction handler.
         """

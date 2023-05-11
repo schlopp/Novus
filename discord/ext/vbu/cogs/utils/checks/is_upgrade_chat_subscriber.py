@@ -42,17 +42,25 @@ def is_upgrade_chat_purchaser(*any_item_names):
 
         # See if we're even requesting anything
         if not any_item_names:
-            ctx.bot.logger.warning(f"No products input for is_upgrade_chat_purchaser for command {ctx.command.name}")
-            return True  # This returns a bool because it needs to return something truthy
+            ctx.bot.logger.warning(
+                f"No products input for is_upgrade_chat_purchaser for command {ctx.command.name}"
+            )
+            return (
+                True  # This returns a bool because it needs to return something truthy
+            )
 
         # Grab all purchased roles by the user
         try:
             purchases = await asyncio.wait_for(
-                ctx.bot.upgrade_chat.get_orders(discord_id=ctx.author.id, type=upgradechat.UpgradeChatItemType.SHOP),
+                ctx.bot.upgrade_chat.get_orders(
+                    discord_id=ctx.author.id, type=upgradechat.UpgradeChatItemType.SHOP
+                ),
                 timeout=3,
             )
         except (asyncio.TimeoutError, upgradechat.UpgradeChatError):
-            raise commands.CheckFailure("Upgrade.Chat is currently unable to process my request for purchasers - please try again later.")
+            raise commands.CheckFailure(
+                "Upgrade.Chat is currently unable to process my request for purchasers - please try again later."
+            )
 
         # See if they purchased anything that's correct
         output_items = []
@@ -89,17 +97,26 @@ def is_upgrade_chat_subscriber(*any_item_names):
 
         # See if we're even requesting anything
         if not any_item_names:
-            ctx.bot.logger.warning(f"No role tiers input for is_upgrade_chat_subscriber for command {ctx.command.name}")
-            return True  # This returns a bool because it needs to return something truthy
+            ctx.bot.logger.warning(
+                f"No role tiers input for is_upgrade_chat_subscriber for command {ctx.command.name}"
+            )
+            return (
+                True  # This returns a bool because it needs to return something truthy
+            )
 
         # Grab all purchased roles by the user
         try:
             purchases = await asyncio.wait_for(
-                ctx.bot.upgrade_chat.get_orders(discord_id=ctx.author.id, type=upgradechat.UpgradeChatItemType.UPGRADE),
+                ctx.bot.upgrade_chat.get_orders(
+                    discord_id=ctx.author.id,
+                    type=upgradechat.UpgradeChatItemType.UPGRADE,
+                ),
                 timeout=3,
             )
         except (asyncio.TimeoutError, upgradechat.UpgradeChatError):
-            raise commands.CheckFailure("Upgrade.Chat is currently unable to process my request for subscribers - please try again later.")
+            raise commands.CheckFailure(
+                "Upgrade.Chat is currently unable to process my request for subscribers - please try again later."
+            )
 
         # See if they purchased anything that's correct
         output_items = []

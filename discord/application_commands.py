@@ -63,13 +63,15 @@ class ApplicationCommandInteractionDataOption:
         self.from_data(data)
 
     def __repr__(self) -> str:
-        a = ('name', 'value', 'type')
+        a = ("name", "value", "type")
         v = [f"{i}={getattr(self, i)!r}" for i in a]
         return f"{self.__class__.__name__}<{', '.join(v)}>"
 
     def from_data(self, data: ApplicationCommandInteractionDataOptionPayload):
         self.name: str = data["name"]
-        self.type: ApplicationCommandOptionType = ApplicationCommandOptionType(data["type"])
+        self.type: ApplicationCommandOptionType = ApplicationCommandOptionType(
+            data["type"]
+        )
         self.value: Optional[str] = data.get("value")
         self.options: Optional[List[ApplicationCommandInteractionDataOption]] = [
             ApplicationCommandInteractionDataOption(i) for i in data.get("options", [])
@@ -94,11 +96,12 @@ class ApplicationCommandOptionChoice:
     """
 
     def __init__(
-            self,
-            *,
-            name: str,
-            name_localizations: Dict[Union[Locale, str], str] = None,
-            value: ApplicationCommandOptionChoiceValue = None):
+        self,
+        *,
+        name: str,
+        name_localizations: Dict[Union[Locale, str], str] = None,
+        value: ApplicationCommandOptionChoiceValue = None,
+    ):
         self.name: str = name
         self.name_localizations = name_localizations or dict()
         self.value: Any = value if value is not None else name
@@ -109,15 +112,17 @@ class ApplicationCommandOptionChoice:
     @classmethod
     def from_data(cls, data: dict):
         return cls(
-            name=data['name'],
+            name=data["name"],
             name_localizations=data.get("name_localizations", dict()),
-            value=data['value'],
+            value=data["value"],
         )
 
     def to_json(self) -> dict:
         return {
             "name": self.name,
-            "name_localizations": {str(i): o for i, o in self.name_localizations.items()},
+            "name_localizations": {
+                str(i): o for i, o in self.name_localizations.items()
+            },
             "value": self.value,
         }
 
@@ -212,21 +217,21 @@ class ApplicationCommandOption:
     """
 
     def __init__(
-            self,
-            *,
-            name: str,
-            type: ApplicationCommandOptionType,
-            description: str,
-            required: bool = True,
-            autocomplete: bool = False,
-            name_localizations: Dict[Union[Locale, str], str] = None,
-            description_localizations: Dict[Union[Locale, str], str] = None,
-            choices: List[ApplicationCommandOptionChoice] = None,
-            options: List[ApplicationCommandOption] = None,
-            channel_types: List[ChannelType] = None,
-            min_value: Optional[int] = None,
-            max_value: Optional[int] = None,
-            ):
+        self,
+        *,
+        name: str,
+        type: ApplicationCommandOptionType,
+        description: str,
+        required: bool = True,
+        autocomplete: bool = False,
+        name_localizations: Dict[Union[Locale, str], str] = None,
+        description_localizations: Dict[Union[Locale, str], str] = None,
+        choices: List[ApplicationCommandOptionChoice] = None,
+        options: List[ApplicationCommandOption] = None,
+        channel_types: List[ChannelType] = None,
+        min_value: Optional[int] = None,
+        max_value: Optional[int] = None,
+    ):
         self.name: str = name
         self.type: ApplicationCommandOptionType = type
         self.description: str = description
@@ -260,21 +265,21 @@ class ApplicationCommandOption:
     @classmethod
     def from_data(cls, data: dict):
         base_option = cls(
-            name=data['name'],
-            type=ApplicationCommandOptionType(data['type']),
-            description=data['description'],
+            name=data["name"],
+            type=ApplicationCommandOptionType(data["type"]),
+            description=data["description"],
             name_localizations=data.get("name_localizations", dict()),
             description_localizations=data.get("description_localizations", dict()),
-            required=data.get('required', False),
-            autocomplete=data.get('autocomplete', False),
-            min_value=data.get('min_value', None),
-            max_value=data.get('max_value', None),
+            required=data.get("required", False),
+            autocomplete=data.get("autocomplete", False),
+            min_value=data.get("min_value", None),
+            max_value=data.get("max_value", None),
         )
-        for choice in data.get('choices', list()):
+        for choice in data.get("choices", list()):
             base_option.add_choice(ApplicationCommandOptionChoice.from_data(choice))
-        for option in data.get('options', list()):
+        for option in data.get("options", list()):
             base_option.add_option(cls.from_data(option))
-        for channel_type in data.get('channel_types', list()):
+        for channel_type in data.get("channel_types", list()):
             channel, _ = _channel_factory(channel_type)
             base_option.channel_types.append(channel)
         return base_option
@@ -290,10 +295,17 @@ class ApplicationCommandOption:
             "options": [i.to_json() for i in self.options],
             "min_value": self.min_value,
             "max_value": self.max_value,
-            "name_localizations": {str(i): o for i, o in self.name_localizations.items()},
-            "description_localizations": {str(i): o for i, o in self.description_localizations.items()},
+            "name_localizations": {
+                str(i): o for i, o in self.name_localizations.items()
+            },
+            "description_localizations": {
+                str(i): o for i, o in self.description_localizations.items()
+            },
         }
-        if self.type in [ApplicationCommandOptionType.subcommand, ApplicationCommandOptionType.subcommand_group]:
+        if self.type in [
+            ApplicationCommandOptionType.subcommand,
+            ApplicationCommandOptionType.subcommand_group,
+        ]:
             payload.pop("required", None)
             payload.pop("choices", None)
             payload.pop("channel_types", None)
@@ -371,16 +383,17 @@ class ApplicationCommand(Snowflake):
     """
 
     def __init__(
-            self,
-            *,
-            name: str,
-            description: Optional[str] = None,
-            type: ApplicationCommandType = ApplicationCommandType.chat_input,
-            options: Optional[List[ApplicationCommandOption]] = None,
-            name_localizations: Optional[Dict[Union[Locale, str], str]] = None,
-            description_localizations: Optional[Dict[Union[Locale, str], str]] = None,
-            dm_permissions: bool = True,
-            default_member_permissions: Optional[Permissions] = None):
+        self,
+        *,
+        name: str,
+        description: Optional[str] = None,
+        type: ApplicationCommandType = ApplicationCommandType.chat_input,
+        options: Optional[List[ApplicationCommandOption]] = None,
+        name_localizations: Optional[Dict[Union[Locale, str], str]] = None,
+        description_localizations: Optional[Dict[Union[Locale, str], str]] = None,
+        dm_permissions: bool = True,
+        default_member_permissions: Optional[Permissions] = None,
+    ):
         self.name: str = name
         self.description: str = description or name
         self.type: ApplicationCommandType = type
@@ -405,17 +418,19 @@ class ApplicationCommand(Snowflake):
     @classmethod
     def from_data(cls, data: ApplicationCommandPayload):
         command = cls(
-            name=data['name'],
-            description=data['description'],
-            type=ApplicationCommandType(data.get('type', 1)),
+            name=data["name"],
+            description=data["description"],
+            type=ApplicationCommandType(data.get("type", 1)),
             name_localizations=data.get("name_localizations", dict()),
             description_localizations=data.get("description_localizations", dict()),
             dm_permissions=data.get("dm_permissions", True),
-            default_member_permissions=None if data.get("default_member_permissions") is None else Permissions(int(data["default_member_permissions"])),
+            default_member_permissions=None
+            if data.get("default_member_permissions") is None
+            else Permissions(int(data["default_member_permissions"])),
         )
-        command.id = int(data.get('id', 0)) or None
-        command.application_id = int(data.get('application_id', 0)) or None
-        for option in data.get('options', list()):
+        command.id = int(data.get("id", 0)) or None
+        command.application_id = int(data.get("application_id", 0)) or None
+        for option in data.get("options", list()):
             command.add_option(ApplicationCommandOption.from_data(option))
         return command
 
@@ -428,9 +443,15 @@ class ApplicationCommand(Snowflake):
             "description": self.description,
             "type": self.type.value,
             "options": [i.to_json() for i in self.options],
-            "name_localizations": {str(i): o for i, o in self.name_localizations.items()},
-            "description_localizations": {str(i): o for i, o in self.description_localizations.items()},
-            "default_member_permissions": str(self.default_member_permissions.value) if self.default_member_permissions else None,
+            "name_localizations": {
+                str(i): o for i, o in self.name_localizations.items()
+            },
+            "description_localizations": {
+                str(i): o for i, o in self.description_localizations.items()
+            },
+            "default_member_permissions": str(self.default_member_permissions.value)
+            if self.default_member_permissions
+            else None,
             "dm_permissions": self.dm_permissions,
         }
         if self.type != ApplicationCommandType.chat_input:

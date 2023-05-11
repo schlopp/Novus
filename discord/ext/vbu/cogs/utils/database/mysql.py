@@ -25,13 +25,14 @@ if typing.TYPE_CHECKING:
 
 
 class MysqlWrapper(DriverWrapper):
-
     @staticmethod
     async def create_pool(config: DatabaseConfig) -> aiomysql.Pool:
         return await aiomysql.create_pool(**config, autocommit=True)
 
     @staticmethod
-    async def get_connection(dbw: typing.Type[MysqlDatabaseWrapper]) -> MysqlDatabaseWrapper:
+    async def get_connection(
+        dbw: typing.Type[MysqlDatabaseWrapper],
+    ) -> MysqlDatabaseWrapper:
         connection: aiomysql.Connection = await dbw.pool.acquire()
         cursor = await connection.cursor(aiomysql.DictCursor)
         v = dbw(
@@ -66,7 +67,9 @@ class MysqlWrapper(DriverWrapper):
         await tra.parent.conn.rollback()
 
     @staticmethod
-    async def fetch(dbw: MysqlDatabaseWrapper, sql: str, *args) -> typing.List[typing.Any]:
+    async def fetch(
+        dbw: MysqlDatabaseWrapper, sql: str, *args
+    ) -> typing.List[typing.Any]:
         await dbw.caller.execute(sql, args)
         data = await dbw.caller.fetchall()
         return data or list()

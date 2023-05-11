@@ -3,7 +3,6 @@ from discord.ext import tasks
 
 
 class MyClient(discord.Client):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -14,8 +13,8 @@ class MyClient(discord.Client):
         self.my_background_task.start()
 
     async def on_ready(self):
-        print(f'Logged in as {self.user} (ID: {self.user.id})')
-        print('------')
+        print(f"Logged in as {self.user} (ID: {self.user.id})")
+        print("------")
 
     @tasks.loop(seconds=60)  # task runs every 60 seconds
     async def my_background_task(self):
@@ -29,4 +28,4 @@ class MyClient(discord.Client):
 
 
 client = MyClient()
-client.run('token')
+client.run("token")

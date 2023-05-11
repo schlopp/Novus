@@ -11,12 +11,12 @@ from .interaction_filter import interaction_filter
 
 
 __all__ = (
-    'is_config_set',
-    'meta_command',
-    'bot_is_ready',
-    'is_bot_support',
-    'is_voter',
-    'is_upgrade_chat_subscriber',
-    'is_upgrade_chat_purchaser',
-    'interaction_filter',
+    "is_config_set",
+    "meta_command",
+    "bot_is_ready",
+    "is_bot_support",
+    "is_voter",
+    "is_upgrade_chat_subscriber",
+    "is_upgrade_chat_purchaser",
+    "interaction_filter",
 )

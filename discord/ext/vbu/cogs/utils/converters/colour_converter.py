@@ -30,15 +30,13 @@ print("}")
 
 
 COLOURS_BY_NAME = {
-
     # Custom colours
-    "kae blue": 0x5dadec,
-    "ollie yellow": 0xf5e59d,
-    "poop brown": 0x7a5901,
-    "stegosans": 0xf1e6a9,
-    "teddy purple": 0xb19cd9,
-    "medusa green": 0x173b0b,
-
+    "kae blue": 0x5DADEC,
+    "ollie yellow": 0xF5E59D,
+    "poop brown": 0x7A5901,
+    "stegosans": 0xF1E6A9,
+    "teddy purple": 0xB19CD9,
+    "medusa green": 0x173B0B,
     # Actual real colours
     "absolute zero": 0x0048BA,
     "acid green": 0xB0BF1A,
@@ -1221,7 +1219,12 @@ class ColourConverter(commands.ColourConverter):
     COLOURS_BY_NAME = COLOURS_BY_NAME
     COLOURS_BY_VALUE = COLOURS_BY_VALUE
 
-    def __init__(self, *, allow_custom_colour_names: bool = True, allow_default_colours: bool = True):
+    def __init__(
+        self,
+        *,
+        allow_custom_colour_names: bool = True,
+        allow_default_colours: bool = True
+    ):
         self.allow_custom_colour_names = allow_custom_colour_names
         self.allow_default_colours = allow_default_colours
 

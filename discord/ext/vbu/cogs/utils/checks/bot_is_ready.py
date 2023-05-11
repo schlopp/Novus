@@ -41,7 +41,11 @@ def bot_is_ready(*, gateway: bool = True, database: bool = True):
             if not (ctx.bot.startup_method is None or ctx.bot.startup_method.done()):
                 raise BotNotReady(error_text)
         if gateway:
-            if not getattr(ctx.bot, "is_interactions_only", False) and not ctx.bot.is_ready():
+            if (
+                not getattr(ctx.bot, "is_interactions_only", False)
+                and not ctx.bot.is_ready()
+            ):
                 raise BotNotReady(error_text)
         return True
+
     return commands.check(predicate)

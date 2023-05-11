@@ -22,13 +22,11 @@ class UserDatabaseConfig(DatabaseConfig):
 
 
 class DriverFetchConnection(typing.Protocol):
-
     async def fetch(self):
         raise NotImplementedError()
 
 
 class DriverExecuteConnection(typing.Protocol):
-
     async def execute(self):
         raise NotImplementedError()
 
@@ -37,7 +35,6 @@ DriverConnection = typing.Union[DriverFetchConnection, DriverExecuteConnection]
 
 
 class DriverPool(typing.Protocol):
-
     async def acquire(self) -> DriverConnection:
         raise NotImplementedError()
 
@@ -49,7 +46,6 @@ class DriverPool(typing.Protocol):
 
 
 class DriverWrapper(typing.Protocol):
-
     @staticmethod
     async def create_pool(config: DatabaseConfig) -> DriverPool:
         """Connect to your database driver using the given config."""
@@ -66,7 +62,12 @@ class DriverWrapper(typing.Protocol):
         raise NotImplementedError()
 
     @classmethod
-    def transaction(cls: typing.Type[DriverWrapper], dbw: DatabaseWrapper, *, commit_on_exit: bool = True):
+    def transaction(
+        cls: typing.Type[DriverWrapper],
+        dbw: DatabaseWrapper,
+        *,
+        commit_on_exit: bool = True,
+    ):
         """Make a transaction instance with the connection's current instance."""
         return DatabaseTransaction(cls, dbw, commit_on_exit=commit_on_exit)
 
@@ -86,11 +87,15 @@ class DriverWrapper(typing.Protocol):
         raise NotImplementedError()
 
     @staticmethod
-    async def fetch(dbw: DatabaseWrapper, sql: str, *args: typing.Any) -> typing.List[typing.Any]:
+    async def fetch(
+        dbw: DatabaseWrapper, sql: str, *args: typing.Any
+    ) -> typing.List[typing.Any]:
         """Run some SQL in your database."""
         raise NotImplementedError()
 
     @staticmethod
-    async def executemany(dbw: DatabaseWrapper, sql: str, *args_list: typing.Iterable[typing.Any]) -> None:
+    async def executemany(
+        dbw: DatabaseWrapper, sql: str, *args_list: typing.Iterable[typing.Any]
+    ) -> None:
         """Run some SQL in your database."""
         raise NotImplementedError()

@@ -59,14 +59,26 @@ class Button(DisableableComponent):
         The emoji of the button, if available.
     """
 
-    __slots__ = ("label", "style", "custom_id", "emoji", "url", "disabled",)
+    __slots__ = (
+        "label",
+        "style",
+        "custom_id",
+        "emoji",
+        "url",
+        "disabled",
+    )
     TYPE = ComponentType.button
 
     def __init__(
-            self, *, label: Optional[str] = None, custom_id: Optional[str] = None,
-            style: Optional[ButtonStyle] = None,
-            emoji: Optional[Union[str, Emoji, PartialEmoji]] = None, url: Optional[str] = None,
-            disabled: Optional[bool] = False):
+        self,
+        *,
+        label: Optional[str] = None,
+        custom_id: Optional[str] = None,
+        style: Optional[ButtonStyle] = None,
+        emoji: Optional[Union[str, Emoji, PartialEmoji]] = None,
+        url: Optional[str] = None,
+        disabled: Optional[bool] = False,
+    ):
         self.label = label
         self.style = style or ButtonStyle.secondary
         self.custom_id = custom_id or str(uuid.uuid1())
@@ -76,7 +88,9 @@ class Button(DisableableComponent):
             elif isinstance(emoji, _EmojiTag):
                 self.emoji = emoji._to_partial()
             else:
-                raise TypeError(f'expected emoji to be str, Emoji, or PartialEmoji not {emoji.__class__}')
+                raise TypeError(
+                    f"expected emoji to be str, Emoji, or PartialEmoji not {emoji.__class__}"
+                )
         else:
             self.emoji = None
         self.url = url
@@ -90,15 +104,15 @@ class Button(DisableableComponent):
 
     def __repr__(self) -> str:
         attrs = (
-            ('label', self.label),
-            ('style', self.style),
-            ('custom_id', self.custom_id),
-            ('emoji', self.emoji),
-            ('url', self.url),
-            ('disabled', self.disabled),
+            ("label", self.label),
+            ("style", self.style),
+            ("custom_id", self.custom_id),
+            ("emoji", self.emoji),
+            ("url", self.url),
+            ("disabled", self.disabled),
         )
-        inner = ' '.join('%s=%r' % t for t in attrs)
-        return f'{self.__class__.__name__}({inner})'
+        inner = " ".join("%s=%r" % t for t in attrs)
+        return f"{self.__class__.__name__}({inner})"
 
     def to_dict(self) -> ButtonPayload:
         v = {

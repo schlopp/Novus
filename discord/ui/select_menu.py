@@ -32,7 +32,7 @@ from ..partial_emoji import PartialEmoji, _EmojiTag
 from ..channel import _channel_factory
 from ..utils import MISSING
 from ..types.components import (
-    Component, 
+    Component,
     SelectMenu as SelectMenuPayload,
     ChannelSelectMenu as ChannelSelectMenuPayload,
     SelectOption as SelectOptionPayload,
@@ -61,11 +61,23 @@ class SelectOption(InteractableComponent):
         set to ``True`` per select menu. Defaults to ``False``.
     """
 
-    __slots__ = ("label", "value", "description", "emoji", "default",)
+    __slots__ = (
+        "label",
+        "value",
+        "description",
+        "emoji",
+        "default",
+    )
 
     def __init__(
-            self, *, label: Optional[str], value: Optional[str] = MISSING, description: Optional[str] = None,
-            emoji: Optional[Union[str, Emoji, PartialEmoji]] = None, default: bool = False):
+        self,
+        *,
+        label: Optional[str],
+        value: Optional[str] = MISSING,
+        description: Optional[str] = None,
+        emoji: Optional[Union[str, Emoji, PartialEmoji]] = None,
+        default: bool = False,
+    ):
         self.label = label
         self.value = value if value is not MISSING else label
         self.description = description
@@ -77,21 +89,23 @@ class SelectOption(InteractableComponent):
             elif isinstance(emoji, dict):
                 self.emoji = PartialEmoji(**emoji)
             else:
-                raise TypeError(f'expected emoji to be str, Emoji, PartialEmoji, or dict not {emoji.__class__}')
+                raise TypeError(
+                    f"expected emoji to be str, Emoji, PartialEmoji, or dict not {emoji.__class__}"
+                )
         else:
             self.emoji = None
         self.default = default
 
     def __repr__(self) -> str:
         attrs = (
-            ('label', self.label),
-            ('value', self.value),
-            ('description', self.description),
-            ('emoji', self.emoji),
-            ('default', self.default),
+            ("label", self.label),
+            ("value", self.value),
+            ("description", self.description),
+            ("emoji", self.emoji),
+            ("default", self.default),
         )
-        inner = ' '.join('%s=%r' % t for t in attrs)
-        return f'{self.__class__.__name__}({inner})'
+        inner = " ".join("%s=%r" % t for t in attrs)
+        return f"{self.__class__.__name__}({inner})"
 
     def to_dict(self) -> SelectOptionPayload:
         v = {
@@ -139,12 +153,26 @@ class SelectMenu(DisableableComponent):
         Whether or not the select menu is clickable.
     """
 
-    __slots__ = ("custom_id", "options", "placeholder", "min_values", "max_values", "disabled",)
+    __slots__ = (
+        "custom_id",
+        "options",
+        "placeholder",
+        "min_values",
+        "max_values",
+        "disabled",
+    )
     TYPE = ComponentType.select_menu
 
     def __init__(
-            self, *, custom_id: str = MISSING, options: List[SelectOption] = MISSING, placeholder: Optional[str] = None,
-            min_values: Optional[int] = 1, max_values: Optional[int] = 1, disabled: Optional[bool] = False):
+        self,
+        *,
+        custom_id: str = MISSING,
+        options: List[SelectOption] = MISSING,
+        placeholder: Optional[str] = None,
+        min_values: Optional[int] = 1,
+        max_values: Optional[int] = 1,
+        disabled: Optional[bool] = False,
+    ):
         self.custom_id = custom_id if custom_id is not MISSING else str(uuid.uuid1())
         self.options = options
         self.placeholder = placeholder
@@ -154,15 +182,15 @@ class SelectMenu(DisableableComponent):
 
     def __repr__(self) -> str:
         attrs = (
-            ('custom_id', self.custom_id),
-            ('options ', self.options),
-            ('placeholder ', self.placeholder),
-            ('min_values ', self.min_values),
-            ('max_values ', self.max_values),
-            ('disabled', self.disable),
+            ("custom_id", self.custom_id),
+            ("options ", self.options),
+            ("placeholder ", self.placeholder),
+            ("min_values ", self.min_values),
+            ("max_values ", self.max_values),
+            ("disabled", self.disable),
         )
-        inner = ' '.join('%s=%r' % t for t in attrs)
-        return f'{self.__class__.__name__}({inner})'
+        inner = " ".join("%s=%r" % t for t in attrs)
+        return f"{self.__class__.__name__}({inner})"
 
     def to_dict(self) -> SelectMenuPayload:
         v = {
@@ -171,7 +199,7 @@ class SelectMenu(DisableableComponent):
             "placeholder": self.placeholder,
             "min_values": self.min_values,
             "max_values": self.max_values,
-            "disabled": self.disabled
+            "disabled": self.disabled,
         }
         if self.options:
             v["options"] = [i.to_dict() for i in self.options]
@@ -187,7 +215,7 @@ class SelectMenu(DisableableComponent):
             placeholder=data.get("placeholder"),
             min_values=data.get("min_values"),
             max_values=data.get("max_values"),
-            disabled=data.get("disabled", False)
+            disabled=data.get("disabled", False),
         )
 
 
@@ -222,7 +250,9 @@ class ChannelSelectMenu(SelectMenu):
 
     TYPE = ComponentType.channel_select_menu
 
-    def __init__(self, *args, channel_types: Optional[List[ChannelType]] = None, **kwargs):
+    def __init__(
+        self, *args, channel_types: Optional[List[ChannelType]] = None, **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self.channel_types = channel_types or list()
 
@@ -235,8 +265,7 @@ class ChannelSelectMenu(SelectMenu):
     @classmethod
     def from_dict(cls, data: ChannelSelectMenuPayload):
         v = super().from_dict(data)
-        for channel_type in data.get('channel_types', list()):
+        for channel_type in data.get("channel_types", list()):
             channel, _ = _channel_factory(channel_type)
             v.channel_types.append(channel)
         return v
-

@@ -2,13 +2,13 @@ import discord
 from discord.ext import commands
 
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or('$'))
+bot = commands.Bot(command_prefix=commands.when_mentioned_or("$"))
 
 
 @bot.event
 async def on_ready():
-    print(f'Logged in as {bot.user} (ID: {bot.user.id})')
-    print('------')
+    print(f"Logged in as {bot.user} (ID: {bot.user.id})")
+    print("------")
 
 
 @bot.command()
@@ -23,7 +23,7 @@ async def ask(ctx: commands.SlashContext):
             (no_button := discord.ui.Button(label="No")),
         ),
     )
-    await ctx.send('Do you want to continue?', components=components)
+    await ctx.send("Do you want to continue?", components=components)
 
     # Set up a check for our `wait_for`
     def check(interaction: discord.Interaction):
@@ -48,7 +48,7 @@ async def ask(ctx: commands.SlashContext):
 
 
 async def main():
-    await bot.login('TOKEN')  # Validate our token
+    await bot.login("TOKEN")  # Validate our token
     await bot.register_application_commands()  # Upsert our commands so they're added as slashies
     await bot.connect()  # Run a websocket connection
 

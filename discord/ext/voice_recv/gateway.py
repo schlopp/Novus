@@ -5,29 +5,30 @@ import asyncio
 
 
 async def hook(self: discord.gateway.DiscordVoiceWebSocket, msg: dict):
-    op = msg['op']
-    data = msg.get('d')
+    op = msg["op"]
+    data = msg.get("d")
 
     if op == self.SESSION_DESCRIPTION:
         await _do_hacks(self)
 
     elif op == self.SPEAKING:
-        user_id = int(data['user_id'])
+        user_id = int(data["user_id"])
         vc = self._connection
-        vc._add_ssrc(user_id, data['ssrc'])
+        vc._add_ssrc(user_id, data["ssrc"])
 
         if vc.guild:
             user = vc.guild.get_member(user_id)
         else:
             user = vc._state.get_user(user_id)
 
-        vc._state.dispatch('speaking_update', user, data['speaking'])
+        vc._state.dispatch("speaking_update", user, data["speaking"])
 
     elif op == self.CLIENT_CONNECT:
-        self._connection._add_ssrc(int(data['user_id']), data['audio_ssrc'])
+        self._connection._add_ssrc(int(data["user_id"]), data["audio_ssrc"])
 
     elif op == self.CLIENT_DISCONNECT:
-        self._connection._remove_ssrc(user_id=int(data['user_id']))
+        self._connection._remove_ssrc(user_id=int(data["user_id"]))
+
 
 async def _do_hacks(self):
     # Everything below this is a hack because discord keeps breaking things
@@ -43,7 +44,7 @@ async def _do_hacks(self):
 
     # hack #2:
     # sending a silence packet is required to be able to read from the socket
-    self._connection.send_audio_packet(b'\xF8\xFF\xFE', encode=False)
+    self._connection.send_audio_packet(b"\xF8\xFF\xFE", encode=False)
 
     # just so we don't have the speaking circle when we're not actually speaking
     await self.speak(False)

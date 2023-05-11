@@ -1,7 +1,18 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Any, Callable, Dict, Protocol, Union, Type, Optional, List, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Protocol,
+    Union,
+    Type,
+    Optional,
+    List,
+    overload,
+)
 
 import discord
 from discord.ext import commands
@@ -29,11 +40,12 @@ if TYPE_CHECKING:
 
 class _ConverterProtocol(Protocol):
     callback: Callable
-    async def convert(self, ctx, value): ...
+
+    async def convert(self, ctx, value):
+        ...
 
 
 class _FakeConverter(object):
-
     def __init__(self, callback):
         self.callback = callback
 
@@ -48,34 +60,37 @@ class Converter(object):
 
     @overload
     def __init__(
-            self,
-            prompt: str,
-            checks: Optional[List[Check]] = ...,
-            converter: Optional[Callable[[discord.Interaction], bool]] = ...,
-            components: discord.ui.MessageComponents = ...,
-            timeout_message: Optional[str] = ...,
-            input_text_kwargs: Optional[Dict[str, Any]] = None):
+        self,
+        prompt: str,
+        checks: Optional[List[Check]] = ...,
+        converter: Optional[Callable[[discord.Interaction], bool]] = ...,
+        components: discord.ui.MessageComponents = ...,
+        timeout_message: Optional[str] = ...,
+        input_text_kwargs: Optional[Dict[str, Any]] = None,
+    ):
         ...
 
     @overload
     def __init__(
-            self,
-            prompt: str,
-            checks: Optional[List[Check]] = ...,
-            converter: Optional[TypeConverter] = ...,
-            components: Optional[discord.ui.MessageComponents] = None,
-            timeout_message: Optional[str] = ...,
-            input_text_kwargs: Optional[Dict[str, Any]] = None):
+        self,
+        prompt: str,
+        checks: Optional[List[Check]] = ...,
+        converter: Optional[TypeConverter] = ...,
+        components: Optional[discord.ui.MessageComponents] = None,
+        timeout_message: Optional[str] = ...,
+        input_text_kwargs: Optional[Dict[str, Any]] = None,
+    ):
         ...
 
     def __init__(
-            self,
-            prompt: str,
-            checks: Optional[List[Check]] = None,
-            converter: Optional[AnyConverter] = str,
-            components: Optional[discord.ui.MessageComponents] = None,
-            timeout_message: Optional[str] = None,
-            input_text_kwargs: Optional[Dict[str, Any]] = None):
+        self,
+        prompt: str,
+        checks: Optional[List[Check]] = None,
+        converter: Optional[AnyConverter] = str,
+        components: Optional[discord.ui.MessageComponents] = None,
+        timeout_message: Optional[str] = None,
+        input_text_kwargs: Optional[Dict[str, Any]] = None,
+    ):
         """
         Parameters
         ----------
@@ -127,9 +142,8 @@ class Converter(object):
         return _FakeConverter(converter)
 
     async def run(
-            self,
-            ctx: commands.SlashContext,
-            messages_to_delete: Optional[list] = None):
+        self, ctx: commands.SlashContext, messages_to_delete: Optional[list] = None
+    ):
         """
         Ask the user for an input, run the checks, run the converter, and
         return. Timeout errors *will* be raised here, but they'll propogate all
@@ -140,9 +154,7 @@ class Converter(object):
 
         # Ask the user for an input
         messages_to_delete = (
-            messages_to_delete
-            if messages_to_delete is not None
-            else list()
+            messages_to_delete if messages_to_delete is not None else list()
         )
 
         # The input will be an interaction - branch off here
@@ -157,9 +169,8 @@ class Converter(object):
             raise
 
     async def _run_with_components(
-            self,
-            ctx: commands.SlashContext,
-            messages_to_delete: List[discord.Message]):
+        self, ctx: commands.SlashContext, messages_to_delete: List[discord.Message]
+    ):
         """
         Run this converter when this components have been supplied.
         """
@@ -194,10 +205,12 @@ class Converter(object):
                 return False
             if payload.user.id == ctx.interaction.user.id:
                 return True
-            ctx.bot.loop.create_task(payload.response.send_message(
-                f"Only {ctx.interaction.user.mention} can interact with these buttons.",
-                ephemeral=True,
-            ))
+            ctx.bot.loop.create_task(
+                payload.response.send_message(
+                    f"Only {ctx.interaction.user.mention} can interact with these buttons.",
+                    ephemeral=True,
+                )
+            )
             return False
 
         # Wait for the user to click a button
@@ -216,9 +229,8 @@ class Converter(object):
         return await self.converter.convert(ctx, payload)
 
     async def _run_with_modal(
-            self,
-            ctx: commands.SlashContext,
-            messages_to_delete: List[discord.Message]):
+        self, ctx: commands.SlashContext, messages_to_delete: List[discord.Message]
+    ):
         """
         Run this converter when this no components are supplied - spawn a modal.
         """
@@ -255,8 +267,8 @@ class Converter(object):
                 ctx.bot.wait_for(
                     "component_interaction",
                     check=lambda i: (
-                        i.user.id == ctx.interaction.user.id and
-                        i.custom_id in [button.custom_id, cancel.custom_id]
+                        i.user.id == ctx.interaction.user.id
+                        and i.custom_id in [button.custom_id, cancel.custom_id]
                     ),
                 ),
             ]
@@ -266,7 +278,9 @@ class Converter(object):
                 wait_tasks.append(running_modal_task)
 
             # Wait for one of those things to happen
-            done, pending = await asyncio.wait(wait_tasks, return_when=asyncio.FIRST_COMPLETED)
+            done, pending = await asyncio.wait(
+                wait_tasks, return_when=asyncio.FIRST_COMPLETED
+            )
 
             # Cancel waiting for the other task
             for t in pending:
@@ -286,7 +300,9 @@ class Converter(object):
                 ctx.interaction = result  # Don't defer this one so we can send a modal
                 if ctx.interaction.custom_id == cancel.custom_id:
                     return None
-                running_modal_task = ctx.bot.loop.create_task(self._run_spawn_modal(ctx))
+                running_modal_task = ctx.bot.loop.create_task(
+                    self._run_spawn_modal(ctx)
+                )
                 continue
 
             # If it's anything else, it'll be from the modal task
@@ -309,9 +325,7 @@ class Converter(object):
             # is fine
             return result
 
-    async def _run_spawn_modal(
-            self,
-            ctx: commands.SlashContext) -> Union[Check, Any]:
+    async def _run_spawn_modal(self, ctx: commands.SlashContext) -> Union[Check, Any]:
         """
         Spawn a modal from the button click.
 
@@ -350,7 +364,8 @@ class Converter(object):
         # Wait for an input
         modal_submission: discord.Interaction = await ctx.bot.wait_for(
             "modal_submit",
-            check=lambda i: i.user.id == ctx.interaction.user.id and i.custom_id == modal.custom_id,
+            check=lambda i: i.user.id == ctx.interaction.user.id
+            and i.custom_id == modal.custom_id,
             timeout=60.0 * 30,
         )
         ctx.interaction = modal_submission

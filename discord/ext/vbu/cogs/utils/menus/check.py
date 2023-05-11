@@ -38,10 +38,11 @@ class Check(object):
     failures = CheckFailureAction
 
     def __init__(
-            self,
-            check: typing.Callable[[discord.Message], bool] = None,
-            on_failure: CheckFailureAction = CheckFailureAction.FAIL,
-            fail_message: str = None):
+        self,
+        check: typing.Callable[[discord.Message], bool] = None,
+        on_failure: CheckFailureAction = CheckFailureAction.FAIL,
+        fail_message: str = None,
+    ):
         """
         Attributes
         ----------
@@ -87,10 +88,11 @@ class ModalCheck(Check):
     failures = CheckFailureAction
 
     def __init__(
-            self,
-            check: typing.Callable[[discord.Interaction], bool] = None,
-            on_failure: CheckFailureAction = CheckFailureAction.FAIL,
-            fail_message: str = None):
+        self,
+        check: typing.Callable[[discord.Interaction], bool] = None,
+        on_failure: CheckFailureAction = CheckFailureAction.FAIL,
+        fail_message: str = None,
+    ):
         """
         Attributes
         ----------

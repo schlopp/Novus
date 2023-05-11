@@ -3,7 +3,6 @@ import string
 
 
 class PluralFormatter(string.Formatter):
-
     def format_field(self, value: typing.Any, spec: str) -> str:
         spec_split = spec.split(",")
         if spec_split[0] == "plural":
@@ -15,7 +14,6 @@ class PluralFormatter(string.Formatter):
 
 
 class PronounFormatter(string.Formatter):
-
     def format_field(self, value: typing.Any, spec: str) -> str:
         spec_split = spec.split(",")
         if spec_split[0] == "pronoun":
@@ -27,7 +25,6 @@ class PronounFormatter(string.Formatter):
 
 
 class JoinFormatter(string.Formatter):
-
     def format_field(self, value: typing.Any, spec: str) -> str:
         spec_split = spec.split(",", 1)
         if spec_split[0] == "join":
@@ -86,7 +83,6 @@ class ProgressFormatter(string.Formatter):
 
 
 class Formatter(PluralFormatter, PronounFormatter, JoinFormatter, ProgressFormatter):
-
     def format(self, *args, **kwargs):
         """
         A modified version of the normal :code:`str.format` method to have some slightly more

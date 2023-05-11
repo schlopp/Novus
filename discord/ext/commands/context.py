@@ -53,26 +53,22 @@ if TYPE_CHECKING:
     from .help import HelpCommand
     from .view import StringView
 
-__all__ = (
-    'Context',
-    'SlashContext'
-)
+__all__ = ("Context", "SlashContext")
 
 MISSING: Any = discord.utils.MISSING
 
 
-T = TypeVar('T')
-BotT = TypeVar('BotT', bound="Union[Bot, AutoShardedBot]")
-CogT = TypeVar('CogT', bound="Cog")
+T = TypeVar("T")
+BotT = TypeVar("BotT", bound="Union[Bot, AutoShardedBot]")
+CogT = TypeVar("CogT", bound="Cog")
 
 if TYPE_CHECKING:
-    P = ParamSpec('P')
+    P = ParamSpec("P")
 else:
-    P = TypeVar('P')
+    P = TypeVar("P")
 
 
 class _NoRequestTyping(discord.context_managers.Typing):
-
     async def do_typing(self) -> None:
         await self.messageable.trigger_typing()
         while True:
@@ -144,7 +140,8 @@ class Context(discord.abc.Messageable, Generic[BotT]):
         .. versionadded:: 0.0.6
     """
 
-    def __init__(self,
+    def __init__(
+        self,
         *,
         message: Message,
         bot: BotT,
@@ -181,7 +178,9 @@ class Context(discord.abc.Messageable, Generic[BotT]):
     def locale(self):
         return self.user_locale or self.guild_locale or "en-US"
 
-    async def invoke(self, command: Command[CogT, P, T], /, *args: P.args, **kwargs: P.kwargs) -> T:
+    async def invoke(
+        self, command: Command[CogT, P, T], /, *args: P.args, **kwargs: P.kwargs
+    ) -> T:
         r"""|coro|
 
         Calls a command with the arguments given.
@@ -250,13 +249,16 @@ class Context(discord.abc.Messageable, Generic[BotT]):
         else:
             view = None
         if cmd is None:
-            raise ValueError('This context is not valid.')
+            raise ValueError("This context is not valid.")
 
         # some state to revert to when we're done
         if view:
             index, previous = view.index, view.previous
         else:
-            index, previous = -1, -1  # Should really be None, but view doesn't exist anyway
+            index, previous = (
+                -1,
+                -1,
+            )  # Should really be None, but view doesn't exist anyway
         invoked_with = self.invoked_with
         invoked_subcommand = self.invoked_subcommand
         invoked_parents = self.invoked_parents
@@ -265,9 +267,9 @@ class Context(discord.abc.Messageable, Generic[BotT]):
         if restart:
             to_call = cmd.root_parent or cmd
             if view:
-                view.index = len(self.prefix or '')
+                view.index = len(self.prefix or "")
                 view.previous = 0
-                self.invoked_with = view.get_word() # advance to get the root command
+                self.invoked_with = view.get_word()  # advance to get the root command
             self.invoked_parents = []
         else:
             to_call = cmd
@@ -294,10 +296,9 @@ class Context(discord.abc.Messageable, Generic[BotT]):
 
     @property
     def clean_prefix(self) -> str:
-        """:class:`str`: The cleaned up invoke prefix. i.e. mentions are ``@name`` instead of ``<@id>``.
-        """
+        """:class:`str`: The cleaned up invoke prefix. i.e. mentions are ``@name`` instead of ``<@id>``."""
         if self.prefix is None:
-            return ''
+            return ""
 
         user = self.me
         # this breaks if the prefix mention is not the bot itself but I
@@ -305,7 +306,7 @@ class Context(discord.abc.Messageable, Generic[BotT]):
         # for this common use case rather than waste performance for the
         # odd one.
         pattern = re.compile(r"<@!?%s>" % user.id)
-        return pattern.sub("@%s" % user.display_name.replace('\\', r'\\'), self.prefix)
+        return pattern.sub("@%s" % user.display_name.replace("\\", r"\\"), self.prefix)
 
     @property
     def cog(self) -> Optional[Cog]:
@@ -419,7 +420,7 @@ class Context(discord.abc.Messageable, Generic[BotT]):
         await cmd.prepare_help_command(self, entity.qualified_name)
 
         try:
-            if hasattr(entity, '__cog_commands__'):
+            if hasattr(entity, "__cog_commands__"):
                 injected = wrap_callback(cmd.send_cog_help)
                 return await injected(entity)
             elif isinstance(entity, Group):
@@ -445,7 +446,8 @@ class SlashContext(Context, Generic[BotT]):
 
     supports_ephemeral: bool = True
 
-    def __init__(self,
+    def __init__(
+        self,
         *,
         interaction: Interaction,
         bot: BotT,
@@ -504,7 +506,9 @@ class SlashContext(Context, Generic[BotT]):
 
     async def send(self, *args, **kwargs):
         if not self.interaction.response.is_done():
-            await self.interaction.response.defer(ephemeral=kwargs.get("ephemeral", False))
+            await self.interaction.response.defer(
+                ephemeral=kwargs.get("ephemeral", False)
+            )
             return await self.send(*args, **kwargs)
         return await self.interaction.followup.send(*args, **kwargs)
 

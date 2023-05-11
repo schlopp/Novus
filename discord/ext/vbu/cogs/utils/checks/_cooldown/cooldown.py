@@ -36,14 +36,18 @@ class CooldownMapping(commands.CooldownMapping):
 
         return super()._bucket_key(message)
 
-    def get_bucket(self, message: discord.Message, current: float = None) -> commands.Cooldown:
+    def get_bucket(
+        self, message: discord.Message, current: float = None
+    ) -> commands.Cooldown:
         """
         Gives you the applied cooldown for a message, which you can use to work out whether to run the command or not.
         """
 
         return super().get_bucket(message, current)
 
-    def update_rate_limit(self, message: discord.Message, current: float = None) -> None:
+    def update_rate_limit(
+        self, message: discord.Message, current: float = None
+    ) -> None:
         """
         Updates the rate limit for a given message.
         """
@@ -122,9 +126,23 @@ class Cooldown(commands.Cooldown):
     default_mapping_class = CooldownMapping
 
     _copy_kwargs = ()  # The attrs that are passed into kwargs when copied; error and mapping are always copied
-    __slots__ = ('rate', 'per', 'type', 'error', 'mapping', '_window', '_tokens', '_last')
+    __slots__ = (
+        "rate",
+        "per",
+        "type",
+        "error",
+        "mapping",
+        "_window",
+        "_tokens",
+        "_last",
+    )
 
-    def __init__(self, *, error: commands.CommandOnCooldown = None, mapping: CooldownMapping = None):
+    def __init__(
+        self,
+        *,
+        error: commands.CommandOnCooldown = None,
+        mapping: CooldownMapping = None
+    ):
         """
         Args:
             error (None, optional): The error instance to be raised if the user is on cooldown.
@@ -189,12 +207,15 @@ class Cooldown(commands.Cooldown):
         Returns a copy of the cooldown.
         """
 
-        kwargs = {attr: getattr(getattr(self, attr, None), 'copy', lambda: attr)() for attr in self._copy_kwargs}
+        kwargs = {
+            attr: getattr(getattr(self, attr, None), "copy", lambda: attr)()
+            for attr in self._copy_kwargs
+        }
         cooldown = self.__class__(error=self.error, mapping=self.mapping, **kwargs)
         cooldown = cooldown(rate=self.rate, per=self.per, type=self.type)
         return cooldown
 
-    def __call__(self, rate: float, per: int, type: commands.BucketType) -> 'Cooldown':
+    def __call__(self, rate: float, per: int, type: commands.BucketType) -> "Cooldown":
         """
         Runs the original init method. MUST return self.
 
@@ -230,8 +251,12 @@ class NoRaiseCooldown(Cooldown):
 
 
 def cooldown(
-        rate: int, per: int, type: commands.BucketType = commands.BucketType.default, *,
-        cls: commands.Cooldown = None) -> typing.Callable:
+    rate: int,
+    per: int,
+    type: commands.BucketType = commands.BucketType.default,
+    *,
+    cls: commands.Cooldown = None
+) -> typing.Callable:
     """
     Args:
         rate (int): How many times this command can be run.
@@ -253,9 +278,10 @@ def cooldown(
         else:
             func.__commands_cooldown__ = cls(rate, per, type)
         return func
+
     return decorator
 
 
 def no_raise_cooldown(*args, **kwargs):
-    cls = kwargs.pop('cls', NoRaiseCooldown())
+    cls = kwargs.pop("cls", NoRaiseCooldown())
     return cooldown(*args, cls=cls, **kwargs)

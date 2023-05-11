@@ -62,20 +62,27 @@ class InputText(InteractableComponent):
         The default value that goes into the text field.
     """
 
-    __slots__ = ("label", "style", "custom_id", "min_length", "max_length",)
+    __slots__ = (
+        "label",
+        "style",
+        "custom_id",
+        "min_length",
+        "max_length",
+    )
     TYPE = ComponentType.input_text
 
     def __init__(
-            self,
-            *,
-            label: str = MISSING,
-            custom_id: Optional[str] = None,
-            style: TextStyle = TextStyle.short,
-            placeholder: Optional[str] = None,
-            min_length: Optional[int] = None,
-            max_length: Optional[int] = None,
-            required: bool = True,
-            value: Optional[str] = None):
+        self,
+        *,
+        label: str = MISSING,
+        custom_id: Optional[str] = None,
+        style: TextStyle = TextStyle.short,
+        placeholder: Optional[str] = None,
+        min_length: Optional[int] = None,
+        max_length: Optional[int] = None,
+        required: bool = True,
+        value: Optional[str] = None,
+    ):
         self.label = label
         self.style = style
         self.placeholder = placeholder
@@ -87,17 +94,17 @@ class InputText(InteractableComponent):
 
     def __repr__(self) -> str:
         attrs = (
-            ('label', self.label),
-            ('style', self.style),
-            ('placeholder', self.placeholder),
-            ('custom_id', self.custom_id),
-            ('min_length', self.min_length),
-            ('max_length', self.max_length),
-            ('required', self.required),
-            ('value', self.value),
+            ("label", self.label),
+            ("style", self.style),
+            ("placeholder", self.placeholder),
+            ("custom_id", self.custom_id),
+            ("min_length", self.min_length),
+            ("max_length", self.max_length),
+            ("required", self.required),
+            ("value", self.value),
         )
-        inner = ' '.join('%s=%r' % t for t in attrs)
-        return f'{self.__class__.__name__}({inner})'
+        inner = " ".join("%s=%r" % t for t in attrs)
+        return f"{self.__class__.__name__}({inner})"
 
     def to_dict(self) -> InputTextPayload:
         v = {

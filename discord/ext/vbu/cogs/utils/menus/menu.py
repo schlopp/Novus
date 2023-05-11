@@ -58,6 +58,7 @@ def _do_nothing(return_value: Optional[Type[T]] = None) -> Callable[[], Optional
         if return_value:
             return return_value()
         return return_value
+
     return wrapper
 
 
@@ -69,10 +70,11 @@ class Menu(MenuDisplayable):
     callbacks = MenuCallbacks
 
     def __init__(
-            self,
-            *options: Option,
-            display: Optional[str] = None,
-            component_display: Optional[str] = None):
+        self,
+        *options: Option,
+        display: Optional[str] = None,
+        component_display: Optional[str] = None,
+    ):
         """
         Parameters
         ----------
@@ -87,49 +89,53 @@ class Menu(MenuDisplayable):
         """
 
         self.display: Optional[str] = display  # Used for nested menus
-        self.component_display: Optional[str] = component_display  # Used for nested menus
+        self.component_display: Optional[
+            str
+        ] = component_display  # Used for nested menus
         self._options = list(options)
 
     @overload
     def create_cog(
-            self,
-            bot: None = None,
-            *,
-            cog_name: str = "Bot Settings",
-            name: str = "settings",
-            aliases: List[str] = ["setup"],
-            permissions: Optional[List[str]] = None,
-            post_invoke: Optional[MaybeCoroContextCallable] = None,
-            guild_only: bool = True,
-            **command_kwargs) -> Type[commands.Cog]:
+        self,
+        bot: None = None,
+        *,
+        cog_name: str = "Bot Settings",
+        name: str = "settings",
+        aliases: List[str] = ["setup"],
+        permissions: Optional[List[str]] = None,
+        post_invoke: Optional[MaybeCoroContextCallable] = None,
+        guild_only: bool = True,
+        **command_kwargs,
+    ) -> Type[commands.Cog]:
         ...
 
     @overload
     def create_cog(
-            self,
-            bot: AnyBot = ...,
-            *,
-            cog_name: str = "Bot Settings",
-            name: str = "settings",
-            aliases: List[str] = ["setup"],
-            permissions: Optional[List[str]] = None,
-            post_invoke: Optional[MaybeCoroContextCallable] = None,
-            guild_only: bool = True,
-            **command_kwargs) -> commands.Cog:
+        self,
+        bot: AnyBot = ...,
+        *,
+        cog_name: str = "Bot Settings",
+        name: str = "settings",
+        aliases: List[str] = ["setup"],
+        permissions: Optional[List[str]] = None,
+        post_invoke: Optional[MaybeCoroContextCallable] = None,
+        guild_only: bool = True,
+        **command_kwargs,
+    ) -> commands.Cog:
         ...
 
     def create_cog(
-            self,
-            bot: Optional[AnyBot] = None,
-            *,
-            cog_name: str = "Bot Settings",
-            name: str = "settings",
-            aliases: List[str] = ["setup"],
-            permissions: Optional[List[str]] = None,
-            post_invoke: Optional[MaybeCoroContextCallable] = None,
-            guild_only: bool = True,
-            **command_kwargs
-            ) -> Union[commands.Cog, Type[commands.Cog]]:
+        self,
+        bot: Optional[AnyBot] = None,
+        *,
+        cog_name: str = "Bot Settings",
+        name: str = "settings",
+        aliases: List[str] = ["setup"],
+        permissions: Optional[List[str]] = None,
+        post_invoke: Optional[MaybeCoroContextCallable] = None,
+        guild_only: bool = True,
+        **command_kwargs,
+    ) -> Union[commands.Cog, Type[commands.Cog]]:
         """
         Creates a cog that can be loaded into the bot in a setup method.
 
@@ -163,7 +169,6 @@ class Menu(MenuDisplayable):
         meta = commands.ApplicationCommandMeta(guild_only=guild_only)
 
         class NestedCog(Cog, name=cog_name):
-
             def __init__(nested_self, bot):
                 super().__init__(bot)
                 if guild_only:
@@ -176,7 +181,9 @@ class Menu(MenuDisplayable):
             @commands.command(
                 name=name,
                 aliases=aliases,
-                application_command_meta=command_kwargs.pop("application_command_meta", meta),
+                application_command_meta=command_kwargs.pop(
+                    "application_command_meta", meta
+                ),
                 **command_kwargs,
             )
             # @commands.defer()
@@ -189,14 +196,18 @@ class Menu(MenuDisplayable):
 
                 # Make sure it's a slashie
                 if not isinstance(ctx, commands.SlashContext):
-                    return await ctx.send("This command can only be run as a slash command.")
+                    return await ctx.send(
+                        "This command can only be run as a slash command."
+                    )
                 await ctx.interaction.response.send_message("Loading menu...")
 
                 # Get a guild if we need to
                 if ctx.interaction.guild_id:
                     guild = await ctx.bot.fetch_guild(ctx.interaction.guild_id)
                     channels = await guild.fetch_channels()
-                    guild._channels = {i.id: i for i in channels}  # Fetching a guild doesn't set channels :/
+                    guild._channels = {
+                        i.id: i for i in channels
+                    }  # Fetching a guild doesn't set channels :/
                     ctx._guild = guild
 
                 # Start the menu
@@ -215,9 +226,8 @@ class Menu(MenuDisplayable):
         return NestedCog
 
     async def get_options(
-            self,
-            ctx: commands.SlashContext,
-            force_regenerate: bool = False) -> List[Option]:
+        self, ctx: commands.SlashContext, force_regenerate: bool = False
+    ) -> List[Option]:
         """
         Get all of the options for an instance.
         This method has an open database instance in :code:`ctx.database`.
@@ -226,9 +236,8 @@ class Menu(MenuDisplayable):
         return self._options
 
     async def start(
-            self,
-            ctx: commands.SlashContext,
-            delete_message: bool = False) -> None:
+        self, ctx: commands.SlashContext, delete_message: bool = False
+    ) -> None:
         """
         Run the menu instance.
 
@@ -244,7 +253,7 @@ class Menu(MenuDisplayable):
         # Set up our base case
         component_custom_id: str = str(uuid.uuid4())
         sendable_data: dict = await self.get_sendable_data(ctx, component_custom_id)
-        sent_components: discord.ui.MessageComponents = sendable_data['components']
+        sent_components: discord.ui.MessageComponents = sendable_data["components"]
         component_custom_ids: List[str] = []
 
         # Send the initial message
@@ -262,11 +271,14 @@ class Menu(MenuDisplayable):
                     return False
                 if payload.user.id == ctx.interaction.user.id:
                     return True
-                ctx.bot.loop.create_task(payload.response.send_message(
-                    f"Only {ctx.interaction.user.mention} can interact with these buttons.",
-                    ephemeral=True,
-                ))
+                ctx.bot.loop.create_task(
+                    payload.response.send_message(
+                        f"Only {ctx.interaction.user.mention} can interact with these buttons.",
+                        ephemeral=True,
+                    )
+                )
                 return False
+
             return button_check
 
         # Keep looping while we're expecting a user input
@@ -328,9 +340,8 @@ class Menu(MenuDisplayable):
             pass
 
     async def get_sendable_data(
-            self,
-            ctx: commands.SlashContext,
-            component_custom_id: Optional[str] = None) -> dict:
+        self, ctx: commands.SlashContext, component_custom_id: Optional[str] = None
+    ) -> dict:
         """
         Gets a dictionary of sendable objects to unpack for the :func:`start` method.
         """
@@ -348,15 +359,21 @@ class Menu(MenuDisplayable):
                 if output:
                     output_strings.append(f"\N{BULLET} {output}")
                 style = (
-                    discord.ui.ButtonStyle.secondary
-                    if isinstance(i._callback, Menu)
-                    else None
-                ) or i._button_style or discord.ui.ButtonStyle.primary
-                buttons.append(discord.ui.Button(
-                    label=i.component_display,
-                    custom_id=i._component_custom_id,
-                    style=style,
-                ))
+                    (
+                        discord.ui.ButtonStyle.secondary
+                        if isinstance(i._callback, Menu)
+                        else None
+                    )
+                    or i._button_style
+                    or discord.ui.ButtonStyle.primary
+                )
+                buttons.append(
+                    discord.ui.Button(
+                        label=i.component_display,
+                        custom_id=i._component_custom_id,
+                        style=style,
+                    )
+                )
         ctx.database = None  # type: ignore - context doesn't have slots deliberately
 
         # Add a done button
@@ -370,7 +387,7 @@ class Menu(MenuDisplayable):
 
         # Output
         components = discord.ui.MessageComponents.add_buttons_with_rows(*buttons)
-        embed = discord.Embed(colour=0xffffff)
+        embed = discord.Embed(colour=0xFFFFFF)
         embed.description = "\n".join(output_strings) or "No options added."
         return {
             "content": None,
@@ -387,20 +404,25 @@ class MenuIterable(Menu, Option):
     allow_none = False
 
     def __init__(
-            self,
-            *,
-            select_sql: str,
-            insert_sql: str,
-            delete_sql: str,
-            row_text_display: Callable[[AnyContext, Dict[str, Any]], str],
-            row_component_display: Callable[[AnyContext, Dict[str, Any]], Union[str, Tuple[str, str]]],
-            converters: List[Converter],
-            select_sql_args: Callable[[AnyContext], Iterable[Any]],
-            insert_sql_args: Callable[[AnyContext, List[Any]], Iterable[Any]],
-            delete_sql_args: Callable[[AnyContext, Dict[str, Any]], Iterable[Any]],
-            cache_callback: Optional[Callable[[AnyContext, List[Any]], None]] = None,
-            cache_delete_callback: Optional[Callable[[str], Callable[[AnyContext, List[Any]], None]]] = None,
-            cache_delete_args: Optional[Callable[[Dict[str, Any]], Iterable[Any]]] = None):
+        self,
+        *,
+        select_sql: str,
+        insert_sql: str,
+        delete_sql: str,
+        row_text_display: Callable[[AnyContext, Dict[str, Any]], str],
+        row_component_display: Callable[
+            [AnyContext, Dict[str, Any]], Union[str, Tuple[str, str]]
+        ],
+        converters: List[Converter],
+        select_sql_args: Callable[[AnyContext], Iterable[Any]],
+        insert_sql_args: Callable[[AnyContext, List[Any]], Iterable[Any]],
+        delete_sql_args: Callable[[AnyContext, Dict[str, Any]], Iterable[Any]],
+        cache_callback: Optional[Callable[[AnyContext, List[Any]], None]] = None,
+        cache_delete_callback: Optional[
+            Callable[[str], Callable[[AnyContext, List[Any]], None]]
+        ] = None,
+        cache_delete_args: Optional[Callable[[Dict[str, Any]], Iterable[Any]]] = None,
+    ):
         """
         Parameters
         ----------
@@ -477,6 +499,7 @@ class MenuIterable(Menu, Option):
             args = self.insert_sql_args(ctx, data)
             async with ctx.bot.database() as db:
                 await db(self.insert_sql, *args)
+
         return wrapper
 
     def delete_database_call(self, row):
@@ -488,12 +511,10 @@ class MenuIterable(Menu, Option):
             args = self.delete_sql_args(ctx, row)
             async with ctx.bot.database() as db:
                 await db(self.delete_sql, *args)
+
         return wrapper
 
-    async def get_options(
-            self,
-            ctx: SlashContext,
-            force_regenerate: bool = False):
+    async def get_options(self, ctx: SlashContext, force_regenerate: bool = False):
         """
         Get all of the options for an instance.
         This method has an open database instance in :code:`Context.database`.
@@ -513,7 +534,9 @@ class MenuIterable(Menu, Option):
                 display=self.row_text_display(ctx, i),
                 component_display=self.row_component_display(ctx, i),
                 callback=self.delete_database_call(i),
-                cache_callback=self.cache_delete_callback(*list(self.cache_delete_args(i)))
+                cache_callback=self.cache_delete_callback(
+                    *list(self.cache_delete_args(i))
+                ),
             )
             v._button_style = discord.ui.ButtonStyle.danger
             generated.append(v)
@@ -525,7 +548,7 @@ class MenuIterable(Menu, Option):
                 component_display="Add New",
                 converters=self.converters,
                 callback=self.insert_database_call(),
-                cache_callback=self.cache_callback
+                cache_callback=self.cache_callback,
             )
             v._button_style = discord.ui.ButtonStyle.secondary
             generated.append(v)

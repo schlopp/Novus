@@ -37,8 +37,8 @@ from .partial_emoji import PartialEmoji
 from . import utils
 
 __all__ = (
-    'RoleTags',
-    'Role',
+    "RoleTags",
+    "Role",
 )
 
 if TYPE_CHECKING:
@@ -71,19 +71,21 @@ class RoleTags:
     """
 
     __slots__ = (
-        'bot_id',
-        'integration_id',
-        '_premium_subscriber',
+        "bot_id",
+        "integration_id",
+        "_premium_subscriber",
     )
 
     def __init__(self, data: RoleTagPayload):
-        self.bot_id: Optional[int] = _get_as_snowflake(data, 'bot_id')
-        self.integration_id: Optional[int] = _get_as_snowflake(data, 'integration_id')
+        self.bot_id: Optional[int] = _get_as_snowflake(data, "bot_id")
+        self.integration_id: Optional[int] = _get_as_snowflake(data, "integration_id")
         # NOTE: The API returns "null" for this if it's valid, which corresponds to None.
         # This is different from other fields where "null" means "not there".
         # So in this case, a value of None is the same as True.
         # Which means we would need a different sentinel.
-        self._premium_subscriber: Optional[Any] = data.get('premium_subscriber', MISSING)
+        self._premium_subscriber: Optional[Any] = data.get(
+            "premium_subscriber", MISSING
+        )
 
     def is_bot_managed(self) -> bool:
         """:class:`bool`: Whether the role is associated with a bot."""
@@ -99,12 +101,12 @@ class RoleTags:
 
     def __repr__(self) -> str:
         return (
-            f'<RoleTags bot_id={self.bot_id} integration_id={self.integration_id} '
-            f'premium_subscriber={self.is_premium_subscriber()}>'
+            f"<RoleTags bot_id={self.bot_id} integration_id={self.integration_id} "
+            f"premium_subscriber={self.is_premium_subscriber()}>"
         )
 
 
-R = TypeVar('R', bound='Role')
+R = TypeVar("R", bound="Role")
 
 
 class Role(Hashable):
@@ -180,39 +182,39 @@ class Role(Hashable):
     """
 
     __slots__ = (
-        'id',
-        'name',
-        '_permissions',
-        '_colour',
-        'position',
-        'managed',
-        'mentionable',
-        'hoist',
-        'guild',
-        'tags',
-        '_state',
-        '_icon',
-        'unicode_emoji',
+        "id",
+        "name",
+        "_permissions",
+        "_colour",
+        "position",
+        "managed",
+        "mentionable",
+        "hoist",
+        "guild",
+        "tags",
+        "_state",
+        "_icon",
+        "unicode_emoji",
     )
 
     def __init__(self, *, guild: Guild, state: ConnectionState, data: RolePayload):
         self.guild: Guild = guild
         self._state: ConnectionState = state
-        self.id: int = int(data['id'])
+        self.id: int = int(data["id"])
         self._update(data)
 
     def __str__(self) -> str:
         return self.name
 
     def __repr__(self) -> str:
-        return f'<Role id={self.id} name={self.name!r}>'
+        return f"<Role id={self.id} name={self.name!r}>"
 
     def __lt__(self: R, other: R) -> bool:
         if not isinstance(other, Role) or not isinstance(self, Role):
             return NotImplemented
 
         if self.guild != other.guild:
-            raise RuntimeError('cannot compare roles from two different guilds.')
+            raise RuntimeError("cannot compare roles from two different guilds.")
 
         # the @everyone role is always the lowest role in hierarchy
         guild_id = self.guild.id
@@ -244,19 +246,19 @@ class Role(Hashable):
         return not r
 
     def _update(self, data: RolePayload):
-        self.name: str = data['name']
-        self._permissions: int = int(data.get('permissions', 0))
-        self.position: int = data.get('position', 0)
-        self._colour: int = data.get('color', 0)
-        self.hoist: bool = data.get('hoist', False)
-        self.managed: bool = data.get('managed', False)
-        self.mentionable: bool = data.get('mentionable', False)
+        self.name: str = data["name"]
+        self._permissions: int = int(data.get("permissions", 0))
+        self.position: int = data.get("position", 0)
+        self._colour: int = data.get("color", 0)
+        self.hoist: bool = data.get("hoist", False)
+        self.managed: bool = data.get("managed", False)
+        self.mentionable: bool = data.get("mentionable", False)
         self.tags: Optional[RoleTags]
-        self.unicode_emoji: str = data.get('unicode_emoji', None)
-        self._icon: str = data.get('icon', None)
+        self.unicode_emoji: str = data.get("unicode_emoji", None)
+        self._icon: str = data.get("icon", None)
 
         try:
-            self.tags = RoleTags(data['tags'])
+            self.tags = RoleTags(data["tags"])
         except KeyError:
             self.tags = None
 
@@ -265,25 +267,25 @@ class Role(Hashable):
         return self.guild.id == self.id
 
     def is_bot_managed(self) -> bool:
-        """:class:`bool`: Whether the role is associated with a bot.
-        """
+        """:class:`bool`: Whether the role is associated with a bot."""
         return self.tags is not None and self.tags.is_bot_managed()
 
     def is_premium_subscriber(self) -> bool:
-        """:class:`bool`: Whether the role is the premium subscriber, AKA "boost", role for the guild.
-        """
+        """:class:`bool`: Whether the role is the premium subscriber, AKA "boost", role for the guild."""
         return self.tags is not None and self.tags.is_premium_subscriber()
 
     def is_integration(self) -> bool:
-        """:class:`bool`: Whether the role is managed by an integration.
-        """
+        """:class:`bool`: Whether the role is managed by an integration."""
         return self.tags is not None and self.tags.is_integration()
 
     def is_assignable(self) -> bool:
-        """:class:`bool`: Whether the role is able to be assigned or removed by the bot.
-        """
+        """:class:`bool`: Whether the role is able to be assigned or removed by the bot."""
         me = self.guild.me
-        return not self.is_default() and not self.managed and (me.top_role > self or me.id == self.guild.owner_id)
+        return (
+            not self.is_default()
+            and not self.managed
+            and (me.top_role > self or me.id == self.guild.owner_id)
+        )
 
     @property
     def icon(self) -> Optional[Asset]:
@@ -318,7 +320,7 @@ class Role(Hashable):
     @property
     def mention(self) -> str:
         """:class:`str`: Returns a string that allows you to mention a role."""
-        return f'<@&{self.id}>'
+        return f"<@&{self.id}>"
 
     @property
     def members(self) -> List[Member]:
@@ -342,15 +344,23 @@ class Role(Hashable):
 
         http = self._state.http
 
-        change_range = range(min(self.position, position), max(self.position, position) + 1)
-        roles = [r.id for r in self.guild.roles[1:] if r.position in change_range and r.id != self.id]
+        change_range = range(
+            min(self.position, position), max(self.position, position) + 1
+        )
+        roles = [
+            r.id
+            for r in self.guild.roles[1:]
+            if r.position in change_range and r.id != self.id
+        ]
 
         if self.position > position:
             roles.insert(0, self.id)
         else:
             roles.append(self.id)
 
-        payload: List[RolePositionUpdate] = [{"id": z[0], "position": z[1]} for z in zip(roles, change_range)]
+        payload: List[RolePositionUpdate] = [
+            {"id": z[0], "position": z[1]} for z in zip(roles, change_range)
+        ]
         await http.move_role_position(self.guild.id, payload, reason=reason)
 
     async def edit(
@@ -422,39 +432,41 @@ class Role(Hashable):
 
         if colour is not MISSING:
             if isinstance(colour, int):
-                payload['color'] = colour
+                payload["color"] = colour
             else:
-                payload['color'] = colour.value
+                payload["color"] = colour.value
 
         if name is not MISSING:
-            payload['name'] = name
+            payload["name"] = name
 
         if permissions is not MISSING:
-            payload['permissions'] = permissions.value
+            payload["permissions"] = permissions.value
 
         if hoist is not MISSING:
-            payload['hoist'] = hoist
+            payload["hoist"] = hoist
 
         if mentionable is not MISSING:
-            payload['mentionable'] = mentionable
+            payload["mentionable"] = mentionable
 
         if icon is not MISSING:
             if isinstance(icon, str):
                 icon = PartialEmoji.from_str(icon)
                 if icon.is_unicode_emoji():
                     icon = str(icon)
-                    payload['unicode_emoji'] = icon
+                    payload["unicode_emoji"] = icon
             if isinstance(icon, PartialEmoji):
                 icon_bytes = await icon.read()
-                payload['icon'] = utils._bytes_to_base64_data(icon_bytes)
+                payload["icon"] = utils._bytes_to_base64_data(icon_bytes)
             elif icon is None:
-                payload['icon'] = None
-                payload['unicode_emoji'] = None
+                payload["icon"] = None
+                payload["unicode_emoji"] = None
             elif isinstance(icon, io.BufferedIOBase):
                 icon_bytes = icon.read()
-                payload['icon'] = utils._bytes_to_base64_data(icon_bytes)
+                payload["icon"] = utils._bytes_to_base64_data(icon_bytes)
 
-        data = await self._state.http.edit_role(self.guild.id, self.id, reason=reason, **payload)
+        data = await self._state.http.edit_role(
+            self.guild.id, self.id, reason=reason, **payload
+        )
         return Role(guild=self.guild, data=data, state=self._state)
 
     async def delete(self, *, reason: Optional[str] = None) -> None:

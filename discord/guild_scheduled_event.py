@@ -29,7 +29,12 @@ from datetime import datetime as dt
 
 from .mixins import Hashable
 from .utils import MISSING, _get_as_snowflake, parse_time
-from .enums import GuildScheduledEventPrivacyLevel, GuildScheduledEventStatus, GuildScheduledEventEntityType, try_enum
+from .enums import (
+    GuildScheduledEventPrivacyLevel,
+    GuildScheduledEventStatus,
+    GuildScheduledEventEntityType,
+    try_enum,
+)
 from .user import User
 
 if TYPE_CHECKING:
@@ -64,11 +69,9 @@ class GuildScheduledEventEntityMetadata:
         }
 
     def __repr__(self) -> str:
-        attrs = (
-            ('location', self.location),
-        )
-        inner = ' '.join('%s=%r' % t for t in attrs)
-        return f'<{self.__class__.__name__} {inner}>'
+        attrs = (("location", self.location),)
+        inner = " ".join("%s=%r" % t for t in attrs)
+        return f"<{self.__class__.__name__} {inner}>"
 
 
 class GuildScheduledEvent(Hashable):
@@ -140,14 +143,24 @@ class GuildScheduledEvent(Hashable):
         self.name: str = data.get("name")
         self.description: Optional[str] = data.get("description")
         self.scheduled_start_time: dt = parse_time(data.get("scheduled_start_time"))
-        self.scheduled_end_time: Optional[dt] = parse_time(data.get("scheduled_end_time"))
-        self.privacy_level: GuildScheduledEventPrivacyLevel = try_enum(GuildScheduledEventPrivacyLevel, data.get("privacy_level"))
-        self.status: GuildScheduledEventStatus = try_enum(GuildScheduledEventStatus, data.get("status"))
-        self.entity_type: GuildScheduledEventEntityType = try_enum(GuildScheduledEventEntityType, data.get("entity_type"))
+        self.scheduled_end_time: Optional[dt] = parse_time(
+            data.get("scheduled_end_time")
+        )
+        self.privacy_level: GuildScheduledEventPrivacyLevel = try_enum(
+            GuildScheduledEventPrivacyLevel, data.get("privacy_level")
+        )
+        self.status: GuildScheduledEventStatus = try_enum(
+            GuildScheduledEventStatus, data.get("status")
+        )
+        self.entity_type: GuildScheduledEventEntityType = try_enum(
+            GuildScheduledEventEntityType, data.get("entity_type")
+        )
         self.entity_id: Optional[Snowflake] = _get_as_snowflake(data, "entity_id")
         self.entity_metadata: Optional[GuildScheduledEventEntityMetadata] = None
         if data.get("entity_metadata"):
-            self.entity_metadata = GuildScheduledEventEntityMetadata(data=data.get("entity_metadata"))
+            self.entity_metadata = GuildScheduledEventEntityMetadata(
+                data=data.get("entity_metadata")
+            )
         self.creator: Optional[User] = None
         if data.get("creator"):
             self.creator = User(state=state, data=data.get("creator"))
@@ -155,11 +168,11 @@ class GuildScheduledEvent(Hashable):
 
     def __repr__(self) -> str:
         attrs = (
-            ('id', self.id),
-            ('name', self.name),
+            ("id", self.id),
+            ("name", self.name),
         )
-        inner = ' '.join('%s=%r' % t for t in attrs)
-        return f'<{self.__class__.__name__} {inner}>'
+        inner = " ".join("%s=%r" % t for t in attrs)
+        return f"<{self.__class__.__name__} {inner}>"
 
     @property
     def guild(self) -> Optional[Guild]:
@@ -258,7 +271,9 @@ class GuildScheduledEvent(Hashable):
         if status is not MISSING:
             payload["status"] = status.value
 
-        returned = await self._state.http.modify_guild_scheduled_event(self.guild_id, self.id, payload)
+        returned = await self._state.http.modify_guild_scheduled_event(
+            self.guild_id, self.id, payload
+        )
         if returned:
             return self.__class__(state=self._state, data=returned)
         return None
@@ -296,13 +311,15 @@ class GuildScheduledEvent(Hashable):
         payload = {
             "status": GuildScheduledEventStatus.canceled.value,
         }
-        await self._state.http.modify_guild_scheduled_event(self.guild_id, self.id, payload)
+        await self._state.http.modify_guild_scheduled_event(
+            self.guild_id, self.id, payload
+        )
 
     def __repr__(self) -> str:
         attrs = (
-            ('id', self.id),
-            ('guild_id', self.guild_id),
-            ('name', self.name),
+            ("id", self.id),
+            ("guild_id", self.guild_id),
+            ("name", self.name),
         )
-        inner = ' '.join('%s=%r' % t for t in attrs)
-        return f'<{self.__class__.__name__} {inner}>'
+        inner = " ".join("%s=%r" % t for t in attrs)
+        return f"<{self.__class__.__name__} {inner}>"

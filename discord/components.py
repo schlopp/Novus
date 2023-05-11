@@ -20,7 +20,8 @@ def _component_factory(data: ComponentPayload):
         MentionableSelectMenu,  # 7
         ChannelSelectMenu,  # 8
     )
-    component_type = data['type']
+
+    component_type = data["type"]
     if component_type == 1:
         return ActionRow.from_dict(data)
     elif component_type == 2:

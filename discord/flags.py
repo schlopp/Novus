@@ -24,21 +24,34 @@ DEALINGS IN THE SOFTWARE.
 
 from __future__ import annotations
 
-from typing import Any, Callable, ClassVar, Dict, Generic, Iterator, List, Optional, Tuple, Type, TypeVar, overload
+from typing import (
+    Any,
+    Callable,
+    ClassVar,
+    Dict,
+    Generic,
+    Iterator,
+    List,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    overload,
+)
 
 from .enums import UserFlags
 
 __all__ = (
-    'SystemChannelFlags',
-    'MessageFlags',
-    'PublicUserFlags',
-    'Intents',
-    'MemberCacheFlags',
-    'ApplicationFlags',
+    "SystemChannelFlags",
+    "MessageFlags",
+    "PublicUserFlags",
+    "Intents",
+    "MemberCacheFlags",
+    "ApplicationFlags",
 )
 
-FV = TypeVar('FV', bound='flag_value')
-BF = TypeVar('BF', bound='BaseFlags')
+FV = TypeVar("FV", bound="flag_value")
+BF = TypeVar("BF", bound="BaseFlags")
 
 
 class flag_value:
@@ -63,7 +76,7 @@ class flag_value:
         instance._set_flag(self.flag, value)
 
     def __repr__(self):
-        return f'<flag_value flag={self.flag!r}>'
+        return f"<flag_value flag={self.flag!r}>"
 
 
 class alias_flag_value(flag_value):
@@ -82,7 +95,7 @@ def fill_with_flags(*, inverted: bool = False):
 
         if inverted:
             max_bits = max(cls.VALID_FLAGS.values()).bit_length()
-            cls.DEFAULT_VALUE = -1 + (2 ** max_bits)
+            cls.DEFAULT_VALUE = -1 + (2**max_bits)
         else:
             cls.DEFAULT_VALUE = 0
 
@@ -98,13 +111,13 @@ class BaseFlags:
 
     value: int
 
-    __slots__ = ('value',)
+    __slots__ = ("value",)
 
     def __init__(self, **kwargs: bool):
         self.value = self.DEFAULT_VALUE
         for key, value in kwargs.items():
             if key not in self.VALID_FLAGS:
-                raise TypeError(f'{key!r} is not a valid flag name.')
+                raise TypeError(f"{key!r} is not a valid flag name.")
             setattr(self, key, value)
 
     @classmethod
@@ -123,7 +136,7 @@ class BaseFlags:
         return hash(self.value)
 
     def __repr__(self) -> str:
-        return f'<{self.__class__.__name__} value={self.value}>'
+        return f"<{self.__class__.__name__} value={self.value}>"
 
     def __iter__(self) -> Iterator[Tuple[str, bool]]:
         for name, value in self.__class__.__dict__.items():
@@ -142,7 +155,9 @@ class BaseFlags:
         elif toggle is False:
             self.value &= ~o
         else:
-            raise TypeError(f'Value to set for {self.__class__.__name__} must be a bool.')
+            raise TypeError(
+                f"Value to set for {self.__class__.__name__} must be a bool."
+            )
 
 
 @fill_with_flags(inverted=True)
@@ -196,7 +211,7 @@ class SystemChannelFlags(BaseFlags):
         elif toggle is False:
             self.value |= o
         else:
-            raise TypeError('Value to set for SystemChannelFlags must be a bool.')
+            raise TypeError("Value to set for SystemChannelFlags must be a bool.")
 
     @flag_value
     def join_notifications(self):
@@ -210,8 +225,7 @@ class SystemChannelFlags(BaseFlags):
 
     @flag_value
     def guild_reminder_notifications(self):
-        """:class:`bool`: Returns ``True`` if the system channel is used for server setup helpful tips notifications.
-        """
+        """:class:`bool`: Returns ``True`` if the system channel is used for server setup helpful tips notifications."""
         return 4
 
 
@@ -277,14 +291,12 @@ class MessageFlags(BaseFlags):
 
     @flag_value
     def has_thread(self):
-        """:class:`bool`: Returns ``True`` if the source message is associated with a thread.
-        """
+        """:class:`bool`: Returns ``True`` if the source message is associated with a thread."""
         return 32
 
     @flag_value
     def ephemeral(self):
-        """:class:`bool`: Returns ``True`` if the source message is ephemeral.
-        """
+        """:class:`bool`: Returns ``True`` if the source message is ephemeral."""
         return 64
 
 
@@ -386,19 +398,21 @@ class PublicUserFlags(BaseFlags):
 
     @alias_flag_value
     def early_verified_bot_developer(self):
-        """:class:`bool`: An alias for :attr:`verified_bot_developer`.
-        """
+        """:class:`bool`: An alias for :attr:`verified_bot_developer`."""
         return UserFlags.verified_bot_developer.value
 
     @flag_value
     def discord_certified_moderator(self):
-        """:class:`bool`: Returns ``True`` if the user is a Discord Certified Moderator.
-        """
+        """:class:`bool`: Returns ``True`` if the user is a Discord Certified Moderator."""
         return UserFlags.discord_certified_moderator.value
 
     def all(self) -> List[UserFlags]:
         """List[:class:`UserFlags`]: Returns all public flags the user has."""
-        return [public_flag for public_flag in UserFlags if self._has_flag(public_flag.value)]
+        return [
+            public_flag
+            for public_flag in UserFlags
+            if self._has_flag(public_flag.value)
+        ]
 
 
 @fill_with_flags()
@@ -445,7 +459,7 @@ class Intents(BaseFlags):
         self.value = self.DEFAULT_VALUE
         for key, value in kwargs.items():
             if key not in self.VALID_FLAGS:
-                raise TypeError(f'{key!r} is not a valid flag name.')
+                raise TypeError(f"{key!r} is not a valid flag name.")
             setattr(self, key, value)
 
     @classmethod
@@ -550,8 +564,7 @@ class Intents(BaseFlags):
 
     @flag_value
     def emojis(self):
-        """:class:`bool`: Alias of :attr:`.emojis_and_stickers`.
-        """
+        """:class:`bool`: Alias of :attr:`.emojis_and_stickers`."""
         return 1 << 3
 
     @alias_flag_value
@@ -917,7 +930,7 @@ class MemberCacheFlags(BaseFlags):
         self.value = (1 << bits) - 1
         for key, value in kwargs.items():
             if key not in self.VALID_FLAGS:
-                raise TypeError(f'{key!r} is not a valid flag name.')
+                raise TypeError(f"{key!r} is not a valid flag name.")
             setattr(self, key, value)
 
     @classmethod
@@ -987,10 +1000,10 @@ class MemberCacheFlags(BaseFlags):
 
     def _verify_intents(self, intents: Intents):
         if self.voice and not intents.voice_states:
-            raise ValueError('MemberCacheFlags.voice requires Intents.voice_states')
+            raise ValueError("MemberCacheFlags.voice requires Intents.voice_states")
 
         if self.joined and not intents.members:
-            raise ValueError('MemberCacheFlags.joined requires Intents.members')
+            raise ValueError("MemberCacheFlags.joined requires Intents.members")
 
     @property
     def _voice_only(self):

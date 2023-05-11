@@ -49,9 +49,9 @@ except ImportError:
 log = logging.getLogger(__name__)
 
 __all__ = [
-    'AudioSink',
-    'BasicSink',
-    'AudioReader',
+    "AudioSink",
+    "BasicSink",
+    "AudioReader",
     # 'WaveSink',
     # 'PCMVolumeTransformerFilter',
     # 'ConditionalFilter',
@@ -59,6 +59,7 @@ __all__ = [
     # 'UserFilter',
     # 'SinkExit',
 ]
+
 
 class SinkExit(DiscordException):
     """A signal type exception (like ``GeneratorExit``) to raise in a Sink's write() method to stop it.
@@ -75,6 +76,7 @@ class SinkExit(DiscordException):
 
     def __init__(self, *, drain=True, flush=False):
         self.kwargs = kwargs
+
 
 class AudioSink:
     def __del__(self):
@@ -93,11 +95,12 @@ class AudioSink:
     # def pack_data(data, user=None, packet=None):
     #     return VoiceData(data, user, packet) # is this even necessary?
 
+
 class WaveSink(AudioSink):
     def __init__(self, destination):
-        self._file = wave.open(destination, 'wb')
+        self._file = wave.open(destination, "wb")
         self._file.setnchannels(Decoder.CHANNELS)
-        self._file.setsampwidth(Decoder.SAMPLE_SIZE//Decoder.CHANNELS)
+        self._file.setsampwidth(Decoder.SAMPLE_SIZE // Decoder.CHANNELS)
         self._file.setframerate(Decoder.SAMPLING_RATE)
 
     def write(self, data):
@@ -110,21 +113,21 @@ class WaveSink(AudioSink):
             pass
 
 
-
 class BasicSink(AudioSink):
     def __init__(self, event, *, rtcp_event=lambda _: None):
         self.on_voice_packet = event
         self.on_voice_rtcp_packet = rtcp_event
 
 
-
 class PCMVolumeTransformerFilter(AudioSink):
     def __init__(self, destination, volume=1.0):
         if not isinstance(destination, AudioSink):
-            raise TypeError('expected AudioSink not {0.__class__.__name__}.'.format(destination))
+            raise TypeError(
+                "expected AudioSink not {0.__class__.__name__}.".format(destination)
+            )
 
         if destination.wants_opus():
-            raise ClientException('AudioSink must not request Opus encoding.')
+            raise ClientException("AudioSink must not request Opus encoding.")
 
         self.destination = destination
         self.volume = volume
@@ -142,11 +145,13 @@ class PCMVolumeTransformerFilter(AudioSink):
         data = audioop.mul(data.data, 2, min(self._volume, 2.0))
         self.destination.write(data)
 
+
 # I need some sort of filter sink with a predicate or something
 # Which means I need to sort out the write() signature issue
 # Also need something to indicate a sink is "done", probably
 # something like raising an exception and handling that in the write loop
 # Maybe should rename some of these to Filter instead of Sink
+
 
 class ConditionalFilter(AudioSink):
     def __init__(self, destination, predicate):
@@ -156,6 +161,7 @@ class ConditionalFilter(AudioSink):
     def write(self, data):
         if self.predicate(data):
             self.destination.write(data)
+
 
 class TimedFilter(ConditionalFilter):
     def __init__(self, destination, duration, *, start_on_init=False):
@@ -178,6 +184,7 @@ class TimedFilter(ConditionalFilter):
     def get_time(self):
         return time.time()
 
+
 class UserFilter(ConditionalFilter):
     def __init__(self, destination, user):
         super().__init__(destination, self._predicate)
@@ -186,24 +193,26 @@ class UserFilter(ConditionalFilter):
     def _predicate(self, data):
         return data.user == self.user
 
+
 # rename 'data' to 'payload'? or 'opus'? something else?
 class VoiceData:
-    __slots__ = ('data', 'user', 'packet')
+    __slots__ = ("data", "user", "packet")
 
     def __init__(self, data, user, packet):
         self.data = data
         self.user = user
         self.packet = packet
 
+
 class _ReaderBase(threading.Thread):
     def __init__(self, client, **kwargs):
-        daemon = kwargs.pop('daemon', True)
+        daemon = kwargs.pop("daemon", True)
         super().__init__(daemon=daemon, **kwargs)
 
         self.client = client
         self.box = nacl.secret.SecretBox(bytes(client.secret_key))
-        self.decrypt_rtp = getattr(self, '_decrypt_rtp_' + client.mode)
-        self.decrypt_rtcp = getattr(self, '_decrypt_rtcp_' + client.mode)
+        self.decrypt_rtp = getattr(self, "_decrypt_rtp_" + client.mode)
+        self.decrypt_rtcp = getattr(self, "_decrypt_rtcp_" + client.mode)
 
     def _decrypt_rtp_xsalsa20_poly1305(self, packet):
         nonce = bytearray(24)
@@ -285,7 +294,7 @@ class OpusEventAudioReader(_ReaderBase):
         return self.client._connected
 
     def dispatch(self, event, *args):
-        event = getattr(self.sink, 'on_'+event, self._noop)
+        event = getattr(self.sink, "on_" + event, self._noop)
         event(*args)
 
     def _get_user(self, packet):
@@ -298,8 +307,9 @@ class OpusEventAudioReader(_ReaderBase):
             if not self.connected.is_set():
                 self.connected.wait()
 
-            ready, _, err = select.select([self.client.socket], [],
-                                          [self.client.socket], 0.01)
+            ready, _, err = select.select(
+                [self.client.socket], [], [self.client.socket], 0.01
+            )
             if not ready:
                 if err:
                     print("Socket error")
@@ -310,7 +320,7 @@ class OpusEventAudioReader(_ReaderBase):
             except socket.error as e:
                 t0 = time.time()
 
-                if e.errno == 10038: # ENOTSOCK
+                if e.errno == 10038:  # ENOTSOCK
                     continue
 
                 log.exception("Socket error in reader thread ")
@@ -335,14 +345,14 @@ class OpusEventAudioReader(_ReaderBase):
                 else:
                     packet = rtp.decode(self.decrypt_rtcp(raw_data))
                     if not isinstance(packet, rtp.ReceiverReportPacket):
-                        print('Received unusual rtcp packet')
-                        print('*'*78)
+                        print("Received unusual rtcp packet")
+                        print("*" * 78)
                         print(packet)
-                        print('*'*78)
+                        print("*" * 78)
 
                         # TODO: Fabricate and send SenderReports and see what happens
 
-                    self.dispatch('voice_rtcp_packet', packet)
+                    self.dispatch("voice_rtcp_packet", packet)
                     continue
 
             except CryptoError:
@@ -357,7 +367,7 @@ class OpusEventAudioReader(_ReaderBase):
                 if packet.ssrc not in self.client._ssrc_to_id:
                     log.debug("Received packet for unknown ssrc %s", packet.ssrc)
 
-                self.dispatch('voice_packet', self._get_user(packet), packet)
+                self.dispatch("voice_packet", self._get_user(packet), packet)
 
     def is_listening(self):
         return not self._end.is_set()
@@ -379,14 +389,14 @@ class OpusEventAudioReader(_ReaderBase):
             self._call_after()
 
     def _call_after(self):
-         if self.after is not None:
+        if self.after is not None:
             try:
                 self.after(self._current_error)
             except Exception:
-                log.exception('Calling the after function failed.')
+                log.exception("Calling the after function failed.")
 
 
-#class AudioReader(_ReaderBase):
+# class AudioReader(_ReaderBase):
 #    def __init__(self, sink, client, *, after=None):
 #        if after is not None and not callable(after):
 #            raise TypeError('Expected a callable for the "after" parameter.')
@@ -555,7 +565,7 @@ class SimpleJitterBuffer:
 
     def __init__(self, maxsize=10, *, prefill=0):
         if maxsize < 1:
-            raise ValueError('maxsize must be greater than 0')
+            raise ValueError("maxsize must be greater than 0")
 
         self.maxsize = maxsize
         self.prefill = prefill
@@ -586,7 +596,7 @@ class SimpleJitterBuffer:
 
             # Check for how many contiguous packets we have
             n = ok = 0
-            for n in range(len(self._buffer)): # TODO: enumerate
+            for n in range(len(self._buffer)):  # TODO: enumerate
                 if self._last_seq + n + 1 != self._buffer[n].sequence:
                     break
                 ok = n + 1
@@ -601,7 +611,7 @@ class SimpleJitterBuffer:
 
         # size check and add skips as None
         if len(self._buffer) > self.maxsize:
-            buf = [None for _ in range(self._buffer[0].sequence-self._last_seq-1)]
+            buf = [None for _ in range(self._buffer[0].sequence - self._last_seq - 1)]
             self._last_seq = self._buffer[0].sequence - 1
             buf.extend(self._get_ready_batch())
             return buf

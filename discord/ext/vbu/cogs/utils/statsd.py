@@ -12,7 +12,6 @@ async def _fake_async_stats_collection_function(*args, **kwargs):
 
 
 class _FakeContextManager(object):
-
     def __init__(self, *args, **kwargs):
         pass
 
@@ -30,7 +29,6 @@ class _FakeContextManager(object):
 
 
 class _FakeStatsdConnection(object):
-
     def __init__(self):
         self.connect = _fake_async_stats_collection_function
         self.close = _fake_async_stats_collection_function
@@ -55,7 +53,7 @@ class StatsdConnection(object):
 
     config: dict = None
     logger: logging.Logger = logging.getLogger("vbu.statsd")
-    __slots__ = ('conn',)
+    __slots__ = ("conn",)
 
     def __init__(self, connection: aiodogstatsd.Client = None):
         """:meta private:"""
@@ -63,7 +61,7 @@ class StatsdConnection(object):
         self.conn = connection
 
     @classmethod
-    async def get_connection(cls) -> 'StatsdConnection':
+    async def get_connection(cls) -> "StatsdConnection":
         """
         Acquires a connection to the database from the pool.
 

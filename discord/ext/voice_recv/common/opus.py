@@ -6,14 +6,17 @@ from .rtp import *
 
 from discord.opus import Decoder
 
+
 class BufferedDecoder(threading.Thread):
     DELAY = Decoder.FRAME_LENGTH / 1000.0
 
     def __init__(self, ssrc, output_func, *, buffer=200):
-        super().__init__(daemon=True, name='ssrc-%s' % ssrc)
+        super().__init__(daemon=True, name="ssrc-%s" % ssrc)
 
-        if buffer < 40: # technically 20 works but then FEC is useless
-            raise ValueError("buffer size of %s is invalid; cannot be lower than 40" % buffer)
+        if buffer < 40:  # technically 20 works but then FEC is useless
+            raise ValueError(
+                "buffer size of %s is invalid; cannot be lower than 40" % buffer
+            )
 
         self.ssrc = ssrc
         self.output_func = output_func
@@ -49,7 +52,7 @@ class BufferedDecoder(threading.Thread):
             return
 
     def feed_rtcp(self, packet):
-        ... # TODO: rotating buffer of Nones or something
+        ...  # TODO: rotating buffer of Nones or something
         #           or I can store (last_seq + buffer_size, packet)
         # print(f"[router:feed] Got rtcp packet {packet}")
         # print(f"[router:feed] Other timestamps: {[p.timestamp for p in self._buffer]}")
@@ -76,26 +79,28 @@ class BufferedDecoder(threading.Thread):
             self._end_main_loop.set()
 
             if any(isinstance(p, RTPPacket) for p in self._buffer) or True:
-                if kwargs.pop('flush', False):
+                if kwargs.pop("flush", False):
                     self._finalizing = True
                     self.DELAY = 0
-                elif not kwargs.pop('drain', True):
+                elif not kwargs.pop("drain", True):
                     with self._lock:
                         self._finalizing = True
                         self._buffer.clear()
 
     def reset(self):
         with self._lock:
-            self._decoder = Decoder() # TODO: Add a reset function to Decoder itself
+            self._decoder = Decoder()  # TODO: Add a reset function to Decoder itself
             self._last_seq = self._last_ts = 0
             self._buffer.clear()
             self._primed.clear()
-            self._end_main_loop.set() # XXX: racy with _push?
+            self._end_main_loop.set()  # XXX: racy with _push?
             self.DELAY = self.__class__.DELAY
 
     def _push(self, item):
         if not isinstance(item, (RTPPacket, SilencePacket)):
-            raise TypeError(f"item should be an RTPPacket, not {item.__class__.__name__}")
+            raise TypeError(
+                f"item should be an RTPPacket, not {item.__class__.__name__}"
+            )
 
         # XXX: racy with reset?
         if self._end_main_loop.is_set() and not self._end_thread.is_set():
@@ -116,32 +121,41 @@ class BufferedDecoder(threading.Thread):
                 self._buffer[self._buffer.index(existing_packet)] = item
                 return
             elif isinstance(existing_packet, RTPPacket):
-                return # duplicate packet
+                return  # duplicate packet
 
             bisect.insort(self._buffer, item)
 
-        # Optional diagnostics, will probably remove later
-            bufsize = len(self._buffer) # indent intentional
+            # Optional diagnostics, will probably remove later
+            bufsize = len(self._buffer)  # indent intentional
         if bufsize >= self.buffer_size * self._overflow_mult:
             print(f"[router:push] Warning: rtp heap size has grown to {bufsize}")
             self._overflow_mult += self._overflow_incr
 
-        elif bufsize <= self.buffer_size * (self._overflow_mult - self._overflow_incr) \
-            and self._overflow_mult > self._overflow_base:
+        elif (
+            bufsize <= self.buffer_size * (self._overflow_mult - self._overflow_incr)
+            and self._overflow_mult > self._overflow_base
+        ):
 
             print(f"[router:push] Info: rtp heap size has shrunk to {bufsize}")
-            self._overflow_mult = max(self._overflow_base, self._overflow_mult - self._overflow_incr)
+            self._overflow_mult = max(
+                self._overflow_base, self._overflow_mult - self._overflow_incr
+            )
 
     def _pop(self):
         packet = nextpacket = None
         with self._lock:
             try:
                 if not self._finalizing:
-                    self._buffer.append(SilencePacket(self.ssrc, self._buffer[-1].timestamp + Decoder.SAMPLES_PER_FRAME))
+                    self._buffer.append(
+                        SilencePacket(
+                            self.ssrc,
+                            self._buffer[-1].timestamp + Decoder.SAMPLES_PER_FRAME,
+                        )
+                    )
                 packet = self._buffer.pop(0)
                 nextpacket = self._buffer[0]
             except IndexError:
-                pass # empty buffer
+                pass  # empty buffer
 
         return packet, nextpacket
 
@@ -170,14 +184,17 @@ class BufferedDecoder(threading.Thread):
 
             # generate list of differences between packet sequences
             with self._lock:
-                diffs = [self._buffer[i+1].sequence-self._buffer[i].sequence for i in range(len(self._buffer)-1)]
+                diffs = [
+                    self._buffer[i + 1].sequence - self._buffer[i].sequence
+                    for i in range(len(self._buffer) - 1)
+                ]
             sdiffs = sorted(diffs, reverse=True)
 
             # decide if there's a jump
             jump1, jump2 = sdiffs[:2]
             if jump1 > jump2 * 3:
                 # remove the stale packets and keep the fresh ones
-                self.truncate(size=len(self._buffer[diffs.index(jump1)+1:]))
+                self.truncate(size=len(self._buffer[diffs.index(jump1) + 1 :]))
             else:
                 # otherwise they're all stale, dump 'em (does this ever happen?)
                 with self._lock:
@@ -192,7 +209,9 @@ class BufferedDecoder(threading.Thread):
         with self._lock:
             start_ts = self._buffer[0].timestamp
             for x in range(1, 1 + self.buffer_size - len(self._buffer)):
-                self._push(SilencePacket(self.ssrc, start_ts + x * Decoder.SAMPLES_PER_FRAME))
+                self._push(
+                    SilencePacket(self.ssrc, start_ts + x * Decoder.SAMPLES_PER_FRAME)
+                )
 
         # now fill the rest
         while len(self._buffer) < self.buffer_size:
@@ -203,15 +222,21 @@ class BufferedDecoder(threading.Thread):
     def _packet_gen(self):
         while True:
             packet, nextpacket = self._pop()
-            self._last_ts = getattr(packet, 'timestamp', self._last_ts + Decoder.SAMPLES_PER_FRAME)
-            self._last_seq += 1 # self._last_seq = packet.sequence?
+            self._last_ts = getattr(
+                packet, "timestamp", self._last_ts + Decoder.SAMPLES_PER_FRAME
+            )
+            self._last_seq += 1  # self._last_seq = packet.sequence?
 
             if isinstance(packet, RTPPacket):
                 pcm = self._decoder.decode(packet.decrypted_data)
 
             elif isinstance(nextpacket, RTPPacket):
                 pcm = self._decoder.decode(packet.decrypted_data, fec=True)
-                fec_packet = FECPacket(self.ssrc, nextpacket.sequence - 1, nextpacket.timestamp - Decoder.SAMPLES_PER_FRAME)
+                fec_packet = FECPacket(
+                    self.ssrc,
+                    nextpacket.sequence - 1,
+                    nextpacket.timestamp - Decoder.SAMPLES_PER_FRAME,
+                )
                 yield fec_packet, pcm
 
                 packet, _ = self._pop()
@@ -249,7 +274,7 @@ class BufferedDecoder(threading.Thread):
 
                 time.sleep(max(0, self.DELAY + (next_time - time.perf_counter())))
         except StopIteration:
-            time.sleep(0.001) # just in case, so we don't slam the cpu
+            time.sleep(0.001)  # just in case, so we don't slam the cpu
         finally:
             packet_gen.close()
 
@@ -267,24 +292,30 @@ class BasePacketDecoder:
 
     def feed_rtp(self, packet):
         raise NotImplementedError
+
     def feed_rtcp(self, packet):
         raise NotImplementedError
+
     def truncate(self, *, size=None):
         raise NotImplementedError
+
     def reset(self):
         raise NotImplementedError
+
 
 class BufferedPacketDecoder(BasePacketDecoder):
     """Buffers and decodes packets from a single ssrc"""
 
     def __init__(self, ssrc, *, buffer=200):
-        if buffer < 40: # technically 20 works but then FEC is useless
-            raise ValueError("buffer size of %s is invalid; cannot be lower than 40" % buffer)
+        if buffer < 40:  # technically 20 works but then FEC is useless
+            raise ValueError(
+                "buffer size of %s is invalid; cannot be lower than 40" % buffer
+            )
 
         self.ssrc = ssrc
         self._decoder = Decoder()
         self._buffer = []
-        self._rtcp_buffer = {} # TODO: Add RTCP queue
+        self._rtcp_buffer = {}  # TODO: Add RTCP queue
         self._last_seq = self._last_ts = 0
 
         # Optional diagnostic state stuff
@@ -312,7 +343,7 @@ class BufferedPacketDecoder(BasePacketDecoder):
     def feed_rtcp(self, packet):
         with self._lock:
             if not self._buffer:
-                return # ignore for now, handle properly later
+                return  # ignore for now, handle properly later
             self._rtcp_buffer[self._buffer[-1]] = packet
 
     def truncate(self, *, size=None):
@@ -322,7 +353,7 @@ class BufferedPacketDecoder(BasePacketDecoder):
 
     def reset(self):
         with self._lock:
-            self._decoder = Decoder() # TODO: Add a reset function to Decoder itself
+            self._decoder = Decoder()  # TODO: Add a reset function to Decoder itself
             self.DELAY = self.__class__.DELAY
             self._last_seq = self._last_ts = 0
             self._buffer.clear()
@@ -332,7 +363,9 @@ class BufferedPacketDecoder(BasePacketDecoder):
 
     def _push(self, item):
         if not isinstance(item, (RTPPacket, SilencePacket)):
-            raise TypeError(f"item should be an RTPPacket, not {item.__class__.__name__}")
+            raise TypeError(
+                f"item should be an RTPPacket, not {item.__class__.__name__}"
+            )
 
         # Fake packet loss
         # import random
@@ -346,33 +379,42 @@ class BufferedPacketDecoder(BasePacketDecoder):
                 self._buffer[self._buffer.index(existing_packet)] = item
                 return
             elif isinstance(existing_packet, RTPPacket):
-                return # duplicate packet
+                return  # duplicate packet
 
             bisect.insort(self._buffer, item)
 
-        # Optional diagnostics, will probably remove later
-            bufsize = len(self._buffer) # indent intentional
+            # Optional diagnostics, will probably remove later
+            bufsize = len(self._buffer)  # indent intentional
         if bufsize >= self.buffer_size * self._overflow_mult:
             print(f"[router:push] Warning: rtp heap size has grown to {bufsize}")
             self._overflow_mult += self._overflow_incr
 
-        elif bufsize <= self.buffer_size * (self._overflow_mult - self._overflow_incr) \
-            and self._overflow_mult > self._overflow_base:
+        elif (
+            bufsize <= self.buffer_size * (self._overflow_mult - self._overflow_incr)
+            and self._overflow_mult > self._overflow_base
+        ):
 
             print(f"[router:push] Info: rtp heap size has shrunk to {bufsize}")
-            self._overflow_mult = max(self._overflow_base, self._overflow_mult - self._overflow_incr)
+            self._overflow_mult = max(
+                self._overflow_base, self._overflow_mult - self._overflow_incr
+            )
 
     def _pop(self):
         packet = nextpacket = None
         with self._lock:
             try:
-                self._buffer.append(SilencePacket(self.ssrc, self._buffer[-1].timestamp + Decoder.SAMPLES_PER_FRAME))
+                self._buffer.append(
+                    SilencePacket(
+                        self.ssrc,
+                        self._buffer[-1].timestamp + Decoder.SAMPLES_PER_FRAME,
+                    )
+                )
                 packet = self._buffer.pop(0)
                 nextpacket = self._buffer[0]
             except IndexError:
-                pass # empty buffer
+                pass  # empty buffer
 
-        return packet, nextpacket # return rtcp packets as well?
+        return packet, nextpacket  # return rtcp packets as well?
 
     def _packet_gen(self):
         # Buffer packets
@@ -386,7 +428,7 @@ class BufferedPacketDecoder(BasePacketDecoder):
         # How many packets we already have
         pre_fill = len(self._buffer)
         # How many packets we need to get to half full
-        half_fill = max(0, self.buffer_size//2 - 1 - pre_fill)
+        half_fill = max(0, self.buffer_size // 2 - 1 - pre_fill)
         # How many packets we need to get to full
         full_fill = self.buffer_size - half_fill
 
@@ -395,28 +437,36 @@ class BufferedPacketDecoder(BasePacketDecoder):
         while not self._buffer:
             yield None, None
 
-        for x in range(half_fill-1):
+        for x in range(half_fill - 1):
             yield None, None
 
         with self._lock:
             start_ts = self._buffer[0].timestamp
             for x in range(1, 1 + self.buffer_size - len(self._buffer)):
-                self._push(SilencePacket(self.ssrc, start_ts + x * Decoder.SAMPLES_PER_FRAME))
+                self._push(
+                    SilencePacket(self.ssrc, start_ts + x * Decoder.SAMPLES_PER_FRAME)
+                )
 
         for x in range(full_fill):
             yield None, None
 
         while True:
             packet, nextpacket = self._pop()
-            self._last_ts = getattr(packet, 'timestamp', self._last_ts + Decoder.SAMPLES_PER_FRAME)
-            self._last_seq += 1 # self._last_seq = packet.sequence?
+            self._last_ts = getattr(
+                packet, "timestamp", self._last_ts + Decoder.SAMPLES_PER_FRAME
+            )
+            self._last_seq += 1  # self._last_seq = packet.sequence?
 
             if isinstance(packet, RTPPacket):
                 pcm = self._decoder.decode(packet.decrypted_data)
 
             elif isinstance(nextpacket, RTPPacket):
                 pcm = self._decoder.decode(packet.decrypted_data, fec=True)
-                fec_packet = FECPacket(self.ssrc, nextpacket.sequence - 1, nextpacket.timestamp - Decoder.SAMPLES_PER_FRAME)
+                fec_packet = FECPacket(
+                    self.ssrc,
+                    nextpacket.sequence - 1,
+                    nextpacket.timestamp - Decoder.SAMPLES_PER_FRAME,
+                )
                 yield fec_packet, pcm
 
                 packet, _ = self._pop()
@@ -437,7 +487,7 @@ class BufferedDecoder2(threading.Thread):
     """Ingests rtp packets and dispatches to decoders and sink output function."""
 
     def __init__(self, reader, *, decodercls=BufferedPacketDecoder):
-        super().__init__(daemon=True, name='DecoderBuffer')
+        super().__init__(daemon=True, name="DecoderBuffer")
         self.reader = reader
         self.decodercls = decodercls
 
@@ -453,10 +503,12 @@ class BufferedDecoder2(threading.Thread):
     def _get_decoder(self, ssrc):
         dec = self.decoders.get(ssrc)
 
-        if not dec and self.reader.client._get_ssrc_mapping(ssrc=ssrc)[1]: # and get_user(ssrc)?
+        if (
+            not dec and self.reader.client._get_ssrc_mapping(ssrc=ssrc)[1]
+        ):  # and get_user(ssrc)?
             dec = self.decoders[ssrc] = self.decodercls(ssrc)
-            dec.start_time = time.perf_counter() # :thinking:
-            dec.loops = 0                        # :thinking::thinking::thinking:
+            dec.start_time = time.perf_counter()  # :thinking:
+            dec.loops = 0  # :thinking::thinking::thinking:
             self.queue.append((dec.start_time, dec))
             self._has_decoder.set()
 
@@ -536,7 +588,10 @@ class BufferedDecoder2(threading.Thread):
 
                 # generate list of differences between packet sequences
                 with self._lock:
-                    diffs = [buff[i+1].sequence - buff[i].sequence for i in range(len(buff)-1)]
+                    diffs = [
+                        buff[i + 1].sequence - buff[i].sequence
+                        for i in range(len(buff) - 1)
+                    ]
                 sdiffs = sorted(diffs, reverse=True)
 
                 # decide if there's a jump
@@ -544,7 +599,7 @@ class BufferedDecoder2(threading.Thread):
                 if jump1 > jump2 * 3:
                     # remove the stale packets and keep the fresh ones
                     with self._lock:
-                        size = len(buff[diffs.index(jump1)+1:])
+                        size = len(buff[diffs.index(jump1) + 1 :])
                         buff = buff[-size:]
                 else:
                     # otherwise they're all stale, dump 'em (does this ever happen?)
@@ -587,7 +642,7 @@ class BufferedDecoder2(threading.Thread):
 
             if remaining >= 0:
                 insort(self.queue, (next_time, decoder))
-                time.sleep(max(0.002, remaining/2)) # sleep accuracy tm
+                time.sleep(max(0.002, remaining / 2))  # sleep accuracy tm
                 continue
 
             self.decode(decoder)
@@ -598,7 +653,6 @@ class BufferedDecoder2(threading.Thread):
         except Exception as e:
             log.exception("Error in decoder %s", self.name)
             traceback.print_exc()
-
 
 
 # basically, separate everything

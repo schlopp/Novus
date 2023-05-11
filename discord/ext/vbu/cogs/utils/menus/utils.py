@@ -9,13 +9,18 @@ def async_wrap_callback(callback) -> Callable[..., Awaitable]:
     Wraps a function in an async function.
     """
 
-    if inspect.isawaitable(callback) or inspect.iscoroutine(callback) or inspect.iscoroutinefunction(callback):
+    if (
+        inspect.isawaitable(callback)
+        or inspect.iscoroutine(callback)
+        or inspect.iscoroutinefunction(callback)
+    ):
         return callback
 
     async def wrapper(*args, **kwargs):
         if callback is None:
             return None
         return callback(*args, **kwargs)
+
     return wrapper
 
 
@@ -29,6 +34,8 @@ def get_discord_converter(cls):
     except AttributeError:
         pass
     else:
-        if module is not None and (module.startswith('discord.') and not module.endswith('converter')):
-            cls = getattr(converters, cls.__name__ + 'Converter', cls)
+        if module is not None and (
+            module.startswith("discord.") and not module.endswith("converter")
+        ):
+            cls = getattr(converters, cls.__name__ + "Converter", cls)
     return cls

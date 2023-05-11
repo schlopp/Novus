@@ -19,7 +19,9 @@ class InvalidTimeDuration(commands.BadArgument):
         self.value: str = value
 
     def __str__(self):
-        return f"The value `{self.value}` could not be converted to a valid time duration."
+        return (
+            f"The value `{self.value}` could not be converted to a valid time duration."
+        )
 
 
 class TimeValue(object):
@@ -59,7 +61,9 @@ class TimeValue(object):
         delta (datetime.timedelta): A timedelta for the entire timevalue object.
     """
 
-    TIME_VALUE_REGEX = re.compile(r"^(?:(?P<years>\d+)y)? *(?:(?P<weeks>\d+)w)? *(?:(?P<days>\d+)d)? *(?:(?P<hours>\d+)h)? *(?:(?P<minutes>\d+)m)? *(?:(?P<seconds>\d+)s)?$")
+    TIME_VALUE_REGEX = re.compile(
+        r"^(?:(?P<years>\d+)y)? *(?:(?P<weeks>\d+)w)? *(?:(?P<days>\d+)d)? *(?:(?P<hours>\d+)h)? *(?:(?P<minutes>\d+)m)? *(?:(?P<seconds>\d+)s)?$"
+    )
     MAX_SIZE = 0b1111111111111111111111111111111  # 2**31 - this is about 68 years so anything above this is a bit...... much
 
     def __init__(self, duration: float):
@@ -77,32 +81,83 @@ class TimeValue(object):
         self.duration: int = math.ceil(duration)
         remaining = self.duration
 
-        self.years, remaining = self._get_quotient_and_remainder(remaining, 60 * 60 * 24 * 365)
+        self.years, remaining = self._get_quotient_and_remainder(
+            remaining, 60 * 60 * 24 * 365
+        )
         self.days, remaining = self._get_quotient_and_remainder(remaining, 60 * 60 * 24)
         self.hours, remaining = self._get_quotient_and_remainder(remaining, 60 * 60)
         self.minutes, remaining = self._get_quotient_and_remainder(remaining, 60)
         self.seconds = remaining
 
-        self.clean_spaced = ' '.join([i for i in [
-            f"{self.years}y" if self.years > 0 else None,
-            f"{self.days}d" if self.days > 0 else None,
-            f"{self.hours}h" if self.hours > 0 else None,
-            f"{self.minutes}m" if self.minutes > 0 else None,
-            f"{self.seconds}s" if self.seconds > 0 else None,
-        ] if i])
+        self.clean_spaced = " ".join(
+            [
+                i
+                for i in [
+                    f"{self.years}y" if self.years > 0 else None,
+                    f"{self.days}d" if self.days > 0 else None,
+                    f"{self.hours}h" if self.hours > 0 else None,
+                    f"{self.minutes}m" if self.minutes > 0 else None,
+                    f"{self.seconds}s" if self.seconds > 0 else None,
+                ]
+                if i
+            ]
+        )
 
-        self.clean_full = ' '.join([i for i in [
-            f"{self.years} years" if self.years > 1 else f"{self.years} year" if self.years >= 1 else None,
-            f"{self.days} days" if self.days > 1 else f"{self.days} day" if self.days >= 1 else None,
-            f"{self.hours} hours" if self.hours > 1 else f"{self.hours} hour" if self.hours >= 1 else None,
-            f"{self.minutes} minutes" if self.minutes > 1 else f"{self.minutes} minute" if self.minutes >= 1 else None,
-            f"{self.seconds} seconds" if self.seconds > 1 else f"{self.seconds} second" if self.seconds >= 1 else None,
-        ] if i])
+        self.clean_full = " ".join(
+            [
+                i
+                for i in [
+                    f"{self.years} years"
+                    if self.years > 1
+                    else f"{self.years} year"
+                    if self.years >= 1
+                    else None,
+                    f"{self.days} days"
+                    if self.days > 1
+                    else f"{self.days} day"
+                    if self.days >= 1
+                    else None,
+                    f"{self.hours} hours"
+                    if self.hours > 1
+                    else f"{self.hours} hour"
+                    if self.hours >= 1
+                    else None,
+                    f"{self.minutes} minutes"
+                    if self.minutes > 1
+                    else f"{self.minutes} minute"
+                    if self.minutes >= 1
+                    else None,
+                    f"{self.seconds} seconds"
+                    if self.seconds > 1
+                    else f"{self.seconds} second"
+                    if self.seconds >= 1
+                    else None,
+                ]
+                if i
+            ]
+        )
 
-        self.clean_days = ' '.join([i for i in [
-            f"{self.years} years" if self.years > 1 else f"{self.years} year" if self.years >= 1 else None,
-            f"{self.days} days" if self.days > 1 else f"{self.days} day" if self.days >= 1 else None,
-        ] if i]) or 'less than a day'
+        self.clean_days = (
+            " ".join(
+                [
+                    i
+                    for i in [
+                        f"{self.years} years"
+                        if self.years > 1
+                        else f"{self.years} year"
+                        if self.years >= 1
+                        else None,
+                        f"{self.days} days"
+                        if self.days > 1
+                        else f"{self.days} day"
+                        if self.days >= 1
+                        else None,
+                    ]
+                    if i
+                ]
+            )
+            or "less than a day"
+        )
 
         if self.duration > self.MAX_SIZE:
             raise InvalidTimeDuration(self.clean)
@@ -172,16 +227,16 @@ class TimeValue(object):
 
         duration = 0
 
-        if match.group('years'):
-            duration += int(match.group('years')) * 60 * 60 * 24 * 365
-        if match.group('weeks'):
-            duration += int(match.group('weeks')) * 60 * 60 * 24 * 7
-        if match.group('days'):
-            duration += int(match.group('days')) * 60 * 60 * 24
-        if match.group('hours'):
-            duration += int(match.group('hours')) * 60 * 60
-        if match.group('minutes'):
-            duration += int(match.group('minutes')) * 60
-        if match.group('seconds'):
-            duration += int(match.group('seconds'))
+        if match.group("years"):
+            duration += int(match.group("years")) * 60 * 60 * 24 * 365
+        if match.group("weeks"):
+            duration += int(match.group("weeks")) * 60 * 60 * 24 * 7
+        if match.group("days"):
+            duration += int(match.group("days")) * 60 * 60 * 24
+        if match.group("hours"):
+            duration += int(match.group("hours")) * 60 * 60
+        if match.group("minutes"):
+            duration += int(match.group("minutes")) * 60
+        if match.group("seconds"):
+            duration += int(match.group("seconds"))
         return cls(duration)

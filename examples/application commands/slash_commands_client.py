@@ -7,18 +7,15 @@ client = discord.Client()
 
 # Make the application commands that should be added
 commands = [
-    discord.ApplicationCommand(
-        name="ping",
-        description="Sends a pong response."
-    ),
+    discord.ApplicationCommand(name="ping", description="Sends a pong response."),
 ]
 
 
 # Classic "on ready" event
 @client.event
 async def on_ready():
-    print(f'Logged in as {client.user} (ID: {client.user.id})')
-    print('------')
+    print(f"Logged in as {client.user} (ID: {client.user.id})")
+    print("------")
 
 
 # Pinged whenever the bot receives a slash command
@@ -32,7 +29,7 @@ async def on_slash_command(interaction: discord.Interaction[None]):
 
 
 async def main():
-    await client.login('TOKEN')  # Validate our token
+    await client.login("TOKEN")  # Validate our token
     await client.register_application_commands(commands)  # Upsert our commands
     await client.connect()  # Run a websocket connection
 

@@ -7,9 +7,10 @@ from .string import Formatter
 
 
 def component_check(
-        user: Union[discord.User, discord.Member],
-        message: discord.Message,
-        no_interact_message: Optional[str] = discord.utils.MISSING) -> Callable[[discord.Interaction], bool]:
+    user: Union[discord.User, discord.Member],
+    message: discord.Message,
+    no_interact_message: Optional[str] = discord.utils.MISSING,
+) -> Callable[[discord.Interaction], bool]:
     """
     A check for a wait_for that allows only a user to interact
     with the given button, outputting the no interaction message.
@@ -45,22 +46,26 @@ def component_check(
         if payload.user.id != user.id:
             loop = asyncio.get_event_loop()
             if no_interact_message:
-                loop.create_task(payload.response.send_message(
-                    no_interact_message,
-                    ephemeral=True,
-                    allowed_mentions=discord.AllowedMentions.none(),
-                ))
+                loop.create_task(
+                    payload.response.send_message(
+                        no_interact_message,
+                        ephemeral=True,
+                        allowed_mentions=discord.AllowedMentions.none(),
+                    )
+                )
             else:
                 loop.create_task(payload.response.defer_update())
             return False
         return True
+
     return check
 
 
 def component_id_check(
-        users: Union[discord.abc.Snowflake, Iterable[discord.abc.Snowflake]],
-        custom_id: str,
-        no_interact_message: Optional[str] = discord.utils.MISSING) -> Callable[[discord.Interaction], bool]:
+    users: Union[discord.abc.Snowflake, Iterable[discord.abc.Snowflake]],
+    custom_id: str,
+    no_interact_message: Optional[str] = discord.utils.MISSING,
+) -> Callable[[discord.Interaction], bool]:
     """
     A check for a wait_for that allows only a user to interact
     with the given button, outputting the no interaction message.
@@ -94,10 +99,7 @@ def component_id_check(
     mentions = [f"<@{user.id}>" for user in users]
     if no_interact_message is discord.utils.MISSING:
         no_interact_message = Formatter().format(
-            (
-                "Only {mentions:humanjoin} can interact with "
-                "this message."
-            ),
+            ("Only {mentions:humanjoin} can interact with " "this message."),
             mentions,
         )
 
@@ -113,11 +115,13 @@ def component_id_check(
         if payload.user.id != user.id:
             loop = asyncio.get_event_loop()
             if no_interact_message:
-                loop.create_task(payload.response.send_message(
-                    no_interact_message,
-                    ephemeral=True,
-                    allowed_mentions=discord.AllowedMentions.none(),
-                ))
+                loop.create_task(
+                    payload.response.send_message(
+                        no_interact_message,
+                        ephemeral=True,
+                        allowed_mentions=discord.AllowedMentions.none(),
+                    )
+                )
             else:
                 loop.create_task(payload.response.defer_update())
             return False  # fallback

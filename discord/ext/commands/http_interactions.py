@@ -39,20 +39,22 @@ if typing.TYPE_CHECKING:
     from discord.types.interactions import Interaction as InteractionPayload
 
 
-__all__ = (
-    'get_interaction_route_table',
-)
+__all__ = ("get_interaction_route_table",)
 
 
 log = logging.getLogger("discord.interactions")
 SLEEP_TIME = 2.7
 
 
-def get_invalid_response(*, status: int = 401, reason: str = "Invalid request signature") -> web.StreamResponse:
+def get_invalid_response(
+    *, status: int = 401, reason: str = "Invalid request signature"
+) -> web.StreamResponse:
     return web.StreamResponse(status=status, reason=reason)
 
 
-async def verify_headers(request: web.Request, application_public_key: str) -> typing.Optional[web.StreamResponse]:
+async def verify_headers(
+    request: web.Request, application_public_key: str
+) -> typing.Optional[web.StreamResponse]:
     """
     Verify whether the headers of a given Discord response both
     *exist* and are valid.
@@ -74,7 +76,7 @@ async def verify_headers(request: web.Request, application_public_key: str) -> t
     body = body_bytes.decode()
 
     try:
-        verify_key.verify(f'{timestamp}{body}'.encode(), bytes.fromhex(signature))
+        verify_key.verify(f"{timestamp}{body}".encode(), bytes.fromhex(signature))
         log.debug("Received interaction with valid signature")
     except BadSignatureError:
         log.debug("Received interaction an invalid signature")
@@ -82,7 +84,9 @@ async def verify_headers(request: web.Request, application_public_key: str) -> t
     return None
 
 
-def get_interaction_route_table(bot: BotBase, application_public_key: str, *, path: str = "/interactions"):
+def get_interaction_route_table(
+    bot: BotBase, application_public_key: str, *, path: str = "/interactions"
+):
     """
     Get an interactions endpoint that works with aiohttp. This method
     only works with logged in bots, as it uses the bot's HTTP client.
@@ -108,7 +112,9 @@ def get_interaction_route_table(bot: BotBase, application_public_key: str, *, pa
         """
 
         # Verify the request headers
-        if (response := await verify_headers(request, application_public_key)) is not None:
+        if (
+            response := await verify_headers(request, application_public_key)
+        ) is not None:
             return response
 
         # Grab the data
@@ -128,13 +134,13 @@ def get_interaction_route_table(bot: BotBase, application_public_key: str, *, pa
         if interaction.type == InteractionType.ping:
             await interaction.response.pong()
         elif interaction.type == InteractionType.application_command:
-            bot.dispatch('slash_command', interaction)
+            bot.dispatch("slash_command", interaction)
         elif interaction.type == InteractionType.autocomplete:
-            bot.dispatch('autocomplete_interaction', interaction)
+            bot.dispatch("autocomplete_interaction", interaction)
         elif interaction.type == InteractionType.component:
-            bot.dispatch('component_interaction', interaction)
+            bot.dispatch("component_interaction", interaction)
         elif interaction.type == InteractionType.modal_submit:
-            bot.dispatch('modal_submit', interaction)
+            bot.dispatch("modal_submit", interaction)
         bot.dispatch("interaction", interaction)
 
         if not isinstance(interaction.response, HTTPInteractionResponse):
@@ -143,7 +149,10 @@ def get_interaction_route_table(bot: BotBase, application_public_key: str, *, pa
         # Sleep for a couple seconds, just so we don't try and return without
         # sending a response from inside the bot
         t0 = time.time()
-        while interaction.response._aiohttp_response._eof_sent is False and time.time() - t0 < SLEEP_TIME:
+        while (
+            interaction.response._aiohttp_response._eof_sent is False
+            and time.time() - t0 < SLEEP_TIME
+        ):
             await asyncio.sleep(0.01)
 
         # And give some return data

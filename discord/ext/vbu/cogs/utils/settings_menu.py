@@ -19,13 +19,16 @@ class SettingsMenuError(commands.CommandError):
 
 class SettingsMenuConverter(object):
 
-    __slots__ = ('prompt', 'asking_for', 'converter', 'emojis', 'serialize')
+    __slots__ = ("prompt", "asking_for", "converter", "emojis", "serialize")
 
     def __init__(
-            self, prompt: str, converter: typing.Union[typing.Callable, commands.Converter], asking_for: str = 'item',
-            emojis: typing.Optional[typing.List[discord.Emoji]] = None,
-            serialize_function: typing.Callable[[typing.Any], typing.Any] = lambda x: x,
-            ):
+        self,
+        prompt: str,
+        converter: typing.Union[typing.Callable, commands.Converter],
+        asking_for: str = "item",
+        emojis: typing.Optional[typing.List[discord.Emoji]] = None,
+        serialize_function: typing.Callable[[typing.Any], typing.Any] = lambda x: x,
+    ):
         self.prompt = prompt
         self.asking_for = asking_for
         self.converter = converter
@@ -40,17 +43,26 @@ class SettingsMenuOption(object):
     a role list, etc.
     """
 
-    __slots__ = ('context', '_display', 'converter_args', 'callback', 'emoji', 'allow_nullable',)
+    __slots__ = (
+        "context",
+        "_display",
+        "converter_args",
+        "callback",
+        "emoji",
+        "allow_nullable",
+    )
 
     def __init__(
-            self,
-            ctx: commands.Context,
-            display: typing.Union[str, typing.Callable[[commands.Context], str]],
-            converter_args: typing.List[SettingsMenuConverter] = None,
-            callback: typing.Callable[['SettingsMenuOption', typing.List[typing.Any]], None] = lambda x: None,
-            emoji: str = None,
-            allow_nullable: bool = True,
-            ):
+        self,
+        ctx: commands.Context,
+        display: typing.Union[str, typing.Callable[[commands.Context], str]],
+        converter_args: typing.List[SettingsMenuConverter] = None,
+        callback: typing.Callable[
+            ["SettingsMenuOption", typing.List[typing.Any]], None
+        ] = lambda x: None,
+        emoji: str = None,
+        allow_nullable: bool = True,
+    ):
         """
         Args:
             ctx (commands.Context): The context for which the menu is being invoked.
@@ -65,9 +77,15 @@ class SettingsMenuOption(object):
         """
 
         self.context: commands.Context = ctx
-        self._display: typing.Union[str, typing.Callable[[commands.Context], str]] = display
-        self.converter_args: typing.List[SettingsMenuConverter] = converter_args or list()
-        self.callback: typing.Callable[['SettingsMenuOption', typing.List[typing.Any]], None] = callback
+        self._display: typing.Union[
+            str, typing.Callable[[commands.Context], str]
+        ] = display
+        self.converter_args: typing.List[SettingsMenuConverter] = (
+            converter_args or list()
+        )
+        self.callback: typing.Callable[
+            ["SettingsMenuOption", typing.List[typing.Any]], None
+        ] = callback
         self.allow_nullable: bool = allow_nullable
 
     def get_display(self) -> str:
@@ -91,7 +109,9 @@ class SettingsMenuOption(object):
         returned_data = []
         for arg in self.converter_args:
             try:
-                data = await self.convert_prompted_information(arg.prompt, arg.asking_for, arg.converter, arg.emojis)
+                data = await self.convert_prompted_information(
+                    arg.prompt, arg.asking_for, arg.converter, arg.emojis
+                )
             except SettingsMenuError as e:
                 if not self.allow_nullable:
                     raise e
@@ -111,12 +131,12 @@ class SettingsMenuOption(object):
                 await called_data
 
     async def convert_prompted_information(
-            self,
-            prompt: str,
-            asking_for: str,
-            converter: commands.Converter,
-            reactions: typing.List[discord.Emoji] = None,
-            ) -> typing.Any:
+        self,
+        prompt: str,
+        asking_for: str,
+        converter: commands.Converter,
+        reactions: typing.List[discord.Emoji] = None,
+    ) -> typing.Any:
         """
         Ask the user for some information, convert said information, and then return that converted value.
 
@@ -141,10 +161,9 @@ class SettingsMenuOption(object):
         # Send prompt
         sendable: typing.Dict[str, typing.Any] = {"content": prompt}
         if reactions:
-            x = discord.ui.MessageComponents.add_buttons_with_rows(*[
-                discord.ui.Button(emoji=i, custom_id=str(i))
-                for i in reactions
-            ])
+            x = discord.ui.MessageComponents.add_buttons_with_rows(
+                *[discord.ui.Button(emoji=i, custom_id=str(i)) for i in reactions]
+            )
             sendable["components"] = x
         bot_message = await self.context.send(**sendable)
 
@@ -152,21 +171,33 @@ class SettingsMenuOption(object):
         user_message = None
         try:
             if reactions:
+
                 def check(payload: discord.Interaction):
-                    return all([
-                        payload.message.id == bot_message.id,
-                        payload.user.id == self.context.author.id,
-                    ])
-                payload = await self.context.bot.wait_for("component_interaction", timeout=120, check=check)
+                    return all(
+                        [
+                            payload.message.id == bot_message.id,
+                            payload.user.id == self.context.author.id,
+                        ]
+                    )
+
+                payload = await self.context.bot.wait_for(
+                    "component_interaction", timeout=120, check=check
+                )
                 await payload.response.defer_update()
                 content = str(payload.component.custom_id)
             else:
+
                 def check(message: discord.Message):
-                    return all([
-                        message.channel.id == self.context.channel.id,
-                        message.author.id == self.context.author.id,
-                    ])
-                user_message = await self.context.bot.wait_for("message", timeout=120, check=check)
+                    return all(
+                        [
+                            message.channel.id == self.context.channel.id,
+                            message.author.id == self.context.author.id,
+                        ]
+                    )
+
+                user_message = await self.context.bot.wait_for(
+                    "message", timeout=120, check=check
+                )
                 content = user_message.content
         except asyncio.TimeoutError:
             await self.context.send(f"Timed out asking for {asking_for}.")
@@ -175,7 +206,7 @@ class SettingsMenuOption(object):
         # Run converter
         conversion_failed = False
         value = None
-        if hasattr(converter, 'convert'):
+        if hasattr(converter, "convert"):
             try:
                 converter = converter()
             except TypeError:
@@ -209,11 +240,11 @@ class SettingsMenuOption(object):
 
     @classmethod
     def get_guild_settings_mention(
-            cls,
-            ctx: commands.Context,
-            attr: str,
-            default: str = 'none',
-            ) -> str:
+        cls,
+        ctx: commands.Context,
+        attr: str,
+        default: str = "none",
+    ) -> str:
         """
         Get an item from the cached `Bot.guild_settings` object for the running guild and return
         either it's mention string, or the `default` arg.
@@ -232,11 +263,11 @@ class SettingsMenuOption(object):
 
     @classmethod
     def get_user_settings_mention(
-            cls,
-            ctx: commands.Context,
-            attr: str,
-            default: str = 'none',
-            ) -> str:
+        cls,
+        ctx: commands.Context,
+        attr: str,
+        default: str = "none",
+    ) -> str:
         """
         Get an item from the cached `Bot.user_settings` object for the running user and return
         either it's mention string, or the `default` arg.
@@ -255,12 +286,12 @@ class SettingsMenuOption(object):
 
     @classmethod
     def get_settings_mention(
-            cls,
-            ctx: commands.Context,
-            settings: dict,
-            attr: str,
-            default: str = 'none',
-            ) -> str:
+        cls,
+        ctx: commands.Context,
+        settings: dict,
+        attr: str,
+        default: str = "none",
+    ) -> str:
         """
         Get an item from the bot's settings.
 
@@ -277,9 +308,9 @@ class SettingsMenuOption(object):
         """
 
         # Run converters
-        if 'channel' in attr.lower().split('_'):
+        if "channel" in attr.lower().split("_"):
             data = ctx.bot.get_channel(settings[attr])
-        elif 'role' in attr.lower().split('_'):
+        elif "role" in attr.lower().split("_"):
             data = ctx.guild.get_role(settings[attr])
         else:
             data = settings[attr]
@@ -292,9 +323,9 @@ class SettingsMenuOption(object):
 
     @staticmethod
     def get_mention(
-            data: typing.Union[discord.abc.GuildChannel, discord.Role, None],
-            default: str,
-            ) -> str:
+        data: typing.Union[discord.abc.GuildChannel, discord.Role, None],
+        default: str,
+    ) -> str:
         """
         Get the mention of an object.
 
@@ -313,11 +344,11 @@ class SettingsMenuOption(object):
 
     @classmethod
     def get_set_guild_settings_callback(
-            cls,
-            table_name: str,
-            column_name: str,
-            serialize_function: typing.Callable[[typing.Any], typing.Any] = None,
-            ) -> typing.Callable[[typing.Any], None]:
+        cls,
+        table_name: str,
+        column_name: str,
+        serialize_function: typing.Callable[[typing.Any], typing.Any] = None,
+    ) -> typing.Callable[[typing.Any], None]:
         """
         Return an async method that takes the data given by `convert_prompted_information`, then
         saves it into the database - should be used in the SettingsMenu init.
@@ -340,15 +371,17 @@ class SettingsMenuOption(object):
 
         if serialize_function is None:
             serialize_function = do_nothing
-        return cls.get_set_settings_callback(table_name, "guild_id", column_name, serialize_function)
+        return cls.get_set_settings_callback(
+            table_name, "guild_id", column_name, serialize_function
+        )
 
     @classmethod
     def get_set_user_settings_callback(
-            cls,
-            table_name: str,
-            column_name: str,
-            serialize_function: typing.Callable[[typing.Any], typing.Any] = None,
-            ) -> typing.Callable[[dict], None]:
+        cls,
+        table_name: str,
+        column_name: str,
+        serialize_function: typing.Callable[[typing.Any], typing.Any] = None,
+    ) -> typing.Callable[[dict], None]:
         """
         Return an async method that takes the data given by `convert_prompted_information`, then
         saves it into the database - should be used in the SettingsMenu init.
@@ -370,15 +403,17 @@ class SettingsMenuOption(object):
 
         if serialize_function is None:
             serialize_function = do_nothing
-        return cls.get_set_settings_callback(table_name, "user_id", column_name, serialize_function)
+        return cls.get_set_settings_callback(
+            table_name, "user_id", column_name, serialize_function
+        )
 
     @staticmethod
     def get_set_settings_callback(
-            table_name: str,
-            primary_key: str,
-            column_name: str,
-            serialize_function: typing.Callable[[typing.Any], typing.Any] = None
-            ) -> typing.Callable[[dict], None]:
+        table_name: str,
+        primary_key: str,
+        column_name: str,
+        serialize_function: typing.Callable[[typing.Any], typing.Any] = None,
+    ) -> typing.Callable[[dict], None]:
         """
         Return an async method that takes the data given by `convert_prompted_information`, then
         saves it into the database - should be used in the SettingsMenu init.
@@ -407,7 +442,17 @@ class SettingsMenuOption(object):
             """
 
             # See if we need to get the object's ID
-            if isinstance(data, (discord.Role, discord.TextChannel, discord.User, discord.Member, discord.Object, discord.CategoryChannel)):
+            if isinstance(
+                data,
+                (
+                    discord.Role,
+                    discord.TextChannel,
+                    discord.User,
+                    discord.Member,
+                    discord.Object,
+                    discord.CategoryChannel,
+                ),
+            ):
                 data = data.id
 
             # Serialize via the passed serialize function
@@ -416,23 +461,28 @@ class SettingsMenuOption(object):
             # Add to the database
             async with self.context.bot.database() as db:
                 await db(
-                    "INSERT INTO {0} ({1}, {2}) VALUES ($1, $2) ON CONFLICT ({1}) DO UPDATE SET {2}=$2".format(table_name, primary_key, column_name),
-                    self.context.guild.id, data,
+                    "INSERT INTO {0} ({1}, {2}) VALUES ($1, $2) ON CONFLICT ({1}) DO UPDATE SET {2}=$2".format(
+                        table_name, primary_key, column_name
+                    ),
+                    self.context.guild.id,
+                    data,
                 )
 
             # Cache
-            self.context.bot.guild_settings[self.context.guild.id][column_name] = original_data
+            self.context.bot.guild_settings[self.context.guild.id][
+                column_name
+            ] = original_data
 
         # Return the callback
         return callback
 
     @staticmethod
     def get_set_iterable_delete_callback(
-            table_name: str,
-            column_name: str,
-            cache_key: str,
-            database_key: str,
-            ) -> typing.Callable[[SettingsMenu, commands.Context, int], None]:
+        table_name: str,
+        column_name: str,
+        cache_key: str,
+        database_key: str,
+    ) -> typing.Callable[[SettingsMenu, commands.Context, int], None]:
         """
         Return an async method that takes the data retuend by `convert_prompted_information` and then
         saves it into the database - should be used for the SettingsMenu init.
@@ -462,8 +512,12 @@ class SettingsMenuOption(object):
                 # Database it
                 async with ctx.bot.database() as db:
                     await db(
-                        "DELETE FROM {0} WHERE guild_id=$1 AND {1}=$2 AND key=$3".format(table_name, column_name),
-                        ctx.guild.id, delete_key, database_key
+                        "DELETE FROM {0} WHERE guild_id=$1 AND {1}=$2 AND key=$3".format(
+                            table_name, column_name
+                        ),
+                        ctx.guild.id,
+                        delete_key,
+                        database_key,
                     )
 
                 # Remove the converted value from cache
@@ -478,10 +532,13 @@ class SettingsMenuOption(object):
 
     @staticmethod
     def get_set_iterable_add_callback(
-            table_name: str, column_name: str, cache_key: str, database_key: str,
-            serialize_function: typing.Callable[[typing.Any], str] = None,
-            original_data_type: type = None,
-            ) -> typing.Callable[['SettingsMenu', commands.Context], None]:
+        table_name: str,
+        column_name: str,
+        cache_key: str,
+        database_key: str,
+        serialize_function: typing.Callable[[typing.Any], str] = None,
+        original_data_type: type = None,
+    ) -> typing.Callable[["SettingsMenu", commands.Context], None]:
         """
         Return an async method that takes the data retuend by `convert_prompted_information` and then
         saves it into the database - should be used for the SettingsMenu init. This particular iterable
@@ -530,17 +587,26 @@ class SettingsMenuOption(object):
                 async with ctx.bot.database() as db:
                     await db(
                         """INSERT INTO {0} (guild_id, {1}, key, value) VALUES ($1, $2, $3, $4)
-                        ON CONFLICT (guild_id, {1}, key) DO UPDATE SET value=excluded.value""".format(table_name, column_name),
-                        ctx.guild.id, role.id, database_key, value
+                        ON CONFLICT (guild_id, {1}, key) DO UPDATE SET value=excluded.value""".format(
+                            table_name, column_name
+                        ),
+                        ctx.guild.id,
+                        role.id,
+                        database_key,
+                        value,
                     )
 
                 # Set the original value for the cache
                 if original_data_type is not None:
-                    ctx.bot.guild_settings[ctx.guild.id].setdefault(cache_key, original_data_type())
+                    ctx.bot.guild_settings[ctx.guild.id].setdefault(
+                        cache_key, original_data_type()
+                    )
 
                 # Cache the converted value
                 if value:
-                    ctx.bot.guild_settings[ctx.guild.id][cache_key][role.id] = serialize_function(original_value)
+                    ctx.bot.guild_settings[ctx.guild.id][cache_key][
+                        role.id
+                    ] = serialize_function(original_value)
                 else:
                     if role.id not in ctx.bot.guild_settings[ctx.guild.id][cache_key]:
                         ctx.bot.guild_settings[ctx.guild.id][cache_key].append(role.id)
@@ -662,12 +728,18 @@ class SettingsMenu:
 
             # Get the reaction
             try:
+
                 def check(payload):
-                    return all([
-                        payload.message.id == message.id,
-                        payload.user.id == ctx.author.id,
-                    ])
-                payload = await ctx.bot.wait_for("component_interaction", check=check, timeout=timeout)
+                    return all(
+                        [
+                            payload.message.id == message.id,
+                            payload.user.id == ctx.author.id,
+                        ]
+                    )
+
+                payload = await ctx.bot.wait_for(
+                    "component_interaction", check=check, timeout=timeout
+                )
                 await payload.response.defer_update()
             except asyncio.TimeoutError:
                 break
@@ -694,9 +766,8 @@ class SettingsMenu:
             pass
 
     def get_sendable_data(
-            self,
-            ctx: commands.Context
-            ) -> typing.Tuple[dict, typing.List[str]]:
+        self, ctx: commands.Context
+    ) -> typing.Tuple[dict, typing.List[str]]:
         """
         Get a valid set of sendable data for the destination.
 
@@ -728,24 +799,23 @@ class SettingsMenu:
             emoji_list.append(emoji)
 
         # Finish embed
-        text_lines = '\n'.join(lines)
+        text_lines = "\n".join(lines)
         embed.description = text_lines or "No set data"
 
         # Add tick
         self.emoji_options[self.TICK_EMOJI] = None
         emoji_list.append(self.TICK_EMOJI)
 
-        buttons = [
-            discord.ui.Button(emoji=i, custom_id=i)
-            for i in emoji_list
-        ]
+        buttons = [discord.ui.Button(emoji=i, custom_id=i) for i in emoji_list]
         buttons += [
-            discord.ui.Button(label="Done", custom_id="done", style=discord.ui.ButtonStyle.success)
+            discord.ui.Button(
+                label="Done", custom_id="done", style=discord.ui.ButtonStyle.success
+            )
         ]
         components = discord.ui.MessageComponents.add_buttons_with_rows(*buttons)
 
         # Return data
-        return {'embed': embed, "components": components}, emoji_list
+        return {"embed": embed, "components": components}, emoji_list
 
 
 class SettingsMenuIterable(SettingsMenu):
@@ -754,17 +824,22 @@ class SettingsMenuIterable(SettingsMenu):
     """
 
     def __init__(
-            self,
-            table_name: str,
-            column_name: str,
-            cache_key: str,
-            database_key: str,
-            key_display_function: typing.Callable[[typing.Any], str],
-            value_display_function: typing.Callable[[typing.Any], str] = str,
-            converters: typing.List[SettingsMenuConverter] = None, *,
-            iterable_add_callback: typing.Callable[['SettingsMenu', commands.Context], None] = None,
-            iterable_delete_callback: typing.Callable[['SettingsMenu', commands.Context, int], None] = None,
-            ):
+        self,
+        table_name: str,
+        column_name: str,
+        cache_key: str,
+        database_key: str,
+        key_display_function: typing.Callable[[typing.Any], str],
+        value_display_function: typing.Callable[[typing.Any], str] = str,
+        converters: typing.List[SettingsMenuConverter] = None,
+        *,
+        iterable_add_callback: typing.Callable[
+            ["SettingsMenu", commands.Context], None
+        ] = None,
+        iterable_delete_callback: typing.Callable[
+            ["SettingsMenu", commands.Context, int], None
+        ] = None,
+    ):
         """
         Args:
             table_name (str): The name of the table that the data should be inserted into.
@@ -810,13 +885,18 @@ class SettingsMenuIterable(SettingsMenu):
         self.converters = converters
 
         # Add callback
-        self.iterable_add_callback = iterable_add_callback or SettingsMenuOption.get_set_iterable_add_callback(
-            table_name=table_name,
-            column_name=column_name,
-            cache_key=cache_key,
-            database_key=database_key,
-            serialize_function=str if len(self.converters) == 1 else self.converters[1].serialize,
-            original_data_type=list if len(self.converters) == 1 else dict,
+        self.iterable_add_callback = (
+            iterable_add_callback
+            or SettingsMenuOption.get_set_iterable_add_callback(
+                table_name=table_name,
+                column_name=column_name,
+                cache_key=cache_key,
+                database_key=database_key,
+                serialize_function=str
+                if len(self.converters) == 1
+                else self.converters[1].serialize,
+                original_data_type=list if len(self.converters) == 1 else dict,
+            )
         )
         # This default returns an async function which takes the content of the converted values which adds to the db.
         # Callable[
@@ -828,11 +908,14 @@ class SettingsMenuIterable(SettingsMenu):
         # ]
 
         # Delete callback
-        self.iterable_delete_callback = iterable_delete_callback or SettingsMenuOption.get_set_iterable_delete_callback(
-            table_name=table_name,
-            column_name=column_name,
-            cache_key=cache_key,
-            database_key=database_key,
+        self.iterable_delete_callback = (
+            iterable_delete_callback
+            or SettingsMenuOption.get_set_iterable_delete_callback(
+                table_name=table_name,
+                column_name=column_name,
+                cache_key=cache_key,
+                database_key=database_key,
+            )
         )
         # This default returns an async function which takes the content of the converted values which removes from the db.
         # Callable[
@@ -850,7 +933,9 @@ class SettingsMenuIterable(SettingsMenu):
 
         # See what our display function should be
         if isinstance(data_points, dict):
-            display_function = lambda i, o: f"{self.key_display_function(i)} - {self.value_display_function(o)!s}"
+            display_function = (
+                lambda i, o: f"{self.key_display_function(i)} - {self.value_display_function(o)!s}"
+            )
             corrected_data_points = data_points.items()
         elif isinstance(data_points, list):
             display_function = lambda i, _: self.key_display_function(i)

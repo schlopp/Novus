@@ -65,15 +65,14 @@ from .ui.models import InteractedComponent
 
 
 __all__ = (
-    'Interaction',
-    'InteractionMessage',
-    'InteractionResponse',
-    'InteractionResolved',
-
-    'CommandInteraction',
-    'AutocompleteInteraction',
-    'ComponentInteraction',
-    'ModalInteraction',
+    "Interaction",
+    "InteractionMessage",
+    "InteractionResponse",
+    "InteractionResolved",
+    "CommandInteraction",
+    "AutocompleteInteraction",
+    "ComponentInteraction",
+    "ModalInteraction",
 )
 
 
@@ -112,7 +111,7 @@ if TYPE_CHECKING:
         StoreChannel,
         Thread,
         PartialMessageable,
-        ForumChannel
+        ForumChannel,
     ]
 
 
@@ -162,12 +161,7 @@ class InteractionResolved:
         "_data",
     )
 
-    def __init__(
-            self,
-            *,
-            interaction: Interaction,
-            data: dict,
-            state: ConnectionState):
+    def __init__(self, *, interaction: Interaction, data: dict, state: ConnectionState):
         self._interaction = interaction
         self._state = state
         self._data = data
@@ -185,10 +179,9 @@ class InteractionResolved:
         for uid, d in member_data.items():
             if int(uid) not in users:
                 d.update({"user": user_data.pop(uid)})
-        users.update({
-            int(i): User(data=d, state=self._state)
-            for i, d in user_data.items()
-        })
+        users.update(
+            {int(i): User(data=d, state=self._state) for i, d in user_data.items()}
+        )
         return users
 
     @utils.cached_slot_property("_cs_members")
@@ -239,10 +232,15 @@ class InteractionResolved:
     def channels(self) -> Dict[int, InteractionChannel]:
         channels = {}
         for _, d in self._data.get("channels", dict()).items():
-            factory, ch_type = _threaded_channel_factory(d['type'])
+            factory, ch_type = _threaded_channel_factory(d["type"])
             if factory is None:
-                raise InvalidData('Unknown channel type {type} for channel ID {id}.'.format_map(d))
-            if ch_type in (ChannelType.group, ChannelType.private,):
+                raise InvalidData(
+                    "Unknown channel type {type} for channel ID {id}.".format_map(d)
+                )
+            if ch_type in (
+                ChannelType.group,
+                ChannelType.private,
+            ):
                 channel = factory(
                     me=self.user,
                     data=d,
@@ -365,34 +363,34 @@ class Interaction:
     """
 
     __slots__: Tuple[str, ...] = (
-        'id',
-        'type',
-        'guild_id',
-        'channel_id',
-        'data',
-        'component',
-        'components',
-        'values',
-        'application_id',
-        'target_id',
-        'message',
-        'user',
-        'token',
-        'version',
-        'custom_id',
-        '_cs_resolved',
-        '_permissions',
-        '_app_permissions',
-        '_state',
-        '_session',
-        '_original_message',
-        '_cs_response',
-        '_cs_followup',
-        '_cs_channel',
-        '_cs_command_name',
-        'options',
-        'user_locale',
-        'guild_locale',
+        "id",
+        "type",
+        "guild_id",
+        "channel_id",
+        "data",
+        "component",
+        "components",
+        "values",
+        "application_id",
+        "target_id",
+        "message",
+        "user",
+        "token",
+        "version",
+        "custom_id",
+        "_cs_resolved",
+        "_permissions",
+        "_app_permissions",
+        "_state",
+        "_session",
+        "_original_message",
+        "_cs_response",
+        "_cs_followup",
+        "_cs_channel",
+        "_cs_command_name",
+        "options",
+        "user_locale",
+        "guild_locale",
     )
 
     def __init__(self, *, data: InteractionPayload, state: ConnectionState):
@@ -402,22 +400,22 @@ class Interaction:
         self._from_data(data)
 
     def _from_data(self, payload: InteractionPayload):
-        self.id: Snowflake = int(payload['id'])
+        self.id: Snowflake = int(payload["id"])
         self.type: InteractionType = try_enum(
             InteractionType,
-            payload['type'],
+            payload["type"],
         )
-        self.token: str = payload['token']
-        self.version: int = payload['version']
+        self.token: str = payload["token"]
+        self.version: int = payload["version"]
         self.channel_id: Optional[int] = utils._get_as_snowflake(
             payload,
-            'channel_id',
+            "channel_id",
         )
         self.guild_id: Optional[int] = utils._get_as_snowflake(
             payload,
-            'guild_id',
+            "guild_id",
         )
-        self.application_id: int = int(payload['application_id'])
+        self.application_id: int = int(payload["application_id"])
         self.target_id = payload.get("target_id")
 
         # Parse the message object
@@ -426,7 +424,7 @@ class Interaction:
             self.message = Message(
                 state=self._state,
                 channel=self.channel,
-                data=payload['message'],
+                data=payload["message"],
             )
         except KeyError:
             self.message = None
@@ -438,7 +436,7 @@ class Interaction:
         # back to us
         self.data: InteractionData
         try:
-            self.data = payload['data']
+            self.data = payload["data"]
         except KeyError:
             self.data = {}  # type: ignore
 
@@ -448,7 +446,7 @@ class Interaction:
         try:
             if self.message:
                 self.component = self.message.components.get_component(  # type: ignore - weird typing
-                    self.data['custom_id'],
+                    self.data["custom_id"],
                 )
         except (KeyError, AttributeError):
             pass
@@ -456,30 +454,28 @@ class Interaction:
         # Parse the main custom ID
         self.custom_id: Union[str, None] = None
         if self.data:
-            self.custom_id = self.data.get('custom_id')
+            self.custom_id = self.data.get("custom_id")
 
         # Parse the given values from the component - this is only used by
         # select components
         self.values: Optional[List[str]] = None
-        if self.data and 'values' in self.data:
-            self.values = self.data['values']
+        if self.data and "values" in self.data:
+            self.values = self.data["values"]
 
         # Parse the returned options from the user - this is used by all application
         # commands (including autocorrect)
         self.options: Optional[List[ApplicationCommandInteractionDataOption]]
         self.options = None
-        if self.data and 'options' in self.data:
+        if self.data and "options" in self.data:
             self.options = [
-                ApplicationCommandInteractionDataOption(i)
-                for i in self.data['options']
+                ApplicationCommandInteractionDataOption(i) for i in self.data["options"]
             ]
 
         # Parse the returned components - this is used by modals
         self.components: Optional[List[InteractedComponent]] = None
-        if self.data and 'components' in self.data:
+        if self.data and "components" in self.data:
             self.components = [
-                InteractedComponent.from_data(i)
-                for i in self.data['components']
+                InteractedComponent.from_data(i) for i in self.data["components"]
             ]
 
         # Parse the user and their permissions
@@ -495,7 +491,7 @@ class Interaction:
         if self.guild_id:
             guild = self.guild
             try:
-                member = payload['member']  # type: ignore
+                member = payload["member"]  # type: ignore
             except KeyError:
                 pass
             else:
@@ -504,11 +500,11 @@ class Interaction:
                     guild=guild,  # type: ignore - possible data downgrading
                     data=member,  # type: ignore - possible data downgrading
                 )
-                self._permissions = int(member.get('permissions', 0))
-            self._app_permissions = int(payload['app_permissions'])
+                self._permissions = int(member.get("permissions", 0))
+            self._app_permissions = int(payload["app_permissions"])
         else:
             try:
-                self.user = User(state=self._state, data=payload['user'])
+                self.user = User(state=self._state, data=payload["user"])
             except KeyError:
                 pass
 
@@ -516,7 +512,7 @@ class Interaction:
     def locale(self) -> str:
         return self.user_locale or self.guild_locale or "en-US"
 
-    @utils.cached_slot_property('_cs_resolved')
+    @utils.cached_slot_property("_cs_resolved")
     def resolved(self) -> InteractionResolved:
         return InteractionResolved(
             interaction=self,
@@ -524,7 +520,7 @@ class Interaction:
             state=self._state,
         )
 
-    @utils.cached_slot_property('_cs_command_name')
+    @utils.cached_slot_property("_cs_command_name")
     def command_name(self) -> Optional[str]:
         """
         Optional[:class:`str`]: The name of the invoked command.
@@ -534,13 +530,13 @@ class Interaction:
         if self.data is None:
             return
         data = self.data.copy()
-        command_name = data.get('name')
+        command_name = data.get("name")
         try:
             while command_name:
                 if "options" not in data:
                     break
-                if data['options'][0]['type'] in [1, 2]:
-                    data = data['options'][0]
+                if data["options"][0]["type"] in [1, 2]:
+                    data = data["options"][0]
                     command_name += f" {data['name']}"
                 else:
                     break
@@ -561,7 +557,7 @@ class Interaction:
             return Object(self.guild_id)
         return None
 
-    @utils.cached_slot_property('_cs_channel')
+    @utils.cached_slot_property("_cs_channel")
     def channel(self) -> Optional[InteractionChannel]:
         """
         Optional[Union[:class:`abc.GuildChannel`, :class:`PartialMessageable`, :class:`Thread`]]:
@@ -614,7 +610,7 @@ class Interaction:
 
         return Permissions(self._app_permissions)
 
-    @utils.cached_slot_property('_cs_response')
+    @utils.cached_slot_property("_cs_response")
     def response(self) -> Union[InteractionResponse, HTTPInteractionResponse]:
         """
         :class:`InteractionResponse`: Returns an object responsible for
@@ -626,7 +622,7 @@ class Interaction:
 
         return InteractionResponse(self)
 
-    @utils.cached_slot_property('_cs_followup')
+    @utils.cached_slot_property("_cs_followup")
     def followup(self) -> Webhook:
         """
         :class:`Webhook`: Returns the follow up webhook for
@@ -634,9 +630,9 @@ class Interaction:
         """
 
         payload = {
-            'id': self.application_id,
-            'type': 3,
-            'token': self.token,
+            "id": self.application_id,
+            "type": 3,
+            "token": self.token,
         }
         v = Webhook.from_state(data=payload, state=self._state)
         v.supports_ephemeral = True
@@ -674,7 +670,7 @@ class Interaction:
         # TODO: fix later to not raise?
         channel = self.channel
         if channel is None:
-            raise ClientException('Channel for message could not be resolved')
+            raise ClientException("Channel for message could not be resolved")
 
         adapter = async_context.get()
         data = await adapter.get_original_interaction_response(
@@ -692,15 +688,16 @@ class Interaction:
         return message
 
     async def edit_original_message(
-            self,
-            *,
-            content: Optional[str] = MISSING,
-            embeds: List[Embed] = MISSING,
-            embed: Optional[Embed] = MISSING,
-            file: File = MISSING,
-            files: List[File] = MISSING,
-            components: Optional[MessageComponents] = MISSING,
-            allowed_mentions: Optional[AllowedMentions] = None) -> InteractionMessage:
+        self,
+        *,
+        content: Optional[str] = MISSING,
+        embeds: List[Embed] = MISSING,
+        embed: Optional[Embed] = MISSING,
+        file: File = MISSING,
+        files: List[File] = MISSING,
+        components: Optional[MessageComponents] = MISSING,
+        allowed_mentions: Optional[AllowedMentions] = None,
+    ) -> InteractionMessage:
         """
         |coro|
 
@@ -810,6 +807,7 @@ class CommandInteraction(Interaction):
     Type-hint friendly version of the :class:`Interaction` object for
     interaction commands.
     """
+
     command_name: str
     custom_id: None
     component: None
@@ -824,6 +822,7 @@ class AutocompleteInteraction(Interaction):
     Type-hint friendly version of the :class:`Interaction` object for
     autocomplete interactions.
     """
+
     command_name: str
     custom_id: None
     component: None
@@ -838,6 +837,7 @@ class ComponentInteraction(Interaction):
     Type-hint friendly version of the :class:`Interaction` object for
     component interactions.
     """
+
     command_name: None
     custom_id: str
     component: InteractedComponent
@@ -852,6 +852,7 @@ class ModalInteraction(Interaction):
     Type-hint friendly version of the :class:`Interaction` object for
     modal interactions.
     """
+
     command_name: None
     custom_id: str
     component: Modal
@@ -868,8 +869,8 @@ class InteractionResponse:
     """
 
     __slots__: Tuple[str, ...] = (
-        '_responded',
-        '_parent',
+        "_responded",
+        "_parent",
     )
 
     def __init__(self, parent: Interaction):
@@ -919,7 +920,7 @@ class InteractionResponse:
         parent = self._parent
         defer_type = InteractionResponseType.deferred_channel_message.value
         if ephemeral:
-            data = {'flags': 64}
+            data = {"flags": 64}
 
         if data:
             data = {
@@ -1014,8 +1015,8 @@ class InteractionResponse:
             self._responded = True
 
     async def send_autocomplete(
-            self,
-            options: List[ApplicationCommandOptionChoice] = None) -> None:
+        self, options: List[ApplicationCommandOptionChoice] = None
+    ) -> None:
         """
         |coro|
 
@@ -1059,9 +1060,7 @@ class InteractionResponse:
 
         self._responded = True
 
-    async def send_modal(
-            self,
-            modal: Modal) -> None:
+    async def send_modal(self, modal: Modal) -> None:
         """
         |coro|
 
@@ -1102,17 +1101,18 @@ class InteractionResponse:
         self._responded = True
 
     async def send_message(
-            self,
-            content: Optional[Any] = None,
-            *,
-            embed: Embed = MISSING,
-            embeds: List[Embed] = MISSING,
-            file: File = MISSING,
-            files: List[File] = MISSING,
-            components: MessageComponents = MISSING,
-            tts: bool = False,
-            ephemeral: bool = False,
-            allowed_mentions: AllowedMentions = None) -> None:
+        self,
+        content: Optional[Any] = None,
+        *,
+        embed: Embed = MISSING,
+        embeds: List[Embed] = MISSING,
+        file: File = MISSING,
+        files: List[File] = MISSING,
+        components: MessageComponents = MISSING,
+        tts: bool = False,
+        ephemeral: bool = False,
+        allowed_mentions: AllowedMentions = None,
+    ) -> None:
         """
         |coro|
 
@@ -1186,14 +1186,15 @@ class InteractionResponse:
         self._responded = True
 
     async def edit_message(
-            self,
-            *,
-            content: Optional[Any] = MISSING,
-            embed: Optional[Embed] = MISSING,
-            embeds: List[Embed] = MISSING,
-            attachments: List[Attachment] = MISSING,
-            components: Optional[MessageComponents] = MISSING,
-            allowed_mentions: Optional[AllowedMentions] = MISSING) -> None:
+        self,
+        *,
+        content: Optional[Any] = MISSING,
+        embed: Optional[Embed] = MISSING,
+        embeds: List[Embed] = MISSING,
+        attachments: List[Attachment] = MISSING,
+        components: Optional[MessageComponents] = MISSING,
+        allowed_mentions: Optional[AllowedMentions] = MISSING,
+    ) -> None:
         """
         |coro|
 
@@ -1240,13 +1241,13 @@ class InteractionResponse:
         payload = {}
         if content is not MISSING:
             if content is None:
-                payload['content'] = None
+                payload["content"] = None
             else:
-                payload['content'] = str(content)
+                payload["content"] = str(content)
 
         if embed is not MISSING and embeds is not MISSING:
             raise TypeError(
-                'cannot mix both embed and embeds keyword arguments',
+                "cannot mix both embed and embeds keyword arguments",
             )
 
         if embed is not MISSING:
@@ -1256,34 +1257,28 @@ class InteractionResponse:
                 embeds = [embed]
 
         if embeds is not MISSING:
-            payload['embeds'] = [e.to_dict() for e in embeds]
+            payload["embeds"] = [e.to_dict() for e in embeds]
 
         if attachments is not MISSING:
-            payload['attachments'] = [a.to_dict() for a in attachments]
+            payload["attachments"] = [a.to_dict() for a in attachments]
 
         if components is not MISSING:
             if components is None:
-                payload['components'] = []
+                payload["components"] = []
             else:
-                payload['components'] = components.to_dict()
+                payload["components"] = components.to_dict()
 
         if allowed_mentions is not MISSING:
             parent_state = self._parent._state
             if allowed_mentions:
                 if parent_state.allowed_mentions is not None:
-                    payload['allowed_mentions'] = (
-                        parent_state
-                        .allowed_mentions
-                        .merge(allowed_mentions).to_dict()
-                    )
+                    payload["allowed_mentions"] = parent_state.allowed_mentions.merge(
+                        allowed_mentions
+                    ).to_dict()
                 else:
-                    payload['allowed_mentions'] = allowed_mentions.to_dict()
+                    payload["allowed_mentions"] = allowed_mentions.to_dict()
             elif parent_state.allowed_mentions is not None:
-                payload['allowed_mentions'] = (
-                    parent_state
-                    .allowed_mentions
-                    .to_dict()
-                )
+                payload["allowed_mentions"] = parent_state.allowed_mentions.to_dict()
 
         payload = {
             "type": InteractionResponseType.message_update.value,
@@ -1302,7 +1297,6 @@ class InteractionResponse:
 
 
 class _MultipartWriter(object):
-
     def __init__(self):
         self.buffer = bytearray()
 
@@ -1318,10 +1312,10 @@ class HTTPInteractionResponse(InteractionResponse):
     """
 
     __slots__: Tuple[str, ...] = (
-        '_responded',
-        '_parent',
-        '_aiohttp_request',
-        '_aiohttp_response',
+        "_responded",
+        "_parent",
+        "_aiohttp_request",
+        "_aiohttp_response",
     )
 
     def __init__(self, aiohttp_response: web.Request, parent: Interaction):
@@ -1360,7 +1354,7 @@ class HTTPInteractionResponse(InteractionResponse):
         data: Optional[Dict[str, Any]] = None
         defer_type = InteractionResponseType.deferred_channel_message.value
         if ephemeral:
-            data = {'flags': 64}
+            data = {"flags": 64}
 
         if defer_type:
             payload = {"type": defer_type}
@@ -1435,17 +1429,18 @@ class HTTPInteractionResponse(InteractionResponse):
             self._responded = True
 
     async def send_message(
-            self,
-            content: Optional[Any] = None,
-            *,
-            embed: Embed = MISSING,
-            embeds: List[Embed] = MISSING,
-            file: File = MISSING,
-            files: List[File] = MISSING,
-            components: MessageComponents = MISSING,
-            tts: bool = False,
-            ephemeral: bool = False,
-            allowed_mentions: AllowedMentions = None) -> None:
+        self,
+        content: Optional[Any] = None,
+        *,
+        embed: Embed = MISSING,
+        embeds: List[Embed] = MISSING,
+        file: File = MISSING,
+        files: List[File] = MISSING,
+        components: MessageComponents = MISSING,
+        tts: bool = False,
+        ephemeral: bool = False,
+        allowed_mentions: AllowedMentions = None,
+    ) -> None:
         """
         |coro|
 
@@ -1512,7 +1507,7 @@ class HTTPInteractionResponse(InteractionResponse):
         headers = {}
         to_send = None
         if payload is not None:
-            headers['Content-Type'] = 'application/json'
+            headers["Content-Type"] = "application/json"
             to_send = utils._to_json(payload).encode()
 
         for file in files or list():
@@ -1539,8 +1534,8 @@ class HTTPInteractionResponse(InteractionResponse):
         self._responded = True
 
     async def send_autocomplete(
-            self,
-            options: List[ApplicationCommandOptionChoice] = None) -> None:
+        self, options: List[ApplicationCommandOptionChoice] = None
+    ) -> None:
         """
         |coro|
 
@@ -1579,9 +1574,7 @@ class HTTPInteractionResponse(InteractionResponse):
 
         self._responded = True
 
-    async def send_modal(
-            self,
-            modal: Modal) -> None:
+    async def send_modal(self, modal: Modal) -> None:
         """
         |coro|
 
@@ -1619,14 +1612,15 @@ class HTTPInteractionResponse(InteractionResponse):
         self._responded = True
 
     async def edit_message(
-            self,
-            *,
-            content: Optional[Any] = MISSING,
-            embed: Optional[Embed] = MISSING,
-            embeds: List[Embed] = MISSING,
-            attachments: List[Attachment] = MISSING,
-            components: Optional[MessageComponents] = MISSING,
-            allowed_mentions: Optional[AllowedMentions] = MISSING) -> None:
+        self,
+        *,
+        content: Optional[Any] = MISSING,
+        embed: Optional[Embed] = MISSING,
+        embeds: List[Embed] = MISSING,
+        attachments: List[Attachment] = MISSING,
+        components: Optional[MessageComponents] = MISSING,
+        allowed_mentions: Optional[AllowedMentions] = MISSING,
+    ) -> None:
         """
         |coro|
 
@@ -1673,13 +1667,13 @@ class HTTPInteractionResponse(InteractionResponse):
         payload = {}
         if content is not MISSING:
             if content is None:
-                payload['content'] = None
+                payload["content"] = None
             else:
-                payload['content'] = str(content)
+                payload["content"] = str(content)
 
         if embed is not MISSING and embeds is not MISSING:
             raise TypeError(
-                'cannot mix both embed and embeds keyword arguments',
+                "cannot mix both embed and embeds keyword arguments",
             )
 
         if embed is not MISSING:
@@ -1689,35 +1683,28 @@ class HTTPInteractionResponse(InteractionResponse):
                 embeds = [embed]
 
         if embeds is not MISSING:
-            payload['embeds'] = [e.to_dict() for e in embeds]
+            payload["embeds"] = [e.to_dict() for e in embeds]
 
         if attachments is not MISSING:
-            payload['attachments'] = [a.to_dict() for a in attachments]
+            payload["attachments"] = [a.to_dict() for a in attachments]
 
         if components is not MISSING:
             if components is None:
-                payload['components'] = []
+                payload["components"] = []
             else:
-                payload['components'] = components.to_dict()
+                payload["components"] = components.to_dict()
 
         if allowed_mentions is not MISSING:
             parent_state = self._parent._state
             if allowed_mentions:
                 if parent_state.allowed_mentions is not None:
-                    payload['allowed_mentions'] = (
-                        parent_state
-                        .allowed_mentions
-                        .merge(allowed_mentions)
-                        .to_dict()
-                    )
+                    payload["allowed_mentions"] = parent_state.allowed_mentions.merge(
+                        allowed_mentions
+                    ).to_dict()
                 else:
-                    payload['allowed_mentions'] = allowed_mentions.to_dict()
+                    payload["allowed_mentions"] = allowed_mentions.to_dict()
             elif parent_state.allowed_mentions is not None:
-                payload['allowed_mentions'] = (
-                    parent_state
-                    .allowed_mentions
-                    .to_dict()
-                )
+                payload["allowed_mentions"] = parent_state.allowed_mentions.to_dict()
 
         data = {
             "type": InteractionResponseType.message_update.value,
@@ -1734,8 +1721,8 @@ class HTTPInteractionResponse(InteractionResponse):
 class _InteractionMessageState:
 
     __slots__ = (
-        '_parent',
-        '_interaction',
+        "_parent",
+        "_interaction",
     )
 
     def __init__(self, interaction: Interaction, parent: ConnectionState):
@@ -1775,14 +1762,15 @@ class InteractionMessage(Message):
     _state: _InteractionMessageState
 
     async def edit(
-            self,
-            content: Optional[str] = MISSING,
-            embeds: List[Embed] = MISSING,
-            embed: Optional[Embed] = MISSING,
-            file: File = MISSING,
-            files: List[File] = MISSING,
-            components: Optional[MessageComponents] = MISSING,
-            allowed_mentions: Optional[AllowedMentions] = None) -> InteractionMessage:
+        self,
+        content: Optional[str] = MISSING,
+        embeds: List[Embed] = MISSING,
+        embed: Optional[Embed] = MISSING,
+        file: File = MISSING,
+        files: List[File] = MISSING,
+        components: Optional[MessageComponents] = MISSING,
+        allowed_mentions: Optional[AllowedMentions] = None,
+    ) -> InteractionMessage:
         """
         |coro|
 

@@ -19,7 +19,9 @@ from discord.types.user import PartialUser
 from . import utils as vbu
 
 
-class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_command': False}):
+class OwnerOnly(
+    vbu.Cog[vbu.Bot], command_attrs={"hidden": True, "add_slash_command": False}
+):
     """
     Handles commands that only the owner should be able to run.
     """
@@ -41,22 +43,26 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
 
         # Type hint time
         guild: typing.Optional[discord.Guild]
-        channel: typing.Union[discord.TextChannel, discord.DMChannel, discord.PartialMessageable]
+        channel: typing.Union[
+            discord.TextChannel, discord.DMChannel, discord.PartialMessageable
+        ]
         author: typing.Union[discord.Member, discord.User, PartialUser]
         bot: typing.Union[discord.Member, discord.User, discord.ClientUser]
         message: typing.Union[discord.Message, discord.PartialMessage]
 
         # Unpack our payload
-        channel_id: int = payload['channel_id']
-        message_id: int = payload['message_id']
-        guild_id: int = payload['guild_id']
-        author_id: int = payload['author_id']
-        fetch: bool = payload['fetch']
+        channel_id: int = payload["channel_id"]
+        message_id: int = payload["message_id"]
+        guild_id: int = payload["guild_id"]
+        author_id: int = payload["author_id"]
+        fetch: bool = payload["fetch"]
 
         # Get the objects
         if not fetch:
             guild = None
-            channel = self.bot.get_partial_messageable(channel_id, type=discord.ChannelType.text)
+            channel = self.bot.get_partial_messageable(
+                channel_id, type=discord.ChannelType.text
+            )
             message = channel.get_partial_message(message_id)
             bot = None
             author = None
@@ -96,7 +102,9 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
     @commands.command()
     @commands.is_owner()
     @vbu.checks.is_config_set("redis", "enabled")
-    @commands.bot_has_permissions(send_messages=True, attach_files=True, add_reactions=True)
+    @commands.bot_has_permissions(
+        send_messages=True, attach_files=True, add_reactions=True
+    )
     async def redis(self, ctx: vbu.Context, *, content: str):
         """
         Pings a command to be run over redis.
@@ -105,19 +113,24 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         if not content:
             raise vbu.errors.MissingRequiredArgumentString("content")
         async with vbu.Redis() as re:
-            await re.publish("RunRedisEval", {
-                'channel_id': ctx.channel.id,
-                'message_id': ctx.message.id,
-                'guild_id': ctx.guild.id if ctx.guild else None,
-                'author_id': ctx.author.id,
-                'content': content,
-                'fetch': False,
-            })
+            await re.publish(
+                "RunRedisEval",
+                {
+                    "channel_id": ctx.channel.id,
+                    "message_id": ctx.message.id,
+                    "guild_id": ctx.guild.id if ctx.guild else None,
+                    "author_id": ctx.author.id,
+                    "content": content,
+                    "fetch": False,
+                },
+            )
 
     @commands.command()
     @commands.is_owner()
     @vbu.checks.is_config_set("redis", "enabled")
-    @commands.bot_has_permissions(send_messages=True, attach_files=True, add_reactions=True)
+    @commands.bot_has_permissions(
+        send_messages=True, attach_files=True, add_reactions=True
+    )
     async def redisfetch(self, ctx: vbu.Context, *, content: str):
         """
         Pings a command to be run over redis, fetching all objects.
@@ -126,18 +139,23 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         if not content:
             raise vbu.errors.MissingRequiredArgumentString("content")
         async with vbu.Redis() as re:
-            await re.publish("RunRedisEval", {
-                'channel_id': ctx.channel.id,
-                'message_id': ctx.message.id,
-                'guild_id': ctx.guild.id if ctx.guild else None,
-                'author_id': ctx.author.id,
-                'content': content,
-                'fetch': True,
-            })
+            await re.publish(
+                "RunRedisEval",
+                {
+                    "channel_id": ctx.channel.id,
+                    "message_id": ctx.message.id,
+                    "guild_id": ctx.guild.id if ctx.guild else None,
+                    "author_id": ctx.author.id,
+                    "content": content,
+                    "fetch": True,
+                },
+            )
 
-    @commands.command(aliases=['src'])
+    @commands.command(aliases=["src"])
     @commands.is_owner()
-    @commands.bot_has_permissions(send_messages=True, attach_files=True, add_reactions=True)
+    @commands.bot_has_permissions(
+        send_messages=True, attach_files=True, add_reactions=True
+    )
     async def source(self, ctx: vbu.Context, *, command_name: str):
         """
         Shows you the source for a given command.
@@ -184,7 +202,7 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         shard_id = (guild_id >> 22) % (self.bot.shard_count or 1)
         await ctx.send(str(shard_id))
 
-    @commands.command(aliases=['pm', 'dm', 'send'])
+    @commands.command(aliases=["pm", "dm", "send"])
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
     async def message(self, ctx: vbu.Context, snowflake: int, *, content: str = None):
@@ -214,7 +232,9 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
 
         # Make sure we have somewhere to send to
         if sendable is None:
-            return await ctx.send(f"I couldn't work out where `{snowflake}` is meant to refer to.")
+            return await ctx.send(
+                f"I couldn't work out where `{snowflake}` is meant to refer to."
+            )
 
         # Set up what we want to send
         payload = {
@@ -227,7 +247,9 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
             async with self.bot.session.get(attachment.url) as r:
                 file_bytes = await r.read()
             image_file = io.BytesIO(file_bytes)
-            payload["files"].append(discord.File(image_file, filename=attachment.filename))
+            payload["files"].append(
+                discord.File(image_file, filename=attachment.filename)
+            )
 
         # And send our data
         try:
@@ -242,13 +264,13 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         """
 
         # remove ```py\n```
-        if content.startswith('```') and content.endswith('```'):
-            if content[-4] == '\n':
-                return '\n'.join(content.split('\n')[1:-1])
-            return '\n'.join(content.split('\n')[1:]).rstrip('`')
+        if content.startswith("```") and content.endswith("```"):
+            if content[-4] == "\n":
+                return "\n".join(content.split("\n")[1:-1])
+            return "\n".join(content.split("\n")[1:]).rstrip("`")
 
         # remove `foo`
-        return content.strip('` \n')
+        return content.strip("` \n")
 
     @staticmethod
     def get_execution_time(end, start) -> str:
@@ -266,7 +288,7 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
             index += 1
         return f"Executed in **{time_taken:,.3f}** {precision}."
 
-    @commands.command(aliases=['evall', 'eval'])
+    @commands.command(aliases=["evall", "eval"])
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True)
     async def ev(self, ctx: vbu.Context, *, content: str = None):
@@ -281,17 +303,17 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
 
         # Make the environment
         env = {
-            'bot': self.bot,
-            'ctx': ctx,
-            'channel': ctx.channel,
-            'author': ctx.author,
-            'guild': ctx.guild,
-            'message': ctx.message,
-            'self': self,
-            'vbu': vbu,
-            'discord': discord,
-            'commands': commands,
-            'utils': utils,
+            "bot": self.bot,
+            "ctx": ctx,
+            "channel": ctx.channel,
+            "author": ctx.author,
+            "guild": ctx.guild,
+            "message": ctx.message,
+            "self": self,
+            "vbu": vbu,
+            "discord": discord,
+            "commands": commands,
+            "utils": utils,
         }
         # env.update(globals())
 
@@ -316,10 +338,10 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         try:
             exec(code, env)
         except Exception as e:
-            return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
+            return await ctx.send(f"```py\n{e.__class__.__name__}: {e}\n```")
 
         # Grab the function we just made and run it
-        func = env['func']
+        func = env["func"]
         start_time = time.perf_counter()
         end_time = None
         try:
@@ -328,7 +350,9 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         except Exception:
             end_time = time.perf_counter()
             stdout_value = stdout.getvalue() or None
-            return await ctx.send(f'```py\n{stdout_value}\n{traceback.format_exc()}\n```')
+            return await ctx.send(
+                f"```py\n{stdout_value}\n{traceback.format_exc()}\n```"
+            )
         end_time = time.perf_counter()
 
         # Oh no it didn't cause an error
@@ -349,9 +373,13 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
                 if len(stdout_value) >= 1_900:
                     return await ctx.send(
                         self.get_execution_time(end_time, start_time),
-                        file=discord.File(io.StringIO(stdout_value), filename=f"ev.txt")
+                        file=discord.File(
+                            io.StringIO(stdout_value), filename=f"ev.txt"
+                        ),
                     )
-                await ctx.send(f'```py\n{stdout_value}\n```{self.get_execution_time(end_time, start_time)}')
+                await ctx.send(
+                    f"```py\n{stdout_value}\n```{self.get_execution_time(end_time, start_time)}"
+                )
             return
 
         # If the function did return a value
@@ -360,7 +388,7 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         if result_raw is None:
             return
         filetype = "py"
-        text = f'```py\n{result}\n```'
+        text = f"```py\n{result}\n```"
         if type(result_raw) == dict:
             try:
                 result = json.dumps(result_raw, indent=4)
@@ -368,16 +396,16 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
                 pass
             else:
                 filetype = "json"
-                text = f'```json\n{result}\n```'
+                text = f"```json\n{result}\n```"
         text += self.get_execution_time(end_time, start_time)
 
         # Output to chat
         return await ctx.send(
             self.get_execution_time(end_time, start_time),
-            file=discord.File(io.StringIO(result), filename=f"ev.{filetype}")
+            file=discord.File(io.StringIO(result), filename=f"ev.{filetype}"),
         )
 
-    @commands.command(aliases=['rld', 'rl'])
+    @commands.command(aliases=["rld", "rl"])
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True)
     async def reload(self, ctx: vbu.Context, *cog_name: str):
@@ -386,13 +414,13 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         """
 
         # Get a list of cogs to reload
-        cog_name = '_'.join([i for i in cog_name])
-        if cog_name == '*':
-            cog_list = [i for i in self.bot.get_extensions() if i.startswith('cogs.')]
-        elif '.' in cog_name:
+        cog_name = "_".join([i for i in cog_name])
+        if cog_name == "*":
+            cog_list = [i for i in self.bot.get_extensions() if i.startswith("cogs.")]
+        elif "." in cog_name:
             cog_list = [cog_name]
         else:
-            cog_list = ['cogs.' + cog_name]
+            cog_list = ["cogs." + cog_name]
 
         # Reload our cogs
         reloaded_cogs = []
@@ -405,9 +433,13 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
                     self.bot.reload_extension(cog)
                     reloaded_cogs.append(cog)
                 except Exception:
-                    await ctx.send(f"Error loading cog `{cog}`: ```py\n{traceback.format_exc()}```")
+                    await ctx.send(
+                        f"Error loading cog `{cog}`: ```py\n{traceback.format_exc()}```"
+                    )
             except Exception:
-                await ctx.send(f"Error loading cog `{cog}`: ```py\n{traceback.format_exc()}```")
+                await ctx.send(
+                    f"Error loading cog `{cog}`: ```py\n{traceback.format_exc()}```"
+                )
 
         # Output which cogs have been reloaded
         if len(reloaded_cogs) == 1:
@@ -416,21 +448,25 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
             await ctx.send("Reloaded:\n`" + "`\n`".join(reloaded_cogs) + "`")
         return
 
-    @commands.command(aliases=['downloadcog', 'dlcog', 'download', 'dl', 'stealcog'])
+    @commands.command(aliases=["downloadcog", "dlcog", "download", "dl", "stealcog"])
     @commands.is_owner()
-    async def downloadfile(self, ctx: vbu.Context, url: str, file_folder: typing.Optional[str]):
+    async def downloadfile(
+        self, ctx: vbu.Context, url: str, file_folder: typing.Optional[str]
+    ):
         """
         Download a cog from Github.
         """
 
         # Convert github link to a raw link and grab contents
-        raw_url = url.replace("/blob", "").replace("github.com", "raw.githubusercontent.com")
+        raw_url = url.replace("/blob", "").replace(
+            "github.com", "raw.githubusercontent.com"
+        )
         headers = {"User-Agent": self.bot.user_agent}
         async with self.bot.session.get(raw_url, headers=headers) as r:
             text = await r.text()
 
         # Work out our filename/path
-        file_name = raw_url[raw_url.rfind("/") + 1:]
+        file_name = raw_url[raw_url.rfind("/") + 1 :]
         if file_folder is None:
             file_folder = "cogs"
         file_folder = file_folder.rstrip("/")
@@ -441,11 +477,15 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
             with open(file_path, "x", encoding="utf-8") as n:
                 n.write(text)
         except FileExistsError:
-            return await ctx.send("The file you tried to download was already downloaded.")
+            return await ctx.send(
+                "The file you tried to download was already downloaded."
+            )
 
         # If it wasn't loaded into the cogs folder, we're probably fine
         if file_folder != "cogs":
-            return await ctx.send(f"Downloaded the `{file_name}` file, and successfully saved as `{file_path}`.")
+            return await ctx.send(
+                f"Downloaded the `{file_name}` file, and successfully saved as `{file_path}`."
+            )
 
         # Load the cog
         errored = True
@@ -455,17 +495,23 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         except commands.ExtensionNotFound:
             await ctx.send("Extension could not be found. Extension has been deleted.")
         except commands.ExtensionAlreadyLoaded:
-            await ctx.send("The extension you tried to download was already running. Extension has been deleted.")
+            await ctx.send(
+                "The extension you tried to download was already running. Extension has been deleted."
+            )
         except commands.NoEntryPointError:
             await ctx.send("No added setup function. Extension has been deleted.")
         except commands.ExtensionFailed:
-            await ctx.send("Extension failed for some unknown reason. Extension has been deleted.")
+            await ctx.send(
+                "Extension failed for some unknown reason. Extension has been deleted."
+            )
         if errored:
             os.remove(file_path)
             return
 
         # And done
-        await ctx.send(f"Downloaded the `{file_name}` cog, saved as `{file_path}`, and loaded successfully into the bot.")
+        await ctx.send(
+            f"Downloaded the `{file_name}` cog, saved as `{file_path}`, and loaded successfully into the bot."
+        )
 
     @commands.command()
     @commands.is_owner()
@@ -480,7 +526,13 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
 
         # Get the data we asked for
         async with self.bot.database() as db:
-            rows = await db(sql.format(guild=None if ctx.guild is None else ctx.guild.id, author=ctx.author.id, channel=ctx.channel.id))
+            rows = await db(
+                sql.format(
+                    guild=None if ctx.guild is None else ctx.guild.id,
+                    author=ctx.author.id,
+                    channel=ctx.channel.id,
+                )
+            )
         if not rows:
             return await ctx.send("No content.")
 
@@ -495,7 +547,9 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
                 row_value = row[header]
                 if row_value is None:
                     continue
-                column_widths[header] = max([column_widths[header], len(repr(row_value))])
+                column_widths[header] = max(
+                    [column_widths[header], len(repr(row_value))]
+                )
 
         # Work out our rows
         for row in rows:
@@ -519,7 +573,7 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         lines.insert(0, header_working[:-1])
 
         # Send it out
-        string_output = '\n'.join(lines)
+        string_output = "\n".join(lines)
         file = discord.File(io.StringIO(string_output), filename="runsql.txt")
         await ctx.send(file=file)
 
@@ -533,7 +587,7 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
 
         pass
 
-    @botuser.command(name='name', aliases=['username'])
+    @botuser.command(name="name", aliases=["username"])
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True)
     async def botuser_name(self, ctx: vbu.Context, *, username: str):
@@ -542,14 +596,16 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         """
 
         if len(username) > 32:
-            return await ctx.send('That username is too long.')
+            return await ctx.send("That username is too long.")
         await self.bot.user.edit(username=username)
-        await ctx.send('Done.')
+        await ctx.send("Done.")
 
-    @botuser.command(name='avatar', aliases=['photo', 'image', 'picture'])
+    @botuser.command(name="avatar", aliases=["photo", "image", "picture"])
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True)
-    async def botuser_avatar(self, ctx: vbu.Context, *, image_url: typing.Optional[str]):
+    async def botuser_avatar(
+        self, ctx: vbu.Context, *, image_url: typing.Optional[str]
+    ):
         """
         Lets you set the profile picture of the bot.
         """
@@ -563,23 +619,29 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         async with self.bot.session.get(image_url) as r:
             image_content = await r.read()
         await self.bot.user.edit(avatar=image_content)
-        await ctx.send('Done.')
+        await ctx.send("Done.")
 
-    @botuser.command(name='activity', aliases=['game'])
+    @botuser.command(name="activity", aliases=["game"])
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True)
-    async def botuser_activity(self, ctx: vbu.Context, activity_type: str, *, name: typing.Optional[str]):
+    async def botuser_activity(
+        self, ctx: vbu.Context, activity_type: str, *, name: typing.Optional[str]
+    ):
         """
         Changes the activity of the bot.
         """
 
         if name:
-            activity = discord.Activity(name=name, type=getattr(discord.ActivityType, activity_type.lower()))
+            activity = discord.Activity(
+                name=name, type=getattr(discord.ActivityType, activity_type.lower())
+            )
         else:
             return await self.bot.set_default_presence()
-        await self.bot.change_presence(activity=activity, status=self.bot.guilds[0].me.status)
+        await self.bot.change_presence(
+            activity=activity, status=self.bot.guilds[0].me.status
+        )
 
-    @botuser.command(name='status')
+    @botuser.command(name="status")
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True)
     async def botuser_status(self, ctx: vbu.Context, status: str):
@@ -588,9 +650,11 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         """
 
         status = getattr(discord.Status, status.lower())
-        await self.bot.change_presence(activity=self.bot.guilds[0].me.activity, status=status)
+        await self.bot.change_presence(
+            activity=self.bot.guilds[0].me.activity, status=status
+        )
 
-    @commands.command(aliases=['sudo'])
+    @commands.command(aliases=["sudo"])
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True)
     async def su(self, ctx, who: discord.User, *, command: str):
@@ -603,7 +667,11 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
 
         # Change the author and content
         try:
-            msg.author = ctx.guild.get_member(who.id) or await ctx.guild.fetch_member(who.id) or who
+            msg.author = (
+                ctx.guild.get_member(who.id)
+                or await ctx.guild.fetch_member(who.id)
+                or who
+            )
         except discord.HTTPException:
             msg.author = who
         msg.content = ctx.prefix + command
@@ -615,7 +683,7 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         # Invoke it dab
         await self.bot.invoke(new_ctx)
 
-    @commands.command(aliases=['sh'])
+    @commands.command(aliases=["sh"])
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True)
     async def shell(self, ctx: vbu.Context, *, command: str):
@@ -624,7 +692,9 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         """
 
         # Run stuff
-        proc = await asyncio.create_subprocess_shell(command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+        proc = await asyncio.create_subprocess_shell(
+            command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+        )
 
         # Send initial message
         current_data = f"$ {command}\n\n"
@@ -640,15 +710,15 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         while proc.returncode is None:
             new_lines = await get_process_data(proc)
             if new_lines:
-                current_data += new_lines + '\n'
+                current_data += new_lines + "\n"
                 await m.edit(content=f"```\n{current_data[-1900:]}```")
             await asyncio.sleep(1)
 
         # Make sure we got all the data
         new_lines = await get_process_data(proc)
         if new_lines:
-            current_data += new_lines + '\n'
-        current_data += f'[RETURN CODE {proc.returncode}]'
+            current_data += new_lines + "\n"
+        current_data += f"[RETURN CODE {proc.returncode}]"
         await m.edit(content=f"```\n{current_data[-1900:]}```")
 
         # And now we done
@@ -678,32 +748,44 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         lines = [f"# {self.bot.user.name} Commands\n"]
 
         # Work out prefix
-        prefix = self.bot.config.get('default_prefix', ctx.clean_prefix)
-        if isinstance(prefix, (list, tuple,)):
+        prefix = self.bot.config.get("default_prefix", ctx.clean_prefix)
+        if isinstance(
+            prefix,
+            (
+                list,
+                tuple,
+            ),
+        ):
             prefix = prefix[0]
 
         # Go through the cogs
         for cog_name, cog in sorted(self.bot.cogs.items()):
-            if cog_name == 'Help':
+            if cog_name == "Help":
                 continue
 
             # Go through the commands
-            visible_commands = await self.bot.help_command.filter_commands_classmethod(ctx, cog.get_commands())
+            visible_commands = await self.bot.help_command.filter_commands_classmethod(
+                ctx, cog.get_commands()
+            )
             if not visible_commands:
                 continue
 
             # Add lines
             lines.append(f"## {cog_name}\n")
             for command in visible_commands:
-                lines.append(f"* `{prefix}{command.name} {command.signature}".rstrip() + '`')
+                lines.append(
+                    f"* `{prefix}{command.name} {command.signature}".rstrip() + "`"
+                )
                 lines.append(f"\t* {command.help}")
 
         # Output file
-        await ctx.send(file=discord.File(io.StringIO('\n'.join(lines)), filename="commands.md"))
+        await ctx.send(
+            file=discord.File(io.StringIO("\n".join(lines)), filename="commands.md")
+        )
 
     @export.command(name="guild")
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    @vbu.checks.is_config_set('database', 'enabled')
+    @vbu.checks.is_config_set("database", "enabled")
     @commands.is_owner()
     async def export_guild(self, ctx: vbu.Context, guild_id: typing.Optional[int]):
         """
@@ -717,14 +799,19 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         db = await self.bot.database.get_connection()
 
         # Get the tables that we want to export
-        table_names = await db("SELECT DISTINCT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema='public' AND column_name='guild_id'")
+        table_names = await db(
+            "SELECT DISTINCT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema='public' AND column_name='guild_id'"
+        )
 
         # Go through and make our insert statements
         insert_statements = []
         for table in table_names:
 
             # Select the data we want to export
-            rows = await db("SELECT * FROM {} WHERE guild_id=$1".format(table['table_name']), guild_id or ctx.guild.id)
+            rows = await db(
+                "SELECT * FROM {} WHERE guild_id=$1".format(table["table_name"]),
+                guild_id or ctx.guild.id,
+            )
             for row in rows:
                 cols = []
                 datas = []
@@ -777,21 +864,24 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
                 loop = asyncio.get_event_loop()
                 loop.run_until_complete(main())
         """.format(
-            user=self.bot.config['database']['user'],
-            database=self.bot.config['database']['database'],
-            port=self.bot.config['database']['port'],
-            host=self.bot.config['database']['host'],
-            data=', '.join(repr(i) for i in insert_statements),
+            user=self.bot.config["database"]["user"],
+            database=self.bot.config["database"]["database"],
+            port=self.bot.config["database"]["port"],
+            host=self.bot.config["database"]["host"],
+            data=", ".join(repr(i) for i in insert_statements),
         )
         file_content = textwrap.dedent(file_content).lstrip()
 
         # And donezo
-        file = discord.File(io.StringIO(file_content), filename=f"_db_migrate_{guild_id or ctx.guild.id}.py")
+        file = discord.File(
+            io.StringIO(file_content),
+            filename=f"_db_migrate_{guild_id or ctx.guild.id}.py",
+        )
         await ctx.send(file=file)
 
     @export.command(name="table")
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    @vbu.checks.is_config_set('database', 'enabled')
+    @vbu.checks.is_config_set("database", "enabled")
     @commands.is_owner()
     async def export_table(self, ctx: vbu.Context, table_name: str):
         """
@@ -800,23 +890,29 @@ class OwnerOnly(vbu.Cog[vbu.Bot], command_attrs={'hidden': True, 'add_slash_comm
         filename = f"./{table_name}_export.csv"
 
         # Make our initial file
-        with open(filename, 'w') as f:
+        with open(filename, "w") as f:
             f.write("")
 
         # Get the data we want to save
         async with self.bot.database() as db:
-            await db.conn.copy_from_query('SELECT * FROM {table_name}'.format(table_name=table_name), output=filename, format='csv')
-            column_descs = await db('DESCRIBE TABLE {table_name}'.format(table_name=table_name))
+            await db.conn.copy_from_query(
+                "SELECT * FROM {table_name}".format(table_name=table_name),
+                output=filename,
+                format="csv",
+            )
+            column_descs = await db(
+                "DESCRIBE TABLE {table_name}".format(table_name=table_name)
+            )
 
         # See what was written to the file
-        with open(filename, 'r') as f:
+        with open(filename, "r") as f:
             file_content = f.read()
 
         # Add our headers
-        headers = ','.join([i['column_name'] for i in column_descs])
+        headers = ",".join([i["column_name"] for i in column_descs])
 
         # Write the new content to the file
-        with open(filename, 'w') as f:
+        with open(filename, "w") as f:
             f.write(headers + "\n" + file_content)
 
         # Send it to discord

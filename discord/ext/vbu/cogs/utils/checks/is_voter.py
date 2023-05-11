@@ -25,20 +25,26 @@ def is_voter(timeout: float = 3.0):
         commands.CheckFailure: Top.gg's API is unable to process our API request within the given time.
     """
 
-    error = IsNotVoter("You need to vote for the bot (`{ctx.clean_prefix}vote`) to be able to run this command.")
+    error = IsNotVoter(
+        "You need to vote for the bot (`{ctx.clean_prefix}vote`) to be able to run this command."
+    )
 
     async def predicate(ctx: commands.Context):
 
         # Get the API token
-        topgg_token = ctx.bot.config.get('bot_listing_api_keys', {}).get('topgg_token')
+        topgg_token = ctx.bot.config.get("bot_listing_api_keys", {}).get("topgg_token")
         if not topgg_token:
             raise error
 
         # Try and get the information
         try:
-            voted = asyncio.wait_for(ctx.bot.get_user_topgg_vote(ctx.author.id), timeout=3)
+            voted = asyncio.wait_for(
+                ctx.bot.get_user_topgg_vote(ctx.author.id), timeout=3
+            )
         except asyncio.TimeoutError:
-            raise commands.CheckFailure("Top.gg is currently unable to process my request for voters - please try again later.")
+            raise commands.CheckFailure(
+                "Top.gg is currently unable to process my request for voters - please try again later."
+            )
 
         # See if they voted
         if voted:

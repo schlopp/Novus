@@ -5,13 +5,15 @@
 
 from collections import defaultdict
 
+
 class Bidict(dict):
     """A bi-directional dict"""
+
     _None = object()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        super().update({v:k for k, v in self.items()})
+        super().update({v: k for k, v in self.items()})
 
     def __setitem__(self, key, value):
         # Delete related mappings
@@ -65,11 +67,11 @@ class Bidict(dict):
     def update(self, *args, **F):
         try:
             E = args[0]
-            if callable(getattr(E, 'keys', None)):
+            if callable(getattr(E, "keys", None)):
                 for k in E:
                     self[k] = E[k]
             else:
-                for k,v in E:
+                for k, v in E:
                     self[k] = v
         except IndexError:
             pass
@@ -83,6 +85,7 @@ class Bidict(dict):
     # incompatible
     # https://docs.python.org/3/library/exceptions.html#NotImplementedError, Note 1
     fromkeys = None
+
 
 class Defaultdict(defaultdict):
     def __missing__(self, key):

@@ -51,10 +51,12 @@ class RedisConnection(object):
 
         cls.config = config.copy()
         modified_config = config.copy()
-        modified_config.pop('shard_manager_enabled', False)  # No longer present, here from old configs
-        if modified_config.pop('enabled', True) is False:
+        modified_config.pop(
+            "shard_manager_enabled", False
+        )  # No longer present, here from old configs
+        if modified_config.pop("enabled", True) is False:
             raise NotImplementedError("The Redis connection has been disabled.")
-        address = modified_config.pop('host'), modified_config.pop('port')
+        address = modified_config.pop("host"), modified_config.pop("port")
         cls.pool = await aioredis.create_redis_pool(address, **modified_config)
         cls.enabled = True
 
@@ -207,33 +209,46 @@ class RedisChannelHandler(object):
 
         # Subscribe to the given channel
         async with self.connection() as re:
-            self.connection.logger.info(f"Subscribing to Redis channel {self.channel_name}")
+            self.connection.logger.info(
+                f"Subscribing to Redis channel {self.channel_name}"
+            )
             channel_list = await re.conn.subscribe(self.channel_name)
 
         # Get the channel from the list, loop it forever
         channel = channel_list[0]
-        self.connection.logger.info(f"Looping to wait for messages to Redis channel {self.channel_name}")
-        while (await channel.wait_message()):
+        self.connection.logger.info(
+            f"Looping to wait for messages to Redis channel {self.channel_name}"
+        )
+        while await channel.wait_message():
             data = await channel.get_json()
-            self.connection.logger.debug(f"Received JSON at channel {self.channel_name}:{json.dumps(data)}")
+            self.connection.logger.debug(
+                f"Received JSON at channel {self.channel_name}:{json.dumps(data)}"
+            )
             try:
-                if asyncio.iscoroutine(self.callback) or asyncio.iscoroutinefunction(self.callback):
+                if asyncio.iscoroutine(self.callback) or asyncio.iscoroutinefunction(
+                    self.callback
+                ):
                     asyncio.create_task(self.callback(self.cog, data))
                 else:
                     self.callback(self.cog, data)
             except Exception as e:
-                self.connection.logger.error("Failed to run channel task", exc_info=True)
+                self.connection.logger.error(
+                    "Failed to run channel task", exc_info=True
+                )
 
     async def unsubscribe(self):
         """
         Unsubscribe from the channel that this instance refers to.
         """
 
-        self.connection.logger.info(f"Unsubscribing from Redis channel {self.channel_name}")
+        self.connection.logger.info(
+            f"Unsubscribing from Redis channel {self.channel_name}"
+        )
         await self.connection.pool.unsubscribe(self.channel_name)
 
 
 def redis_channel_handler(channel_name):
     def wrapper(func):
         return RedisChannelHandler(channel_name, func)
+
     return wrapper

@@ -25,6 +25,7 @@ def is_slash_command():
         if ctx.is_interaction:
             return True
         raise IsNotSlashCommand()
+
     return commands.check(predicate)
 
 
@@ -40,6 +41,7 @@ def is_not_slash_command():
         if not ctx.is_interaction:
             return True
         raise IsSlashCommand()
+
     return commands.check(predicate)
 
 
@@ -55,4 +57,5 @@ def bot_in_guild():
         if ctx.bot.get_guild(ctx.guild.id) is None:
             raise BotNotInGuild()
         return True
+
     return commands.check(predicate)

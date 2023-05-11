@@ -39,7 +39,8 @@ def meta_command():
     """
 
     def predicate(ctx):
-        if getattr(ctx, 'invoke_meta', False):
+        if getattr(ctx, "invoke_meta", False):
             return True
         raise InvokedMetaCommand()
+
     return commands.check(predicate)

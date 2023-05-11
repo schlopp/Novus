@@ -17,8 +17,8 @@ commands = [
 # Classic "on ready" event
 @client.event
 async def on_ready():
-    print(f'Logged in as {client.user} (ID: {client.user.id})')
-    print('------')
+    print(f"Logged in as {client.user} (ID: {client.user.id})")
+    print("------")
 
 
 # Pinged whenever the bot receives a slash command
@@ -29,11 +29,13 @@ async def on_slash_command(interaction: discord.Interaction[None]):
     command_name = interaction.command_name
     if command_name == "Get user avatar":
         user = interaction.resolved.users[0]
-        await interaction.response.send_message(str(user.display_avatar.with_size(1024)))
+        await interaction.response.send_message(
+            str(user.display_avatar.with_size(1024))
+        )
 
 
 async def main():
-    await client.login('TOKEN')  # Validate our token
+    await client.login("TOKEN")  # Validate our token
     await client.register_application_commands(commands)  # Upsert our commands
     await client.connect()  # Run a websocket connection
 

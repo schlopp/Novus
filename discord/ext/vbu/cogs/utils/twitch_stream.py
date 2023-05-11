@@ -40,19 +40,21 @@ class TwitchStream:
     """
 
     def __init__(self, *, data: dict):
-        self.id: str = data['id']
-        self.user_id: str = data['user_id']
-        self.user_login: str = data['user_login']
-        self.user_name: str = data['user_name']
-        self.game_id: str = data['game_id']
-        self.game_name: str = data['game_name']
-        self.type: str = data['type']
-        self.title: str = data['title']
-        self.viewer_count: int = data['viewer_count']
-        started_at = datetime.fromisoformat(data['started_at'][:-1])  # It has a Z on the end :(
+        self.id: str = data["id"]
+        self.user_id: str = data["user_id"]
+        self.user_login: str = data["user_login"]
+        self.user_name: str = data["user_name"]
+        self.game_id: str = data["game_id"]
+        self.game_name: str = data["game_name"]
+        self.type: str = data["type"]
+        self.title: str = data["title"]
+        self.viewer_count: int = data["viewer_count"]
+        started_at = datetime.fromisoformat(
+            data["started_at"][:-1]
+        )  # It has a Z on the end :(
         started_at.replace(tzinfo=timezone.utc)
         self.started_at: datetime = started_at
-        self.language: str = data['language']
-        self.thumbnail_url: str = data['thumbnail_url']
-        self.tag_ids: List[str] = data['tag_ids']
-        self.is_mature: bool = data['is_mature']
+        self.language: str = data["language"]
+        self.thumbnail_url: str = data["thumbnail_url"]
+        self.tag_ids: List[str] = data["tag_ids"]
+        self.is_mature: bool = data["is_mature"]

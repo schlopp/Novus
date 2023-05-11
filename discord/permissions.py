@@ -24,12 +24,24 @@ DEALINGS IN THE SOFTWARE.
 
 from __future__ import annotations
 
-from typing import Callable, Any, ClassVar, Dict, Iterator, Set, TYPE_CHECKING, Tuple, Type, TypeVar, Optional
+from typing import (
+    Callable,
+    Any,
+    ClassVar,
+    Dict,
+    Iterator,
+    Set,
+    TYPE_CHECKING,
+    Tuple,
+    Type,
+    TypeVar,
+    Optional,
+)
 from .flags import BaseFlags, flag_value, fill_with_flags, alias_flag_value
 
 __all__ = (
-    'Permissions',
-    'PermissionOverwrite',
+    "Permissions",
+    "PermissionOverwrite",
 )
 
 # A permission alias works like a regular flag but is marked
@@ -38,7 +50,9 @@ class permission_alias(alias_flag_value):
     alias: str
 
 
-def make_permission_alias(alias: str) -> Callable[[Callable[[Any], int]], permission_alias]:
+def make_permission_alias(
+    alias: str,
+) -> Callable[[Callable[[Any], int]], permission_alias]:
     def decorator(func: Callable[[Any], int]) -> permission_alias:
         ret = permission_alias(func)
         ret.alias = alias
@@ -46,7 +60,9 @@ def make_permission_alias(alias: str) -> Callable[[Callable[[Any], int]], permis
 
     return decorator
 
-P = TypeVar('P', bound='Permissions')
+
+P = TypeVar("P", bound="Permissions")
+
 
 @fill_with_flags()
 class Permissions(BaseFlags):
@@ -97,12 +113,14 @@ class Permissions(BaseFlags):
 
     def __init__(self, permissions: int = 0, **kwargs: bool):
         if not isinstance(permissions, int):
-            raise TypeError(f'Expected int parameter, received {permissions.__class__.__name__} instead.')
+            raise TypeError(
+                f"Expected int parameter, received {permissions.__class__.__name__} instead."
+            )
 
         self.value = permissions
         for key, value in kwargs.items():
             if key not in self.VALID_FLAGS:
-                raise TypeError(f'{key!r} is not a valid permission name.')
+                raise TypeError(f"{key!r} is not a valid permission name.")
             setattr(self, key, value)
 
     def is_subset(self, other: Permissions) -> bool:
@@ -110,14 +128,18 @@ class Permissions(BaseFlags):
         if isinstance(other, Permissions):
             return (self.value & other.value) == self.value
         else:
-            raise TypeError(f"cannot compare {self.__class__.__name__} with {other.__class__.__name__}")
+            raise TypeError(
+                f"cannot compare {self.__class__.__name__} with {other.__class__.__name__}"
+            )
 
     def is_superset(self, other: Permissions) -> bool:
         """Returns ``True`` if self has the same or more permissions as other."""
         if isinstance(other, Permissions):
             return (self.value | other.value) == self.value
         else:
-            raise TypeError(f"cannot compare {self.__class__.__name__} with {other.__class__.__name__}")
+            raise TypeError(
+                f"cannot compare {self.__class__.__name__} with {other.__class__.__name__}"
+            )
 
     def is_strict_subset(self, other: Permissions) -> bool:
         """Returns ``True`` if the permissions on other are a strict subset of those on self."""
@@ -307,10 +329,9 @@ class Permissions(BaseFlags):
         """:class:`bool`: Returns ``True`` if a user can read messages from all or specific text channels."""
         return 1 << 10
 
-    @make_permission_alias('read_messages')
+    @make_permission_alias("read_messages")
     def view_channel(self) -> int:
-        """:class:`bool`: An alias for :attr:`read_messages`.
-        """
+        """:class:`bool`: An alias for :attr:`read_messages`."""
         return 1 << 10
 
     @flag_value
@@ -358,16 +379,14 @@ class Permissions(BaseFlags):
         """:class:`bool`: Returns ``True`` if a user can use emojis from other guilds."""
         return 1 << 18
 
-    @make_permission_alias('external_emojis')
+    @make_permission_alias("external_emojis")
     def use_external_emojis(self) -> int:
-        """:class:`bool`: An alias for :attr:`external_emojis`.
-        """
+        """:class:`bool`: An alias for :attr:`external_emojis`."""
         return 1 << 18
 
     @flag_value
     def view_guild_insights(self) -> int:
-        """:class:`bool`: Returns ``True`` if a user can view the guild's insights.
-        """
+        """:class:`bool`: Returns ``True`` if a user can view the guild's insights."""
         return 1 << 19
 
     @flag_value
@@ -418,10 +437,9 @@ class Permissions(BaseFlags):
         """
         return 1 << 28
 
-    @make_permission_alias('manage_roles')
+    @make_permission_alias("manage_roles")
     def manage_permissions(self) -> int:
-        """:class:`bool`: An alias for :attr:`manage_roles`.
-        """
+        """:class:`bool`: An alias for :attr:`manage_roles`."""
         return 1 << 28
 
     @flag_value
@@ -434,92 +452,78 @@ class Permissions(BaseFlags):
         """:class:`bool`: Returns ``True`` if a user can create, edit, or delete emojis."""
         return 1 << 30
 
-    @make_permission_alias('manage_emojis')
+    @make_permission_alias("manage_emojis")
     def manage_emojis_and_stickers(self) -> int:
-        """:class:`bool`: An alias for :attr:`manage_emojis`.
-        """
+        """:class:`bool`: An alias for :attr:`manage_emojis`."""
         return 1 << 30
 
     @flag_value
     def use_slash_commands(self) -> int:
-        """:class:`bool`: Returns ``True`` if a user can use slash commands.
-        """
+        """:class:`bool`: Returns ``True`` if a user can use slash commands."""
         return 1 << 31
 
     @flag_value
     def request_to_speak(self) -> int:
-        """:class:`bool`: Returns ``True`` if a user can request to speak in a stage channel.
-        """
+        """:class:`bool`: Returns ``True`` if a user can request to speak in a stage channel."""
         return 1 << 32
 
     @flag_value
     def manage_events(self) -> int:
-        """:class:`bool`: Returns ``True`` if a user can manage guild events.
-        """
+        """:class:`bool`: Returns ``True`` if a user can manage guild events."""
         return 1 << 33
 
     @flag_value
     def manage_threads(self) -> int:
-        """:class:`bool`: Returns ``True`` if a user can manage threads.
-        """
+        """:class:`bool`: Returns ``True`` if a user can manage threads."""
         return 1 << 34
 
     @flag_value
     def create_public_threads(self) -> int:
-        """:class:`bool`: Returns ``True`` if a user can create public threads.
-        """
+        """:class:`bool`: Returns ``True`` if a user can create public threads."""
         return 1 << 35
 
     @flag_value
     def create_private_threads(self) -> int:
-        """:class:`bool`: Returns ``True`` if a user can create private threads.
-        """
+        """:class:`bool`: Returns ``True`` if a user can create private threads."""
         return 1 << 36
 
     @flag_value
     def external_stickers(self) -> int:
-        """:class:`bool`: Returns ``True`` if a user can use stickers from other guilds.
-        """
+        """:class:`bool`: Returns ``True`` if a user can use stickers from other guilds."""
         return 1 << 37
 
-    @make_permission_alias('external_stickers')
+    @make_permission_alias("external_stickers")
     def use_external_stickers(self) -> int:
-        """:class:`bool`: An alias for :attr:`external_stickers`.
-        """
+        """:class:`bool`: An alias for :attr:`external_stickers`."""
         return 1 << 37
 
     @flag_value
     def send_messages_in_threads(self) -> int:
-        """:class:`bool`: Returns ``True`` if a user can send messages in threads.
-        """
+        """:class:`bool`: Returns ``True`` if a user can send messages in threads."""
         return 1 << 38
 
     @flag_value
     def start_embedded_activities(self) -> int:
-        """:class:`bool`: Returns ``True`` if a user can start embedded activities.
-        """
+        """:class:`bool`: Returns ``True`` if a user can start embedded activities."""
         return 1 << 39
 
     @flag_value
     def moderate_members(self) -> int:
-        """:class:`bool`: Returns ``True`` if a user can timeout users.
-        """
+        """:class:`bool`: Returns ``True`` if a user can timeout users."""
         return 1 << 40
 
-    @make_permission_alias('moderate_members')
+    @make_permission_alias("moderate_members")
     def time_out_members(self) -> int:
-        """:class:`bool`: An alias for :attr:`moderate_members`.
-        """
+        """:class:`bool`: An alias for :attr:`moderate_members`."""
         return 1 << 40
 
-    @make_permission_alias('moderate_members')
+    @make_permission_alias("moderate_members")
     def timeout_members(self) -> int:
-        """:class:`bool`: An alias for :attr:`moderate_members`.
-        """
+        """:class:`bool`: An alias for :attr:`moderate_members`."""
         return 1 << 40
 
 
-PO = TypeVar('PO', bound='PermissionOverwrite')
+PO = TypeVar("PO", bound="PermissionOverwrite")
 
 
 def _augment_from_permissions(cls):
@@ -583,7 +587,7 @@ class PermissionOverwrite:
         Set the value of permissions by their name.
     """
 
-    __slots__ = ('_values',)
+    __slots__ = ("_values",)
 
     if TYPE_CHECKING:
         VALID_NAMES: ClassVar[Set[str]]
@@ -641,7 +645,7 @@ class PermissionOverwrite:
 
         for key, value in kwargs.items():
             if key not in self.VALID_NAMES:
-                raise ValueError(f'no permission called {key}.')
+                raise ValueError(f"no permission called {key}.")
 
             setattr(self, key, value)
 
@@ -650,7 +654,9 @@ class PermissionOverwrite:
 
     def _set(self, key: str, value: Optional[bool]) -> None:
         if value not in (True, None, False):
-            raise TypeError(f'Expected bool or NoneType, received {value.__class__.__name__}')
+            raise TypeError(
+                f"Expected bool or NoneType, received {value.__class__.__name__}"
+            )
 
         if value is None:
             self._values.pop(key, None)

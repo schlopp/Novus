@@ -30,4 +30,5 @@ def is_config_set(*config_keys):
             ctx.bot.logger.warning(f"No config is set for {'.'.join(config_keys)}")
             raise ConfigNotSet()
         return True
+
     return commands.check(predicate)

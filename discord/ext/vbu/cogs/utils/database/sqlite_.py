@@ -25,7 +25,6 @@ if typing.TYPE_CHECKING:
 
 
 class RowWrapper(aiosqlite.Row):
-
     def values(self):
         for i in self.keys():
             yield self[i]
@@ -36,13 +35,14 @@ class RowWrapper(aiosqlite.Row):
 
 
 class SQLiteWrapper(DriverWrapper):
-
     @staticmethod
     async def create_pool(config: DatabaseConfig) -> None:
         return None
 
     @staticmethod
-    async def get_connection(dbw: typing.Type[SQLiteDatabaseWrapper]) -> SQLiteDatabaseWrapper:
+    async def get_connection(
+        dbw: typing.Type[SQLiteDatabaseWrapper],
+    ) -> SQLiteDatabaseWrapper:
         connection = await aiosqlite.connect(dbw.config.get("database"))
         connection.row_factory = RowWrapper
         v = dbw(
@@ -65,7 +65,9 @@ class SQLiteWrapper(DriverWrapper):
         dbw.is_active = False
 
     @staticmethod
-    async def fetch(dbw: SQLiteDatabaseWrapper, sql: str, *args) -> typing.List[typing.Any]:
+    async def fetch(
+        dbw: SQLiteDatabaseWrapper, sql: str, *args
+    ) -> typing.List[typing.Any]:
         if dbw.cursor:
             try:
                 await dbw.cursor.close()

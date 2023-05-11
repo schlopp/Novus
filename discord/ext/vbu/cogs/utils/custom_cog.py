@@ -60,22 +60,23 @@ class Cog(_commands.Cog, typing.Generic[BotT]):
             if isinstance(item, RedisChannelHandler):
                 item.cog = self
 
-    def get_logger_name(self, *prefixes, sep: str = '.') -> str:
+    def get_logger_name(self, *prefixes, sep: str = ".") -> str:
         """
         Gets the name of the class with any given prefixes, with sep as a seperator. You
         tend to not need this yourself, but it is instead called internally by the bot
         when generating the :attr:`logger` instance.
         """
 
-        return sep.join(['cog'] + list(prefixes) + [self.__cog_name__.replace(' ', '')])
+        return sep.join(["cog"] + list(prefixes) + [self.__cog_name__.replace(" ", "")])
 
     @property
     def qualified_name(self) -> str:
         """:meta private:"""
 
         return re.sub(
-            r"(?:[A-Z])(?:(?:[a-z0-9])+|[A-Z]+$|[A-Z]+(?=[A-Z]))?", "\\g<0> ",
-            super().qualified_name.replace(' ', '')
+            r"(?:[A-Z])(?:(?:[a-z0-9])+|[A-Z]+$|[A-Z]+(?=[A-Z]))?",
+            "\\g<0> ",
+            super().qualified_name.replace(" ", ""),
         ).strip()
 
     async def cache_setup(self, database: DatabaseWrapper):

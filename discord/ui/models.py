@@ -54,13 +54,14 @@ class InteractedComponent:
     """
 
     def __init__(
-            self,
-            *,
-            custom_id: Optional[str] = None,
-            components: Optional[List[InteractedComponent]] = None,
-            value: Optional[str] = None,
-            type: Optional[int] = None,
-            values: Optional[List[str]] = None):
+        self,
+        *,
+        custom_id: Optional[str] = None,
+        components: Optional[List[InteractedComponent]] = None,
+        value: Optional[str] = None,
+        type: Optional[int] = None,
+        values: Optional[List[str]] = None,
+    ):
         self.custom_id = custom_id
         self.components = components
         self.value = value
@@ -69,21 +70,20 @@ class InteractedComponent:
 
     def __repr__(self) -> str:
         attrs = (
-            ('custom_id', self.custom_id),
-            ('components', self.components),
-            ('value', self.value),
-            ('values', self.values),
+            ("custom_id", self.custom_id),
+            ("components", self.components),
+            ("value", self.value),
+            ("values", self.values),
         )
-        inner = ' '.join('%s=%r' % t for t in attrs)
-        return f'{self.__class__.__name__}({inner})'
+        inner = " ".join("%s=%r" % t for t in attrs)
+        return f"{self.__class__.__name__}({inner})"
 
     @classmethod
     def from_data(cls, payload: dict):
         components = None
         if "components" in payload:
             components = [
-                InteractedComponent.from_data(i)
-                for i in payload["components"]
+                InteractedComponent.from_data(i) for i in payload["components"]
             ]
         return cls(
             custom_id=payload.get("custom_id"),
@@ -208,11 +208,9 @@ class ComponentHolder(BaseComponent):
         self.components = list(components)
 
     def __repr__(self) -> str:
-        attrs = (
-            ('components', self.components),
-        )
-        inner = ' '.join('%s=%r' % t for t in attrs)
-        return f'{self.__class__.__name__}({inner})'
+        attrs = (("components", self.components),)
+        inner = " ".join("%s=%r" % t for t in attrs)
+        return f"{self.__class__.__name__}({inner})"
 
     def add_component(self, component: Union[InteractableComponent, LayoutComponent]):
         """
@@ -227,7 +225,9 @@ class ComponentHolder(BaseComponent):
         self.components.append(component)
         return self
 
-    def remove_component(self, component: Union[InteractableComponent, LayoutComponent]):
+    def remove_component(
+        self, component: Union[InteractableComponent, LayoutComponent]
+    ):
         """
         Removes a component from this holder.
 
