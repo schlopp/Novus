@@ -3175,7 +3175,7 @@ class Guild(Hashable):
         entity_metadata: Optional[GuildScheduledEventEntityMetadata] = None,
         scheduled_start_time: datetime.datetime,
         scheduled_end_time: datetime.datetime = None,
-        description: str = None,
+        description: str | None = None,
         entity_type: GuildScheduledEventEntityType,
         status: GuildScheduledEventStatus = GuildScheduledEventStatus.scheduled,
     ) -> GuildScheduledEvent:

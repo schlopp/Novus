@@ -514,7 +514,7 @@ class AutoShardedClient(Client):
         *,
         activity: Optional[BaseActivity] = None,
         status: Optional[Status] = None,
-        shard_id: int = None,
+        shard_id: int | None = None,
     ) -> None:
         """|coro|
 

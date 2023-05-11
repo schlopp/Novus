@@ -74,7 +74,7 @@ class InteractionHandler(
     @commands.bot_has_permissions(
         send_messages=True, add_reactions=True, attach_files=True
     )
-    async def addapplicationcommands(self, ctx, guild_id: int = None, *commands: str):
+    async def addapplicationcommands(self, ctx, guild_id: int | None = None, *commands: str):
         """
         Adds all of the bot's interaction commands to the global interaction handler.
         """
@@ -112,7 +112,7 @@ class InteractionHandler(
         send_messages=True, add_reactions=True, attach_files=True
     )
     async def removeapplicationcommands(
-        self, ctx, guild_id: int = None, *commands: str
+        self, ctx, guild_id: int | None = None, *commands: str
     ):
         """
         Removes the bot's interaction commands from the global interaction handler.

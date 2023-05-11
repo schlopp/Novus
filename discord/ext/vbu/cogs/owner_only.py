@@ -205,7 +205,7 @@ class OwnerOnly(
     @commands.command(aliases=["pm", "dm", "send"])
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def message(self, ctx: vbu.Context, snowflake: int, *, content: str = None):
+    async def message(self, ctx: vbu.Context, snowflake: int, *, content: str | None = None):
         """
         DMs a user the given content.
         """
@@ -291,7 +291,7 @@ class OwnerOnly(
     @commands.command(aliases=["evall", "eval"])
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True)
-    async def ev(self, ctx: vbu.Context, *, content: str = None):
+    async def ev(self, ctx: vbu.Context, *, content: str | None = None):
         """
         Evaluates some Python code.
         """

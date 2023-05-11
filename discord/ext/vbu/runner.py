@@ -44,7 +44,7 @@ logger = logging.getLogger("vbu")
 def set_log_level(
     logger_to_change: typing.Union[logging.Logger, str],
     log_level: str,
-    minimum_level: int = None,
+    minimum_level: int | None = None,
 ) -> None:
     """
     Set a logger to a default log level.

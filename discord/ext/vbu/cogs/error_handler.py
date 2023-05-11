@@ -378,7 +378,7 @@ class ErrorHandler(vbu.Cog):
     )
 
     async def send_to_ctx_or_author(
-        self, ctx: vbu.Context, text: str, author_text: str = None
+        self, ctx: vbu.Context, text: str, author_text: str | None = None
     ) -> typing.Optional[discord.Message]:
         """
         Tries to send the given text to ctx, but failing that, tries to send it to the author

@@ -60,7 +60,7 @@ class SettingsMenuOption(object):
         callback: typing.Callable[
             ["SettingsMenuOption", typing.List[typing.Any]], None
         ] = lambda x: None,
-        emoji: str = None,
+        emoji: str | None = None,
         allow_nullable: bool = True,
     ):
         """

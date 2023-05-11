@@ -12,7 +12,7 @@ from .get_avatar_url import get_avatar_url
 from .oauth_models import OauthMember
 
 
-def get_discord_login_url(request: Request, redirect_uri: str = None) -> str:
+def get_discord_login_url(request: Request, redirect_uri: str | None = None) -> str:
     """
     Returns a login URL for your website based on the oauth information given in
     your :class:`website config<WebsiteConfig.oauth>`.

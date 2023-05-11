@@ -72,7 +72,7 @@ class Paginator:
             self.formatter = self.default_list_formatter
         else:
             self.formatter = formatter
-        self.current_page: int = None
+        self.current_page: int | None = None
         self._page_cache = {}
 
         self.max_pages: int = "?"

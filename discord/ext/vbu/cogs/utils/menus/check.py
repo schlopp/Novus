@@ -41,7 +41,7 @@ class Check(object):
         self,
         check: typing.Callable[[discord.Message], bool] = None,
         on_failure: CheckFailureAction = CheckFailureAction.FAIL,
-        fail_message: str = None,
+        fail_message: str | None = None,
     ):
         """
         Attributes
@@ -91,7 +91,7 @@ class ModalCheck(Check):
         self,
         check: typing.Callable[[discord.Interaction], bool] = None,
         on_failure: CheckFailureAction = CheckFailureAction.FAIL,
-        fail_message: str = None,
+        fail_message: str | None = None,
     ):
         """
         Attributes

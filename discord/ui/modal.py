@@ -51,8 +51,8 @@ class Modal(ComponentHolder):
         self,
         *,
         title: str,
-        custom_id: str = None,
-        components: typing.List[BaseComponent] = None,
+        custom_id: str | None = None,
+        components: typing.List[BaseComponent] | None = None,
     ):
         self.title = title
         self.custom_id = custom_id or str(uuid.uuid1())
