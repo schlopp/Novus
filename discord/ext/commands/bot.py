@@ -1256,6 +1256,8 @@ class BotBase(GroupMixin):
                     )
                 )
 
+        return added
+
 
 class Bot(BotBase, discord.Client):
     """Represents a discord bot.
