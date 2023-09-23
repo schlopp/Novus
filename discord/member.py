@@ -362,7 +362,7 @@ class Member(discord.abc.Messageable, _UserTag):
         self._roles: utils.SnowflakeList = utils.SnowflakeList(map(int, data["roles"]))
         self._client_status: _ClientStatus = _ClientStatus()
         self.activities: Tuple[ActivityTypes, ...] = tuple()
-        self.nick: Optional[str] = data.get("nick", None)
+        self.nick: Optional[str] = data.get("nick")
         self.pending: bool = data.get("pending", False)
         self._avatar: Optional[str] = data.get("avatar")
         self.communication_disabled_until: Optional[
@@ -598,7 +598,7 @@ class Member(discord.abc.Messageable, _UserTag):
         if they have a guild specific nickname then that
         is returned instead.
         """
-        return self.nick or self.name
+        return self.nick or self._user.display_name
 
     @property
     def display_avatar(self) -> Asset:

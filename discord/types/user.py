@@ -30,6 +30,7 @@ class PartialUser(TypedDict):
     id: Snowflake
     username: str
     discriminator: str
+    global_name: str | None
     avatar: Optional[str]
 
 
@@ -40,9 +41,12 @@ class User(PartialUser, total=False):
     bot: bool
     system: bool
     mfa_enabled: bool
-    local: str
+    banner: str | None
+    accent_color: int | None
+    locale: str
     verified: bool
     email: Optional[str]
     flags: int
     premium_type: PremiumType
     public_flags: int
+    avatar_decoration: str | None

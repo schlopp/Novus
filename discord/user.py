@@ -60,6 +60,7 @@ class _UserTag:
 class BaseUser(_UserTag):
     __slots__ = (
         "name",
+        "global_name",
         "id",
         "discriminator",
         "_avatar",
@@ -80,7 +81,7 @@ class BaseUser(_UserTag):
         _state: ConnectionState
         _avatar: Optional[str]
         _banner: Optional[str]
-        _accent_colour: Optional[str]
+        _accent_colour: Optional[int]
         _public_flags: int
 
     def __init__(self, *, state: ConnectionState, data: UserPayload) -> None:
@@ -107,6 +108,7 @@ class BaseUser(_UserTag):
 
     def _update(self, data: UserPayload) -> None:
         self.name = data["username"]
+        self.global_name = data.get("global_name", None)
         self.id = int(data["id"])
         self.discriminator = data["discriminator"]
         self._avatar = data["avatar"]
@@ -249,7 +251,7 @@ class BaseUser(_UserTag):
         if they have a guild specific nickname then that
         is returned instead.
         """
-        return self.name
+        return self.global_name or self.name
 
     def mentioned_in(self, message: Message) -> bool:
         """Checks if the user is mentioned in the specified message.
