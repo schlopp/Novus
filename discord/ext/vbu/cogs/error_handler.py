@@ -438,7 +438,7 @@ class ErrorHandler(vbu.Cog):
             isinstance(error, owner_reinvoke_errors)
             and ctx.original_author_id in self.bot.owner_ids
         ):
-            if self.bot.config.get("owners_ignore_command_errors", True):
+            if not self.bot.config.get("owners_ignore_command_errors", True):
                 pass
             elif not self.bot.config.get(
                 "owners_ignore_check_failures", True
