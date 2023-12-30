@@ -41,6 +41,7 @@ Main
 * ``discord.StickerType.png`` (use :attr:`discord.StickerFormatType.png`)
 * ``discord.StickerType.apng`` (use :attr:`discord.StickerFormatType.apng`)
 * ``discord.StickerType.lottie`` (use :attr:`discord.StickerFormatType.lottie`)
+* ``discord.StickerType.gif`` (use :attr:`discord.StickerFormatType.gif`)
 * ``discord.Webhook.avatar_url`` (use :attr:`discord.Webhook.avatar` and :attr:`discord.Asset.url`)
 * ``discord.Webhook.avatar_url_as`` (use :attr:`discord.Webhook.avatar`)
 * ``discord.Webhook.execute`` (no direct alternative - see :class:`discord.Webhook`)
