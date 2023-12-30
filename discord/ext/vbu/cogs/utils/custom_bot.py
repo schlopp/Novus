@@ -566,7 +566,7 @@ class Bot(MinimalBot):
                 return False
 
         # Return
-        return data.get("voted", False)
+        return bool(data.get("voted", False))
 
     def get_event_webhook(self, event_name: str) -> Optional[discord.Webhook]:
         """
