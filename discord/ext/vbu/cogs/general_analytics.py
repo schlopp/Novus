@@ -13,16 +13,20 @@ class Analytics(vbu.Cog):
     def __init__(self, bot: vbu.Bot):
         super().__init__(bot)
         self.post_statsd_guild_count.start()
-        self.post_topgg_guild_count.start()
-        self.post_discordbotlist_guild_count.start()
+
+        if not bot.config.get("bot_listing_api_keys", {}).get("override_bot_id"):
+            self.post_topgg_guild_count.start()
+            self.post_discordbotlist_guild_count.start()
 
     def cog_unload(self):
         self.logger.info("Stopping Statsd guild count poster loop")
-        self.post_statsd_guild_count.cancel()
-        self.logger.info("Stopping Top.gg guild count poster loop")
-        self.post_topgg_guild_count.cancel()
-        self.logger.info("Stopping DiscordbotList.com guild count poster loop")
-        self.post_discordbotlist_guild_count.cancel()
+
+        if not bot.config.get("bot_listing_api_keys", {}).get("override_bot_id"):
+            self.post_statsd_guild_count.cancel()
+            self.logger.info("Stopping Top.gg guild count poster loop")
+            self.post_topgg_guild_count.cancel()
+            self.logger.info("Stopping DiscordbotList.com guild count poster loop")
+            self.post_discordbotlist_guild_count.cancel()
 
     def get_effective_guild_count(self) -> int:
         return int(

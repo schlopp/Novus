@@ -58,6 +58,7 @@ class _Intents(TypedDict):
 
 
 class _BotListingApiKeys(TypedDict):
+    override_bot_id: int
     topgg_token: str
     discordbotlist_token: str
 

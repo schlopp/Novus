@@ -547,12 +547,14 @@ class Bot(MinimalBot):
         """
 
         # Make sure there's a token provided
-        topgg_token = self.config.get("bot_listing_api_keys", {}).get("topgg_token")
+        bot_listing_api_keys = self.config.get("bot_listing_api_keys", {})
+        topgg_token = bot_listing_api_keys.get("topgg_token")
+        bot_id = bot_listing_api_keys.get("override_bot_id") or self.user.id  # type: ignore
         if not topgg_token:
             return False
 
         # Try and see whether the user has voted
-        url = "https://top.gg/api/bots/{bot.user.id}/check".format(bot=self)
+        url = f"https://top.gg/api/bots/{bot_id}/check"
         async with self.session.get(
             url, params={"userId": user_id}, headers={"Authorization": topgg_token}
         ) as r:
