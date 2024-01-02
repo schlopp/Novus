@@ -59,7 +59,7 @@ extras_require = {
         "orjson>=3.5.4",
         "aiodns>=1.1",
         "Brotli",
-        "cchardet",
+        "faust-cchardet",
     ],
     "vbu": [
         # Main build
