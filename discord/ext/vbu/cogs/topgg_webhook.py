@@ -36,6 +36,7 @@ class TopggWebhookCog(
         self._webhook_task = asyncio.create_task(self._start_webhook())
 
     def cog_unload(self) -> None:
+        self.logger.info("Cleaning up webhook runner")
         self._webhook_task.cancel()
         asyncio.create_task(self._runner.cleanup())
         return super().cog_unload()
