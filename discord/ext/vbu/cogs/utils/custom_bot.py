@@ -19,6 +19,7 @@ import platform
 import random
 import json
 import sys
+from datetime import datetime, timedelta
 
 import aiohttp
 import toml
@@ -353,6 +354,7 @@ class Bot(MinimalBot):
         self.user_settings = collections.defaultdict(
             lambda: copy.deepcopy(self.DEFAULT_USER_SETTINGS)
         )
+        self._topgg_votes: dict[int, datetime] = {}
 
     async def startup(self):
         """
@@ -529,6 +531,25 @@ class Bot(MinimalBot):
             session=self.session,
         )
         return self._upgrade_chat
+    
+    def user_has_voted(self, user_id: int) -> bool:
+        """
+        Returns whether or not the user has vote registered through the top.gg webhook. If the
+        top.gg webhook server is not enabled in your
+        :attr:`config file<BotConfig.topgg_webhook.enabled>` then this will raise an `Exception`.
+
+        Raises:
+            `Exception`: Top.gg webhook server is not enabled.
+        """
+        
+        try:
+            last_vote = self._topgg_votes[user_id]
+        except KeyError:
+            return False
+
+        vote_expiration_date = last_vote + timedelta(hours=12)
+
+        return vote_expiration_date > datetime.utcnow()
 
     async def get_user_topgg_vote(self, user_id: int) -> bool:
         """
