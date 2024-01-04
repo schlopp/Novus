@@ -73,6 +73,7 @@ class TopggWebhookCog(
         return web.Response()
 
     async def _start_webhook(self) -> None:
+        self.logger.info("Starting webhook runner")
         await self._runner.setup()
         site = web.TCPSite(
             self._runner,
