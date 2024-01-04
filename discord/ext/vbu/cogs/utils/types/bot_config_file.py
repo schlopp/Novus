@@ -62,6 +62,12 @@ class _BotListingApiKeys(TypedDict):
     topgg_token: str
     discordbotlist_token: str
 
+class _TopggWebhook(TypedDict):
+    enabled: bool
+    host: str
+    port: int
+    authorization: str
+
 
 class _BotInfoLinks(TypedDict):
     url: str
@@ -176,6 +182,7 @@ class BotConfig(_BotConfigOptional):
     event_webhook: _EventWebhook
     intents: _Intents
     bot_listing_api_keys: _BotListingApiKeys
+    topgg_webhook: _TopggWebhook
     bot_info: _BotInfo
     database: _Database
     reids: _Redis
