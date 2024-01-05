@@ -77,6 +77,10 @@ class TopggWebhookCog(
         else:
             self._vote_cache[user_id] = datetime.utcnow()
 
+        user = await self.bot.fetch_user(user_id)
+
+        self.bot.dispatch("vote", user)
+
         return web.Response()
 
     async def _start_webhook(self) -> None:
