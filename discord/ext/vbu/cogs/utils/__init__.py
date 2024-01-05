@@ -17,6 +17,7 @@ from .embeddify import Embeddify
 from .twitch_stream import TwitchStream
 from .translation import translation, i18n
 from .constants import Constants
+from .votes import user_has_voted
 
 
 __all__ = (
@@ -57,6 +58,7 @@ __all__ = (
     "translation",
     "i18n",
     "Constants",
+    "user_has_voted",
 )
 
 
