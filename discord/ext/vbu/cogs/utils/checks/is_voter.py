@@ -2,7 +2,7 @@ import asyncio
 
 from discord.ext import commands
 
-from .. import Bot
+from ..custom_bot import Bot
 
 
 class IsNotVoter(commands.CheckFailure):
