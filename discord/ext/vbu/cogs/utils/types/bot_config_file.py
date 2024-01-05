@@ -185,7 +185,7 @@ class BotConfig(_BotConfigOptional):
     topgg_webhook: _TopggWebhook
     bot_info: _BotInfo
     database: _Database
-    reids: _Redis
+    redis: _Redis
     shard_manager: _ShardManager
     embed: _Embed
     presence: _Presence
