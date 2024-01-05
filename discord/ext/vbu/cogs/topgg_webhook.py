@@ -30,6 +30,7 @@ class TopggWebhookCog(
         self.__host = self.bot.config["topgg_webhook"]["host"]
         self.__port = self.bot.config["topgg_webhook"]["port"]
         self.__auth = self.bot.config["topgg_webhook"]["authorization"]
+        self.__redis_enabled = self.bot.config["redis"]["enabled"]
         self._vote_cache = self.bot._topgg_votes  # pyright: ignore [reportPrivateUsage]
         self._server = web.Server(self._webhook_handler, access_log=None)
         self._runner = web.ServerRunner(self._server)
@@ -68,7 +69,13 @@ class TopggWebhookCog(
 
         self.logger.log(logging.INFO, f"Received request: {request_repr}")
         user_id = int(payload["user"])
-        self._vote_cache[user_id] = datetime.utcnow()
+
+        if self.__redis_enabled:
+            async with self.bot.redis() as redis:
+                await redis.set(f"votes:{user_id}", str(int(datetime.utcnow().timestamp())))
+
+        else:
+            self._vote_cache[user_id] = datetime.utcnow()
 
         return web.Response()
 

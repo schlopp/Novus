@@ -532,7 +532,7 @@ class Bot(MinimalBot):
         )
         return self._upgrade_chat
     
-    def user_has_voted(self, user_id: int) -> bool:
+    async def user_has_voted(self, user_id: int) -> bool:
         """
         Returns whether or not the user has vote registered through the top.gg webhook. If the
         top.gg webhook server is not enabled in your
@@ -545,14 +545,21 @@ class Bot(MinimalBot):
         if not self.config.get("topgg_webhook", {}).get("enabled", False):
             raise NotImplementedError
 
-        try:
-            last_vote = self._topgg_votes[user_id]
-        except KeyError:
-            return False
+        if self.config["redis"]["enabled"]:
+            async with self.redis() as redis:
+                last_vote_timestamp = int(await redis.get(f"votes:{user_id}"))
+                last_vote = datetime.utcfromtimestamp(last_vote_timestamp)
+        
+        else:
+            try:
+                last_vote = self._topgg_votes[user_id]
+            except KeyError:
+                return False
 
         vote_expiration_date = last_vote + timedelta(hours=12)
 
         return vote_expiration_date > datetime.utcnow()
+
 
     async def get_user_topgg_vote(self, user_id: int) -> bool:
         """

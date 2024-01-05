@@ -34,7 +34,7 @@ def is_voter(timeout: float = 3.0):
     async def predicate(ctx: commands.Context[Bot]):
 
         try:
-            return ctx.bot.user_has_voted(ctx.author.id)
+            return await ctx.bot.user_has_voted(ctx.author.id)
         except NotImplementedError:
             pass
 
