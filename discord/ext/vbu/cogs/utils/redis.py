@@ -129,7 +129,7 @@ class RedisConnection(object):
         self.logger.debug(f"Setting Redis key:value pair with {key}:{value}")
         return await self.conn.set(key, value)
 
-    async def get(self, key: str) -> str:
+    async def get(self, key: str) -> str | None:
         """
         Gets a value from the Redis DB given a key.
 
@@ -138,6 +138,7 @@ class RedisConnection(object):
 
         Returns:
             str: The key from the database.
+            None: No value was found.
         """
 
         v = await self.conn.get(key)
