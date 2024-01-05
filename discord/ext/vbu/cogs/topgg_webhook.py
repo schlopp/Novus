@@ -1,6 +1,6 @@
 import logging
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import TypedDict, NotRequired, Literal
 
 from aiohttp import web
