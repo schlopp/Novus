@@ -83,16 +83,6 @@ class TopggWebhookCog(
         await site.start()
         await asyncio.Future()
 
-    def user_has_voted(self, user_id: int) -> bool:
-        try:
-            last_vote = self._vote_cache[user_id]
-        except KeyError:
-            return False
-
-        vote_expiration_date = last_vote + timedelta(hours=12)
-
-        return vote_expiration_date > datetime.utcnow()
-
 
 def setup(bot: vbu.Bot):
     if bot.config.get("topgg_webhook", {}).get("enabled", False):
