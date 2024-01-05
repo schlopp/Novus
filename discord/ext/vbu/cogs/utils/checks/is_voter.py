@@ -2,6 +2,8 @@ import asyncio
 
 from discord.ext import commands
 
+from .. import Bot
+
 
 class IsNotVoter(commands.CheckFailure):
     """
@@ -29,7 +31,12 @@ def is_voter(timeout: float = 3.0):
         "You need to vote for the bot (`{ctx.clean_prefix}vote`) to be able to run this command."
     )
 
-    async def predicate(ctx: commands.Context):
+    async def predicate(ctx: commands.Context[Bot]):
+
+        try:
+            return ctx.bot.user_has_voted(ctx.author.id)
+        except NotImplementedError:
+            pass
 
         # Get the API token
         topgg_token = ctx.bot.config.get("bot_listing_api_keys", {}).get("topgg_token")

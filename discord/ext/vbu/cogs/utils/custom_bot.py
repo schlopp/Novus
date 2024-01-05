@@ -539,9 +539,12 @@ class Bot(MinimalBot):
         :attr:`config file<BotConfig.topgg_webhook.enabled>` then this will raise an `Exception`.
 
         Raises:
-            `Exception`: Top.gg webhook server is not enabled.
+            `NotImplementedError`: Top.gg webhook server is not enabled.
         """
         
+        if not self.config.get("topgg_webhook", {}).get("enabled", False):
+            raise NotImplementedError
+
         try:
             last_vote = self._topgg_votes[user_id]
         except KeyError:
