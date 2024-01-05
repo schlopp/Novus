@@ -547,7 +547,12 @@ class Bot(MinimalBot):
 
         if self.config["redis"]["enabled"]:
             async with self.redis() as redis:
-                last_vote_timestamp = int(await redis.get(f"votes:{user_id}"))
+                last_vote_data = await redis.get(f"votes:{user_id}")
+
+                if last_vote_data is None:
+                    return False
+                
+                last_vote_timestamp = int(last_vote_data)
                 last_vote = datetime.utcfromtimestamp(last_vote_timestamp)
         
         else:
