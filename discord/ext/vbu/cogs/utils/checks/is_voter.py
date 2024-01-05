@@ -36,7 +36,7 @@ def is_voter(timeout: float = 3.0):
 
         # Try and get the information
         try:
-            voted = asyncio.wait_for(ctx.bot.get_user_topgg_vote(ctx.author.id), timeout=3)
+            voted = await asyncio.wait_for(ctx.bot.get_user_topgg_vote(ctx.author.id), timeout=3)
         except asyncio.TimeoutError:
             raise commands.CheckFailure("Top.gg is currently unable to process my request for voters - please try again later.")
 
