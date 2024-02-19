@@ -1138,6 +1138,16 @@ class Client:
     @overload
     async def wait_for(
         self,
+        event: Literal["vote"],
+        *,
+        check: Optional[Callable[[User], bool]] = None,
+        timeout: Optional[float] = None,
+    ) -> User:
+        ...
+
+    @overload
+    async def wait_for(
+        self,
         event: str,
         *,
         check: Optional[Callable[..., bool]] = None,
