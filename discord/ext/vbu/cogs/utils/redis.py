@@ -175,8 +175,7 @@ class RedisConnection(object):
         """
 
         assert self.conn
-        await self.co
-        nn.delete(key)
+        await self.conn.delete(key)
         self.logger.debug(f"Deleting Redis from key with {key}")
 
 
