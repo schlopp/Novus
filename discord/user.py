@@ -95,6 +95,8 @@ class BaseUser(_UserTag):
         )
 
     def __str__(self) -> str:
+        if self.discriminator == "0":
+            return self.name
         return f"{self.name}#{self.discriminator}"
 
     def __eq__(self, other: Any) -> bool:
