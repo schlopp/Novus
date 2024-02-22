@@ -147,7 +147,7 @@ class RedisConnection(object):
             return v.decode()
         return v
 
-    async def mget(self, *keys) -> typing.List[str]:
+    async def mget(self, *keys: str) -> typing.List[str]:
         """
         Gets multiple values from the Redis DB given a list of keys.
 
@@ -165,6 +165,19 @@ class RedisConnection(object):
         if v:
             return [i.decode() for i in v]
         return v
+    
+    async def delete(self, key: str) -> None:
+        """
+        Delete a key/value pair from the redis DB.
+
+        Args:
+            key (str): The key you want to delete
+        """
+
+        assert self.conn
+        await self.co
+        nn.delete(key)
+        self.logger.debug(f"Deleting Redis from key with {key}")
 
 
 class RedisChannelHandler(object):
