@@ -21,7 +21,7 @@ class Analytics(vbu.Cog):
     def cog_unload(self):
         self.logger.info("Stopping Statsd guild count poster loop")
 
-        if not bot.config.get("bot_listing_api_keys", {}).get("override_bot_id"):
+        if not self.bot.config.get("bot_listing_api_keys", {}).get("override_bot_id"):
             self.post_statsd_guild_count.cancel()
             self.logger.info("Stopping Top.gg guild count poster loop")
             self.post_topgg_guild_count.cancel()
