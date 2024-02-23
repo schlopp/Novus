@@ -10,6 +10,7 @@ __all__ = (
     "_BotListingApiKeys",
     "_BotInfoLinks",
     "_BotInfo",
+    "_HelpCommand",
     "_Database",
     "_Redis",
     "_ShardManager",
@@ -83,6 +84,7 @@ class _BotInfo(TypedDict):
 
 
 class _HelpCommand(TypedDict):
+    use_vbu_implementation: bool
     dm_help: bool
     content: str
 

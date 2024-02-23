@@ -35,6 +35,8 @@ class Help(vbu.Cog):
 
 
 def setup(bot: vbu.Bot):
+    if not bot.config.get("help_command", {}).get("use_vbu_implementation", True):
+        return
     x = Help(bot)
     if not bot.config.get("default_prefix"):
         return bot.remove_command("help")
@@ -42,4 +44,6 @@ def setup(bot: vbu.Bot):
 
 
 def teardown(bot: vbu.Bot):
+    if not bot.config.get("help_command", {}).get("use_vbu_implementation", True):
+        return
     bot.help_command = Help._original_help_command
