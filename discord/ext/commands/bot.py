@@ -207,7 +207,7 @@ class BotBase(GroupMixin):
             try:
                 self.unload_extension(extension)
             except Exception:
-                pass
+                raise
 
         for cog in tuple(self.__cogs):
             try:
