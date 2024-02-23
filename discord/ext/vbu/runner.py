@@ -903,6 +903,14 @@ async def run_modify_commands(args: argparse.Namespace) -> None:
     bot.logger = logger.getChild("bot")
     set_default_log_levels(args)
 
+    # Connect the database pool
+    if bot.config.get("database", {}).get("enabled", False):
+        await start_database_pool(bot.config)  # type: ignore
+
+    # Connect the redis pool
+    if bot.config.get("redis", {}).get("enabled", False):
+        await start_redis_pool(bot.config)  # type: ignore
+
     # Load the bot's extensions
     logger.info("Loading extensions... ")
     bot.load_all_extensions()
@@ -921,3 +929,17 @@ async def run_modify_commands(args: argparse.Namespace) -> None:
     # Logout the bot
     logger.info("Logging out bot")
     await bot.close()
+    
+    # We're now done running the bot, time to clean up and close
+    if bot.config.get("database", {}).get("enabled", False):
+        logger.info("Closing database pool")
+        try:
+            if DatabaseWrapper.pool:
+                await asyncio.wait_for(DatabaseWrapper.pool.close(), timeout=30.0)
+        except asyncio.TimeoutError:
+            logger.error(
+                "Couldn't gracefully close the database connection pool within 30 seconds"
+            )
+    if bot.config.get("redis", {}).get("enabled", False):
+        logger.info("Closing redis pool")
+        RedisConnection.pool.close()
