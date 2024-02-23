@@ -490,4 +490,4 @@ class Cog(metaclass=CogMeta):
             try:
                 self.cog_unload()
             except Exception:
-                pass
+                raise
