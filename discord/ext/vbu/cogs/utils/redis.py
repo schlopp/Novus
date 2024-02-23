@@ -212,8 +212,8 @@ class RedisChannelHandler(object):
         Stop the running task.
         """
 
-        asyncio.get_event_loop().run_until_complete(self.unsubscribe())
-
+        asyncio.get_event_loop().create_task(self.unsubscribe())
+    
     async def channel_handler(self):
         """
         General handler for creating a channel, waiting for an input, and then plugging the
