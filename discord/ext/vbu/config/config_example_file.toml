@@ -86,6 +86,11 @@ bot_support_role_id = 0  # The ID used to determine whether or not the user is p
     [bot_info.links.Vote]
         url = "https://example.com/#your_vote_link"
 
+# Info pertaining to the help command
+[help_command]
+    dm_help = false
+    content = ""
+
 # Data needed for SQL database connections
 [database]
     type = "sqlite"  # postgres, sqlite, mysql

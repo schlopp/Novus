@@ -82,6 +82,11 @@ class _BotInfo(TypedDict):
     links: Dict[str, _BotInfoLinks]
 
 
+class _HelpCommand(TypedDict):
+    dm_help: bool
+    content: str
+
+
 # class _Oauth(TypedDict):
 #     enabled: bool
 #     response_type: str
@@ -184,6 +189,7 @@ class BotConfig(_BotConfigOptional):
     bot_listing_api_keys: _BotListingApiKeys
     topgg_webhook: _TopggWebhook
     bot_info: _BotInfo
+    help_command: _HelpCommand
     database: _Database
     redis: _Redis
     shard_manager: _ShardManager
