@@ -18,8 +18,7 @@ class _WebhookPayload(TypedDict):
 
 
 class TopggWebhookCog(
-    vbu.Cog[vbu.Bot],
-    command_attrs={"hidden": True, "add_slash_command": False}
+    vbu.Cog[vbu.Bot], command_attrs={"hidden": True, "add_slash_command": False}
 ):
     """
     Handles the creation and handling of the top.gg webhook server.
@@ -44,7 +43,7 @@ class TopggWebhookCog(
 
     async def _webhook_handler(self, request: web.BaseRequest) -> web.Response:
         request_repr = f"{request!r} from {request.remote}"
-        
+
         if request.method != "POST":
             self.logger.log(
                 logging.WARNING,
@@ -72,7 +71,9 @@ class TopggWebhookCog(
 
         if self.__redis_enabled:
             async with self.bot.redis() as redis:
-                await redis.set(f"votes:{user_id}", str(int(datetime.utcnow().timestamp())))
+                await redis.set(
+                    f"votes:{user_id}", str(int(datetime.utcnow().timestamp()))
+                )
 
         else:
             self._vote_cache[user_id] = datetime.utcnow()
@@ -98,6 +99,6 @@ class TopggWebhookCog(
 def setup(bot: vbu.Bot):
     if bot.shard_ids and 0 not in bot.shard_ids:
         return
-    
+
     if bot.config.get("topgg_webhook", {}).get("enabled", False):
         bot.add_cog(TopggWebhookCog(bot))

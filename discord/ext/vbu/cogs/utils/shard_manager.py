@@ -58,19 +58,19 @@ class ShardManagerServer(object):
         self.shard_keepalive_handler_task = None
 
         # Things used by the manager
-        self.max_concurrency: int = max_concurrency  #: The maximum number of shards that can connect concurrently.
+        self.max_concurrency: int = (
+            max_concurrency  #: The maximum number of shards that can connect concurrently.
+        )
         self.server: asyncio.Server = None  #: The shard manager TCP server.
 
         # Manager keeping track of shards
-        self.shards_connecting: typing.List[
-            int
-        ] = []  #: The IDs of the shards that are currently connecting.
+        self.shards_connecting: typing.List[int] = (
+            []
+        )  #: The IDs of the shards that are currently connecting.
         self.shard_queue = (
             asyncio.PriorityQueue()
         )  #: The IDs of the shards that are waiting to connect.
-        self.shards_in_queue: typing.List[
-            int
-        ] = (
+        self.shards_in_queue: typing.List[int] = (
             []
         )  #: A list of shard IDs that are in the queue because apparently I can't do that lookup.
         self.shard_wait_timers = (

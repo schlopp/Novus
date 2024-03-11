@@ -262,8 +262,7 @@ class GuildChannel:
 
         def __init__(
             self, *, state: ConnectionState, guild: Guild, data: Dict[str, Any]
-        ):
-            ...
+        ): ...
 
     def __str__(self) -> str:
         return self.name
@@ -717,8 +716,7 @@ class GuildChannel:
         *,
         overwrite: Optional[Union[PermissionOverwrite, _Undefined]] = ...,
         reason: Optional[str] = ...,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     @overload
     async def set_permissions(
@@ -727,8 +725,7 @@ class GuildChannel:
         *,
         reason: Optional[str] = ...,
         **permissions: bool,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     async def set_permissions(
         self, target, *, overwrite=_undefined, reason=None, **permissions
@@ -896,8 +893,7 @@ class GuildChannel:
         category: Optional[Snowflake] = MISSING,
         sync_permissions: bool = MISSING,
         reason: Optional[str] = MISSING,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     @overload
     async def move(
@@ -908,8 +904,7 @@ class GuildChannel:
         category: Optional[Snowflake] = MISSING,
         sync_permissions: bool = MISSING,
         reason: str = MISSING,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     @overload
     async def move(
@@ -920,8 +915,7 @@ class GuildChannel:
         category: Optional[Snowflake] = MISSING,
         sync_permissions: bool = MISSING,
         reason: str = MISSING,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     @overload
     async def move(
@@ -932,8 +926,7 @@ class GuildChannel:
         category: Optional[Snowflake] = MISSING,
         sync_permissions: bool = MISSING,
         reason: str = MISSING,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     async def move(self, **kwargs) -> None:
         """|coro|
@@ -1199,8 +1192,7 @@ class Messageable:
         reference: Union[Message, MessageReference, PartialMessage] = ...,
         mention_author: bool = ...,
         components: MessageComponents = ...,
-    ) -> Message:
-        ...
+    ) -> Message: ...
 
     @overload
     async def send(
@@ -1217,8 +1209,7 @@ class Messageable:
         reference: Union[Message, MessageReference, PartialMessage] = ...,
         mention_author: bool = ...,
         components: MessageComponents = ...,
-    ) -> Message:
-        ...
+    ) -> Message: ...
 
     @overload
     async def send(
@@ -1235,8 +1226,7 @@ class Messageable:
         reference: Union[Message, MessageReference, PartialMessage] = ...,
         mention_author: bool = ...,
         components: MessageComponents = ...,
-    ) -> Message:
-        ...
+    ) -> Message: ...
 
     @overload
     async def send(
@@ -1253,8 +1243,7 @@ class Messageable:
         reference: Union[Message, MessageReference, PartialMessage] = ...,
         mention_author: bool = ...,
         components: MessageComponents = ...,
-    ) -> Message:
-        ...
+    ) -> Message: ...
 
     async def send(
         self,

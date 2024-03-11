@@ -424,9 +424,11 @@ class ApplicationCommand(Snowflake):
             name_localizations=data.get("name_localizations", dict()),
             description_localizations=data.get("description_localizations", dict()),
             dm_permissions=data.get("dm_permissions", True),
-            default_member_permissions=None
-            if data.get("default_member_permissions") is None
-            else Permissions(int(data["default_member_permissions"])),
+            default_member_permissions=(
+                None
+                if data.get("default_member_permissions") is None
+                else Permissions(int(data["default_member_permissions"]))
+            ),
         )
         command.id = int(data.get("id", 0)) or None
         command.application_id = int(data.get("application_id", 0)) or None
@@ -449,9 +451,11 @@ class ApplicationCommand(Snowflake):
             "description_localizations": {
                 str(i): o for i, o in self.description_localizations.items()
             },
-            "default_member_permissions": str(self.default_member_permissions.value)
-            if self.default_member_permissions
-            else None,
+            "default_member_permissions": (
+                str(self.default_member_permissions.value)
+                if self.default_member_permissions
+                else None
+            ),
             "dm_permissions": self.dm_permissions,
         }
         if self.type != ApplicationCommandType.chat_input:

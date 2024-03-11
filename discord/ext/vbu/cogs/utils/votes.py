@@ -11,10 +11,10 @@ async def user_has_voted(user_id: int) -> bool:
     Raises:
         `NotImplementedError`: Redis database is not enabled.
     """
-    
+
     if not RedisConnection.enabled:
         raise NotImplementedError("Redis database is not enabled.")
-    
+
     if not RedisConnection.enabled:
         raise NotImplementedError("Redis database is not enabled.")
 
@@ -23,10 +23,10 @@ async def user_has_voted(user_id: int) -> bool:
 
     if last_vote_data is None:
         return False
-    
+
     last_vote_timestamp = int(last_vote_data)
     last_vote = datetime.utcfromtimestamp(last_vote_timestamp)
-    
+
     vote_expiration_date = last_vote + timedelta(hours=12)
 
     return vote_expiration_date > datetime.utcnow()

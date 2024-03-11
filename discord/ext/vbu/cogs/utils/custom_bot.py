@@ -531,7 +531,7 @@ class Bot(MinimalBot):
             session=self.session,
         )
         return self._upgrade_chat
-    
+
     async def user_has_voted(self, user_id: int) -> bool:
         """
         Returns whether or not the user has vote registered through the top.gg webhook. If the
@@ -541,7 +541,7 @@ class Bot(MinimalBot):
         Raises:
             `NotImplementedError`: Top.gg webhook server is not enabled.
         """
-        
+
         if not self.config.get("topgg_webhook", {}).get("enabled", False):
             raise NotImplementedError
 
@@ -551,10 +551,10 @@ class Bot(MinimalBot):
 
                 if last_vote_data is None:
                     return False
-                
+
                 last_vote_timestamp = int(last_vote_data)
                 last_vote = datetime.utcfromtimestamp(last_vote_timestamp)
-        
+
         else:
             try:
                 last_vote = self._topgg_votes[user_id]
@@ -564,7 +564,6 @@ class Bot(MinimalBot):
         vote_expiration_date = last_vote + timedelta(hours=12)
 
         return vote_expiration_date > datetime.utcnow()
-
 
     async def get_user_topgg_vote(self, user_id: int) -> bool:
         """
@@ -937,10 +936,12 @@ class Bot(MinimalBot):
 
     async def log_command(
         self,
-        context: commands.Context
-        | commands.SlashContext
-        | discord.Interaction
-        | commands.Command,
+        context: (
+            commands.Context
+            | commands.SlashContext
+            | discord.Interaction
+            | commands.Command
+        ),
         *,
         guild: Optional[discord.Guild] = None,
         **kwargs,

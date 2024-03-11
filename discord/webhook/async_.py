@@ -114,9 +114,9 @@ class AsyncDeferredLock:
 
 class AsyncWebhookAdapter:
     def __init__(self):
-        self._locks: weakref.WeakValueDictionary[
-            Any, asyncio.Lock
-        ] = weakref.WeakValueDictionary()
+        self._locks: weakref.WeakValueDictionary[Any, asyncio.Lock] = (
+            weakref.WeakValueDictionary()
+        )
 
     async def request(
         self,
@@ -1310,8 +1310,7 @@ class Webhook(BaseWebhook):
         components: MessageComponents = MISSING,
         thread: Snowflake = MISSING,
         wait: Literal[True],
-    ) -> WebhookMessage:
-        ...
+    ) -> WebhookMessage: ...
 
     @overload
     async def send(
@@ -1330,8 +1329,7 @@ class Webhook(BaseWebhook):
         components: MessageComponents = MISSING,
         thread: Snowflake = MISSING,
         wait: Literal[False] = ...,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     async def send(
         self,

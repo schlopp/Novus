@@ -41,8 +41,7 @@ if TYPE_CHECKING:
 class _ConverterProtocol(Protocol):
     callback: Callable
 
-    async def convert(self, ctx, value):
-        ...
+    async def convert(self, ctx, value): ...
 
 
 class _FakeConverter(object):
@@ -67,8 +66,7 @@ class Converter(object):
         components: discord.ui.MessageComponents = ...,
         timeout_message: Optional[str] = ...,
         input_text_kwargs: Optional[Dict[str, Any]] = None,
-    ):
-        ...
+    ): ...
 
     @overload
     def __init__(
@@ -79,8 +77,7 @@ class Converter(object):
         components: Optional[discord.ui.MessageComponents] = None,
         timeout_message: Optional[str] = ...,
         input_text_kwargs: Optional[Dict[str, Any]] = None,
-    ):
-        ...
+    ): ...
 
     def __init__(
         self,

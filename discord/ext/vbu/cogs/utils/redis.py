@@ -165,7 +165,7 @@ class RedisConnection(object):
         if v:
             return [i.decode() for i in v]
         return v
-    
+
     async def delete(self, key: str) -> None:
         """
         Delete a key/value pair from the redis DB.
@@ -213,7 +213,7 @@ class RedisChannelHandler(object):
         """
 
         asyncio.get_event_loop().create_task(self.unsubscribe())
-    
+
     async def channel_handler(self):
         """
         General handler for creating a channel, waiting for an input, and then plugging the

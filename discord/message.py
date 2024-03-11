@@ -1191,8 +1191,7 @@ class Message(Hashable):
         delete_after: Optional[float] = ...,
         allowed_mentions: Optional[AllowedMentions] = ...,
         components: Optional[MessageComponents] = ...,
-    ) -> Message:
-        ...
+    ) -> Message: ...
 
     @overload
     async def edit(
@@ -1205,8 +1204,7 @@ class Message(Hashable):
         delete_after: Optional[float] = ...,
         allowed_mentions: Optional[AllowedMentions] = ...,
         components: Optional[MessageComponents] = ...,
-    ) -> Message:
-        ...
+    ) -> Message: ...
 
     async def edit(
         self,

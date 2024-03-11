@@ -929,7 +929,7 @@ async def run_modify_commands(args: argparse.Namespace) -> None:
     # Logout the bot
     logger.info("Logging out bot")
     await bot.close()
-    
+
     # We're now done running the bot, time to clean up and close
     if bot.config.get("database", {}).get("enabled", False):
         logger.info("Closing database pool")

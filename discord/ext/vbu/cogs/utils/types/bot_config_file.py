@@ -63,6 +63,7 @@ class _BotListingApiKeys(TypedDict):
     topgg_token: str
     discordbotlist_token: str
 
+
 class _TopggWebhook(TypedDict):
     enabled: bool
     host: str

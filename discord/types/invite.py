@@ -61,12 +61,10 @@ class IncompleteInvite(_InviteMetadata):
     channel: PartialChannel
 
 
-class Invite(IncompleteInvite, _InviteOptional):
-    ...
+class Invite(IncompleteInvite, _InviteOptional): ...
 
 
-class InviteWithCounts(Invite, _GuildPreviewUnique):
-    ...
+class InviteWithCounts(Invite, _GuildPreviewUnique): ...
 
 
 class _GatewayInviteCreateOptional(TypedDict, total=False):

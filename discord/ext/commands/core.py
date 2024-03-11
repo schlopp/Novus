@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
+
 from __future__ import annotations
 
 from typing import (
@@ -1771,8 +1772,7 @@ class GroupMixin(Generic[CogT]):
             ]
         ],
         Command[CogT, P, T],
-    ]:
-        ...
+    ]: ...
 
     @overload
     def command(
@@ -1781,8 +1781,7 @@ class GroupMixin(Generic[CogT]):
         cls: Type[CommandT] = ...,
         *args: Any,
         **kwargs: Any,
-    ) -> Callable[[Callable[Concatenate[ContextT, P], Coro[Any]]], CommandT]:
-        ...
+    ) -> Callable[[Callable[Concatenate[ContextT, P], Coro[Any]]], CommandT]: ...
 
     def command(
         self,
@@ -1823,8 +1822,7 @@ class GroupMixin(Generic[CogT]):
             ]
         ],
         Group[CogT, P, T],
-    ]:
-        ...
+    ]: ...
 
     @overload
     def group(
@@ -1833,8 +1831,7 @@ class GroupMixin(Generic[CogT]):
         cls: Type[GroupT] = ...,
         *args: Any,
         **kwargs: Any,
-    ) -> Callable[[Callable[Concatenate[ContextT, P], Coro[Any]]], GroupT]:
-        ...
+    ) -> Callable[[Callable[Concatenate[ContextT, P], Coro[Any]]], GroupT]: ...
 
     def group(
         self,
@@ -2033,8 +2030,7 @@ def command(
         ]
     ],
     Command[CogT, P, T],
-]:
-    ...
+]: ...
 
 
 @overload
@@ -2050,8 +2046,7 @@ def command(
         ]
     ],
     CommandT,
-]:
-    ...
+]: ...
 
 
 def command(
@@ -2123,8 +2118,7 @@ def context_command(
         ]
     ],
     Command[CogT, P, T],
-]:
-    ...
+]: ...
 
 
 @overload
@@ -2140,8 +2134,7 @@ def context_command(
         ]
     ],
     CommandT,
-]:
-    ...
+]: ...
 
 
 def context_command(
@@ -2217,8 +2210,7 @@ def group(
         ]
     ],
     Group[CogT, P, T],
-]:
-    ...
+]: ...
 
 
 @overload
@@ -2234,8 +2226,7 @@ def group(
         ]
     ],
     GroupT,
-]:
-    ...
+]: ...
 
 
 def group(
@@ -2494,9 +2485,11 @@ def has_any_role(*items: Union[int, str]) -> Callable[[T], T]:
         # ctx.guild is None doesn't narrow ctx.author to Member
         getter = functools.partial(discord.utils.get, ctx.author.roles)  # type: ignore
         if any(
-            getter(id=item) is not None
-            if isinstance(item, int)
-            else getter(name=item) is not None
+            (
+                getter(id=item) is not None
+                if isinstance(item, int)
+                else getter(name=item) is not None
+            )
             for item in items
         ):
             return True
@@ -2546,9 +2539,11 @@ def bot_has_any_role(*items: int) -> Callable[[T], T]:
         me = ctx.me
         getter = functools.partial(discord.utils.get, me.roles)
         if any(
-            getter(id=item) is not None
-            if isinstance(item, int)
-            else getter(name=item) is not None
+            (
+                getter(id=item) is not None
+                if isinstance(item, int)
+                else getter(name=item) is not None
+            )
             for item in items
         ):
             return True

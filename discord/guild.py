@@ -2537,8 +2537,7 @@ class Guild(Hashable):
         colour: Union[Colour, int] = ...,
         hoist: bool = ...,
         mentionable: bool = ...,
-    ) -> Role:
-        ...
+    ) -> Role: ...
 
     @overload
     async def create_role(
@@ -2550,8 +2549,7 @@ class Guild(Hashable):
         color: Union[Colour, int] = ...,
         hoist: bool = ...,
         mentionable: bool = ...,
-    ) -> Role:
-        ...
+    ) -> Role: ...
 
     async def create_role(
         self,
@@ -2731,12 +2729,10 @@ class Guild(Hashable):
         description: Optional[str] = ...,
         welcome_channels: Optional[List[WelcomeChannel]] = ...,
         enabled: Optional[bool] = ...,
-    ) -> WelcomeScreen:
-        ...
+    ) -> WelcomeScreen: ...
 
     @overload
-    async def edit_welcome_screen(self) -> None:
-        ...
+    async def edit_welcome_screen(self) -> None: ...
 
     async def edit_welcome_screen(self, **kwargs):
         """|coro|

@@ -284,12 +284,10 @@ class TextChannel(discord.abc.Messageable, discord.abc.Threadable, Hashable):
         default_auto_archive_duration: ThreadArchiveDuration = ...,
         type: ChannelType = ...,
         overwrites: Mapping[Union[Role, Member, Snowflake], PermissionOverwrite] = ...,
-    ) -> Optional[TextChannel]:
-        ...
+    ) -> Optional[TextChannel]: ...
 
     @overload
-    async def edit(self) -> Optional[TextChannel]:
-        ...
+    async def edit(self) -> Optional[TextChannel]: ...
 
     async def edit(self, *, reason=None, **options):
         """|coro|
@@ -876,12 +874,10 @@ class VoiceChannel(VocalGuildChannel, discord.abc.Messageable):
         video_quality_mode: VideoQualityMode = ...,
         nsfw: bool = ...,
         reason: Optional[str] = ...,
-    ) -> Optional[VoiceChannel]:
-        ...
+    ) -> Optional[VoiceChannel]: ...
 
     @overload
-    async def edit(self) -> Optional[VoiceChannel]:
-        ...
+    async def edit(self) -> Optional[VoiceChannel]: ...
 
     async def edit(self, *, reason=None, **options):
         """|coro|
@@ -1149,12 +1145,10 @@ class StageChannel(VocalGuildChannel):
         rtc_region: Optional[VoiceRegion] = ...,
         video_quality_mode: VideoQualityMode = ...,
         reason: Optional[str] = ...,
-    ) -> Optional[StageChannel]:
-        ...
+    ) -> Optional[StageChannel]: ...
 
     @overload
-    async def edit(self) -> Optional[StageChannel]:
-        ...
+    async def edit(self) -> Optional[StageChannel]: ...
 
     async def edit(self, *, reason=None, **options):
         """|coro|
@@ -1308,12 +1302,10 @@ class CategoryChannel(discord.abc.GuildChannel, Hashable):
         nsfw: bool = ...,
         overwrites: Mapping[Union[Role, Member], PermissionOverwrite] = ...,
         reason: Optional[str] = ...,
-    ) -> Optional[CategoryChannel]:
-        ...
+    ) -> Optional[CategoryChannel]: ...
 
     @overload
-    async def edit(self) -> Optional[CategoryChannel]:
-        ...
+    async def edit(self) -> Optional[CategoryChannel]: ...
 
     async def edit(self, *, reason=None, **options):
         """|coro|
@@ -1571,12 +1563,10 @@ class StoreChannel(discord.abc.GuildChannel, Hashable):
         category: Optional[CategoryChannel],
         reason: Optional[str],
         overwrites: Mapping[Union[Role, Member], PermissionOverwrite],
-    ) -> Optional[StoreChannel]:
-        ...
+    ) -> Optional[StoreChannel]: ...
 
     @overload
-    async def edit(self) -> Optional[StoreChannel]:
-        ...
+    async def edit(self) -> Optional[StoreChannel]: ...
 
     async def edit(self, *, reason=None, **options):
         """|coro|
@@ -1758,12 +1748,10 @@ class ForumChannel(discord.abc.Threadable, Hashable):
         category: Optional[CategoryChannel],
         reason: Optional[str],
         overwrites: Mapping[Union[Role, Member], PermissionOverwrite],
-    ) -> Optional[ForumChannel]:
-        ...
+    ) -> Optional[ForumChannel]: ...
 
     @overload
-    async def edit(self) -> Optional[ForumChannel]:
-        ...
+    async def edit(self) -> Optional[ForumChannel]: ...
 
     async def edit(self, *, reason=None, **options):
         """|coro|

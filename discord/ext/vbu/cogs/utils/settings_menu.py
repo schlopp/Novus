@@ -77,9 +77,9 @@ class SettingsMenuOption(object):
         """
 
         self.context: commands.Context = ctx
-        self._display: typing.Union[
-            str, typing.Callable[[commands.Context], str]
-        ] = display
+        self._display: typing.Union[str, typing.Callable[[commands.Context], str]] = (
+            display
+        )
         self.converter_args: typing.List[SettingsMenuConverter] = (
             converter_args or list()
         )
@@ -604,9 +604,9 @@ class SettingsMenuOption(object):
 
                 # Cache the converted value
                 if value:
-                    ctx.bot.guild_settings[ctx.guild.id][cache_key][
-                        role.id
-                    ] = serialize_function(original_value)
+                    ctx.bot.guild_settings[ctx.guild.id][cache_key][role.id] = (
+                        serialize_function(original_value)
+                    )
                 else:
                     if role.id not in ctx.bot.guild_settings[ctx.guild.id][cache_key]:
                         ctx.bot.guild_settings[ctx.guild.id][cache_key].append(role.id)
@@ -892,9 +892,9 @@ class SettingsMenuIterable(SettingsMenu):
                 column_name=column_name,
                 cache_key=cache_key,
                 database_key=database_key,
-                serialize_function=str
-                if len(self.converters) == 1
-                else self.converters[1].serialize,
+                serialize_function=(
+                    str if len(self.converters) == 1 else self.converters[1].serialize
+                ),
                 original_data_type=list if len(self.converters) == 1 else dict,
             )
         )

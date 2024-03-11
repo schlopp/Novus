@@ -158,12 +158,10 @@ class WelcomeScreen:
         description: Optional[str] = ...,
         welcome_channels: Optional[List[WelcomeChannel]] = ...,
         enabled: Optional[bool] = ...,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     @overload
-    async def edit(self) -> None:
-        ...
+    async def edit(self) -> None: ...
 
     async def edit(self, **kwargs):
         """|coro|

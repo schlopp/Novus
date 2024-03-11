@@ -161,7 +161,12 @@ class Embed(discord.Embed):
         raise KeyError("Key not found in embed")
 
     def edit_field_by_index(
-        self, index: int, *, name: str | None = None, value: str | None = None, inline: bool = None
+        self,
+        index: int,
+        *,
+        name: str | None = None,
+        value: str | None = None,
+        inline: bool = None,
     ) -> Embed:
         """
         Edit a field in the embed using its index.
@@ -184,7 +189,12 @@ class Embed(discord.Embed):
         return self
 
     def edit_field_by_key(
-        self, key: str, *, name: str | None = None, value: str | None = None, inline: bool = None
+        self,
+        key: str,
+        *,
+        name: str | None = None,
+        value: str | None = None,
+        inline: bool = None,
     ) -> Embed:
         """
         Edit a field in the embed using its name as a key.

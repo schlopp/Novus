@@ -283,7 +283,10 @@ class Paginator:
 
         if isinstance(d[0], discord.Embed):
             return {"embeds": d}
-        return Embed(use_random_colour=True, description="\n".join(d),).set_footer(
+        return Embed(
+            use_random_colour=True,
+            description="\n".join(d),
+        ).set_footer(
             f"Page {m.current_page + 1}/{m.max_pages}",
         )
 

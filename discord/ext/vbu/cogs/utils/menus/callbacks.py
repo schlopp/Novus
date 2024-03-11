@@ -74,11 +74,11 @@ class MenuCallbacks(object):
             )
             args = (
                 table_name,
-                "guild_id"
-                if data_location == DataLocation.GUILD
-                else "user_id"
-                if data_location == DataLocation.USER
-                else None,
+                (
+                    "guild_id"
+                    if data_location == DataLocation.GUILD
+                    else "user_id" if data_location == DataLocation.USER else None
+                ),
                 column_name,
             )
             data = [i.id if cls._is_discord_object(i) else i for i in data]
@@ -86,22 +86,30 @@ class MenuCallbacks(object):
                 try:
                     await db(
                         insert_sql.format(*args),
-                        ctx.guild.id
-                        if data_location == DataLocation.GUILD
-                        else ctx.author.id
-                        if data_location == DataLocation.USER
-                        else None,
+                        (
+                            ctx.guild.id
+                            if data_location == DataLocation.GUILD
+                            else (
+                                ctx.author.id
+                                if data_location == DataLocation.USER
+                                else None
+                            )
+                        ),
                         *data,
                     )
                 except Exception:  # Hopefully it's a unique violation error
                     await db(
                         conflict_sql.format(*args),
                         *data,
-                        ctx.guild.id
-                        if data_location == DataLocation.GUILD
-                        else ctx.author.id
-                        if data_location == DataLocation.USER
-                        else None,
+                        (
+                            ctx.guild.id
+                            if data_location == DataLocation.GUILD
+                            else (
+                                ctx.author.id
+                                if data_location == DataLocation.USER
+                                else None
+                            )
+                        ),
                     )
 
         return wrapper

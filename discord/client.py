@@ -232,9 +232,9 @@ class Client:
         self.loop: asyncio.AbstractEventLoop = (
             asyncio.get_event_loop() if loop is None else loop
         )
-        self._listeners: Dict[
-            str, List[Tuple[asyncio.Future, Callable[..., bool]]]
-        ] = {}
+        self._listeners: Dict[str, List[Tuple[asyncio.Future, Callable[..., bool]]]] = (
+            {}
+        )
         self.shard_id: Optional[int] = options.get("shard_id")
         self.shard_count: Optional[int] = options.get("shard_count")
 
@@ -1042,8 +1042,7 @@ class Client:
         *,
         check: Optional[Callable[[Message], bool]] = None,
         timeout: Optional[float] = None,
-    ) -> Message:
-        ...
+    ) -> Message: ...
 
     @overload
     async def wait_for(
@@ -1052,8 +1051,7 @@ class Client:
         *,
         check: Optional[Callable[[Reaction, Union[User, Member]], bool]] = None,
         timeout: Optional[float] = None,
-    ) -> Tuple[Reaction, Union[User, Member]]:
-        ...
+    ) -> Tuple[Reaction, Union[User, Member]]: ...
 
     @overload
     async def wait_for(
@@ -1062,8 +1060,7 @@ class Client:
         *,
         check: Optional[Callable[[RawReactionActionEvent], bool]] = None,
         timeout: Optional[float] = None,
-    ) -> RawReactionActionEvent:
-        ...
+    ) -> RawReactionActionEvent: ...
 
     @overload
     async def wait_for(
@@ -1072,8 +1069,7 @@ class Client:
         *,
         check: Optional[Callable[[Reaction, Union[User, Member]], bool]] = None,
         timeout: Optional[float] = None,
-    ) -> Tuple[Reaction, Union[User, Member]]:
-        ...
+    ) -> Tuple[Reaction, Union[User, Member]]: ...
 
     @overload
     async def wait_for(
@@ -1082,8 +1078,7 @@ class Client:
         *,
         check: Optional[Callable[[RawReactionActionEvent], bool]] = None,
         timeout: Optional[float] = None,
-    ) -> RawReactionActionEvent:
-        ...
+    ) -> RawReactionActionEvent: ...
 
     @overload
     async def wait_for(
@@ -1092,8 +1087,7 @@ class Client:
         *,
         check: Optional[Callable[[CommandInteraction], bool]] = None,
         timeout: Optional[float] = None,
-    ) -> CommandInteraction:
-        ...
+    ) -> CommandInteraction: ...
 
     @overload
     async def wait_for(
@@ -1102,8 +1096,7 @@ class Client:
         *,
         check: Optional[Callable[[ComponentInteraction], bool]] = None,
         timeout: Optional[float] = None,
-    ) -> ComponentInteraction:
-        ...
+    ) -> ComponentInteraction: ...
 
     @overload
     async def wait_for(
@@ -1112,8 +1105,7 @@ class Client:
         *,
         check: Optional[Callable[[AutocompleteInteraction], bool]] = None,
         timeout: Optional[float] = None,
-    ) -> AutocompleteInteraction:
-        ...
+    ) -> AutocompleteInteraction: ...
 
     @overload
     async def wait_for(
@@ -1122,8 +1114,7 @@ class Client:
         *,
         check: Optional[Callable[[ModalInteraction], bool]] = None,
         timeout: Optional[float] = None,
-    ) -> ModalInteraction:
-        ...
+    ) -> ModalInteraction: ...
 
     @overload
     async def wait_for(
@@ -1132,8 +1123,7 @@ class Client:
         *,
         check: Optional[Callable[[Interaction], bool]] = None,
         timeout: Optional[float] = None,
-    ) -> Interaction:
-        ...
+    ) -> Interaction: ...
 
     @overload
     async def wait_for(
@@ -1142,8 +1132,7 @@ class Client:
         *,
         check: Optional[Callable[[User], bool]] = None,
         timeout: Optional[float] = None,
-    ) -> User:
-        ...
+    ) -> User: ...
 
     @overload
     async def wait_for(
@@ -1152,8 +1141,7 @@ class Client:
         *,
         check: Optional[Callable[..., bool]] = None,
         timeout: Optional[float] = None,
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
     def wait_for(
         self,

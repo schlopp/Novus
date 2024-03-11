@@ -5,7 +5,9 @@ from aiohttp.web import HTTPFound, Request
 
 
 def add_discord_arguments(
-    *, redirect_if_logged_out: str | None = None, redirect_if_logged_in: str | None = None
+    *,
+    redirect_if_logged_out: str | None = None,
+    redirect_if_logged_in: str | None = None
 ):
     """
     This function is a wrapper around all routes. It takes the output and

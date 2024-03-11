@@ -44,13 +44,11 @@ T = TypeVar("T")
 
 
 @overload
-def _do_nothing(return_value: Type[T]) -> Callable[[], T]:
-    ...
+def _do_nothing(return_value: Type[T]) -> Callable[[], T]: ...
 
 
 @overload
-def _do_nothing(return_value=None) -> Callable[[], None]:
-    ...
+def _do_nothing(return_value=None) -> Callable[[], None]: ...
 
 
 def _do_nothing(return_value: Optional[Type[T]] = None) -> Callable[[], Optional[T]]:
@@ -89,9 +87,9 @@ class Menu(MenuDisplayable):
         """
 
         self.display: Optional[str] = display  # Used for nested menus
-        self.component_display: Optional[
-            str
-        ] = component_display  # Used for nested menus
+        self.component_display: Optional[str] = (
+            component_display  # Used for nested menus
+        )
         self._options = list(options)
 
     @overload
@@ -106,8 +104,7 @@ class Menu(MenuDisplayable):
         post_invoke: Optional[MaybeCoroContextCallable] = None,
         guild_only: bool = True,
         **command_kwargs,
-    ) -> Type[commands.Cog]:
-        ...
+    ) -> Type[commands.Cog]: ...
 
     @overload
     def create_cog(
@@ -121,8 +118,7 @@ class Menu(MenuDisplayable):
         post_invoke: Optional[MaybeCoroContextCallable] = None,
         guild_only: bool = True,
         **command_kwargs,
-    ) -> commands.Cog:
-        ...
+    ) -> commands.Cog: ...
 
     def create_cog(
         self,

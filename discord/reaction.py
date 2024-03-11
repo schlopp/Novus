@@ -85,9 +85,9 @@ class Reaction:
         emoji: Optional[Union[PartialEmoji, Emoji, str]] = None,
     ):
         self.message: Message = message
-        self.emoji: Union[
-            PartialEmoji, Emoji, str
-        ] = emoji or message._state.get_reaction_emoji(data["emoji"])
+        self.emoji: Union[PartialEmoji, Emoji, str] = (
+            emoji or message._state.get_reaction_emoji(data["emoji"])
+        )
         self.count: int = data.get("count", 1)
         self.me: bool = data.get("me")
 
