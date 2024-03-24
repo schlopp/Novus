@@ -1,6 +1,6 @@
 import logging
 import asyncio
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import TypedDict, NotRequired, Literal
 
 from aiohttp import web
@@ -72,11 +72,11 @@ class TopggWebhookCog(
         if self.__redis_enabled:
             async with self.bot.redis() as redis:
                 await redis.set(
-                    f"votes:{user_id}", str(int(datetime.utcnow().timestamp()))
+                    f"votes:{user_id}", str(int(datetime.now(UTC).timestamp()))
                 )
 
         else:
-            self._vote_cache[user_id] = datetime.utcnow()
+            self._vote_cache[user_id] = datetime.now(UTC)
 
         user = await self.bot.fetch_user(user_id)
 
