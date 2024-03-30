@@ -205,7 +205,7 @@ class BotBase(GroupMixin):
     async def close(self) -> None:
         for extension in tuple(self.__extensions):
             try:
-                self.unload_extension(extension)
+                await self.unload_extension(extension)
             except Exception:
                 raise
 
@@ -674,14 +674,17 @@ class BotBase(GroupMixin):
             for index in reversed(remove):
                 del event_list[index]
 
-    def _call_module_finalizers(self, lib: types.ModuleType, key: str) -> None:
+    async def _call_module_finalizers(self, lib: types.ModuleType, key: str) -> None:
         try:
             func = getattr(lib, "teardown")
         except AttributeError:
             pass
         else:
             try:
-                func(self)
+                if asyncio.iscoroutinefunction(func):
+                    await func(self)
+                else:
+                    func(self)
             except Exception:
                 pass
         finally:
@@ -692,7 +695,7 @@ class BotBase(GroupMixin):
                 if _is_submodule(name, module):
                     del sys.modules[module]
 
-    def _load_from_module_spec(
+    async def _load_from_module_spec(
         self, spec: importlib.machinery.ModuleSpec, key: str
     ) -> None:
         # precondition: key not in self.__extensions
@@ -715,7 +718,7 @@ class BotBase(GroupMixin):
         except Exception as e:
             del sys.modules[key]
             self._remove_module_references(lib.__name__)
-            self._call_module_finalizers(lib, key)
+            await self._call_module_finalizers(lib, key)
             raise errors.ExtensionFailed(key, e) from e
         else:
             self.__extensions[key] = lib
@@ -726,7 +729,7 @@ class BotBase(GroupMixin):
         except ImportError:
             raise errors.ExtensionNotFound(name)
 
-    def load_extension(self, name: str, *, package: Optional[str] = None) -> None:
+    async def load_extension(self, name: str, *, package: Optional[str] = None) -> None:
         """Loads an extension.
 
         An extension is a python module that contains commands, cogs, or
@@ -769,9 +772,9 @@ class BotBase(GroupMixin):
         if spec is None:
             raise errors.ExtensionNotFound(name)
 
-        self._load_from_module_spec(spec, name)
+        await self._load_from_module_spec(spec, name)
 
-    def unload_extension(self, name: str, *, package: Optional[str] = None) -> None:
+    async def unload_extension(self, name: str, *, package: Optional[str] = None) -> None:
         """Unloads an extension.
 
         When the extension is unloaded, all commands, listeners, and cogs are
@@ -808,9 +811,9 @@ class BotBase(GroupMixin):
             raise errors.ExtensionNotLoaded(name)
 
         self._remove_module_references(lib.__name__)
-        self._call_module_finalizers(lib, name)
+        await self._call_module_finalizers(lib, name)
 
-    def reload_extension(self, name: str, *, package: Optional[str] = None) -> None:
+    async def reload_extension(self, name: str, *, package: Optional[str] = None) -> None:
         """Atomically reloads an extension.
 
         This replaces the extension with the same extension, only refreshed. This is
@@ -858,8 +861,8 @@ class BotBase(GroupMixin):
         try:
             # Unload and then load the module...
             self._remove_module_references(lib.__name__)
-            self._call_module_finalizers(lib, name)
-            self.load_extension(name)
+            await self._call_module_finalizers(lib, name)
+            await self.load_extension(name)
         except Exception:
             # if the load failed, the remnants should have been
             # cleaned from the load_extension function call

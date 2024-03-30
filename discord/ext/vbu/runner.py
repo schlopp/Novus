@@ -445,7 +445,7 @@ async def run_bot(args: argparse.Namespace) -> None:
 
     # Load the bot's extensions
     logger.info("Loading extensions... ")
-    bot.load_all_extensions()
+    await bot.load_all_extensions()
 
     # Run the bot
     try:
@@ -504,7 +504,7 @@ async def run_interactions(args: argparse.Namespace) -> None:
 
     # Load the bot's extensions
     logger.info("Loading extensions... ")
-    bot.load_all_extensions()
+    await bot.load_all_extensions()
 
     # Run the bot
     logger.info("Logging in bot")
@@ -696,7 +696,7 @@ async def run_website(args: argparse.Namespace) -> None:
         app["bots"][bot_name] = bot
         try:
             await bot.login()
-            bot.load_all_extensions()
+            await bot.load_all_extensions()
         except Exception:
             logger.error(f"Failed to start bot {bot_name}", exc_info=True)
             exit(1)
@@ -794,7 +794,7 @@ async def run_shell(args: argparse.Namespace) -> None:
 
     # Load the bot's extensions
     logger.info("Loading extensions... ")
-    bot.load_all_extensions()
+    await bot.load_all_extensions()
 
     # Set up the default env
     import voxelbotutils as vbu
@@ -913,7 +913,7 @@ async def run_modify_commands(args: argparse.Namespace) -> None:
 
     # Load the bot's extensions
     logger.info("Loading extensions... ")
-    bot.load_all_extensions()
+    await bot.load_all_extensions()
 
     # Run the bot
     logger.info("Running bot")

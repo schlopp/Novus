@@ -71,7 +71,7 @@ class Bot(commands.{base}):
         super().__init__(command_prefix=commands.when_mentioned_or('{prefix}'), **kwargs)
         for cog in config.cogs:
             try:
-                self.load_extension(cog)
+                self.loop.run_until_complete(self.load_extension(cog))
             except Exception as exc:
                 print(f'Could not load extension {{cog}} due to {{exc.__class__.__name__}}: {{exc}}')
 

@@ -428,11 +428,11 @@ class OwnerOnly(
         reloaded_cogs = []
         for cog in cog_list:
             try:
-                self.bot.load_extension(cog)
+                await self.bot.load_extension(cog)
                 reloaded_cogs.append(cog)
             except commands.ExtensionAlreadyLoaded:
                 try:
-                    self.bot.reload_extension(cog)
+                    await self.bot.reload_extension(cog)
                     reloaded_cogs.append(cog)
                 except Exception:
                     await ctx.send(
@@ -492,7 +492,7 @@ class OwnerOnly(
         # Load the cog
         errored = True
         try:
-            self.bot.load_extension(f"cogs.{file_name[:-3]}")
+            await self.bot.load_extension(f"cogs.{file_name[:-3]}")
             errored = False
         except commands.ExtensionNotFound:
             await ctx.send("Extension could not be found. Extension has been deleted.")

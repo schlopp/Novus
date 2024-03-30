@@ -840,7 +840,7 @@ class Bot(MinimalBot):
         self.logger.debug("Getting all extensions: " + str(extensions))
         return extensions
 
-    def load_all_extensions(self) -> None:
+    async def load_all_extensions(self) -> None:
         """
         Loads all the given extensions from :func:`voxelbotutils.Bot.get_extensions`.
         """
@@ -849,7 +849,7 @@ class Bot(MinimalBot):
         self.logger.info("Unloading extensions... ")
         for i in self.get_extensions():
             try:
-                self.unload_extension(i)
+                await self.unload_extension(i)
             except Exception as e:
                 self.logger.debug(f" * {i}... failed - {e!s}")
             else:
@@ -859,7 +859,7 @@ class Bot(MinimalBot):
         self.logger.info("Loading extensions... ")
         for i in self.get_extensions():
             try:
-                self.load_extension(i)
+                await self.load_extension(i)
             except Exception as e:
                 self.logger.critical(f" * {i}... failed - {e!s}")
                 raise e
