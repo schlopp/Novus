@@ -71,6 +71,6 @@ class BotSettings(vbu.Cog):
         )
 
 
-def setup(bot: vbu.Bot):
+async def setup(bot: vbu.Bot):
     x = BotSettings(bot)
-    bot.add_cog(x)
+    await bot.add_cog(x)

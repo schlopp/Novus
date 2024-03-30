@@ -211,7 +211,7 @@ class BotBase(GroupMixin):
 
         for cog in tuple(self.__cogs):
             try:
-                self.remove_cog(cog)
+                await self.remove_cog(cog)
             except Exception:
                 pass
 
@@ -555,7 +555,7 @@ class BotBase(GroupMixin):
 
     # cogs
 
-    def add_cog(self, cog: Cog, *, override: bool = False) -> None:
+    async def add_cog(self, cog: Cog, *, override: bool = False) -> None:
         """Adds a "cog" to the bot.
 
         A cog is a class that has its own event listeners and commands.
@@ -587,7 +587,7 @@ class BotBase(GroupMixin):
         if existing is not None:
             if not override:
                 raise discord.ClientException(f"Cog named {cog_name!r} already loaded")
-            self.remove_cog(cog_name)
+            await self.remove_cog(cog_name)
 
         cog = cog._inject(self)
         self.__cogs[cog_name] = cog
@@ -611,7 +611,7 @@ class BotBase(GroupMixin):
         """
         return self.__cogs.get(name)
 
-    def remove_cog(self, name: str) -> Optional[Cog]:
+    async def remove_cog(self, name: str) -> Optional[Cog]:
         """Removes a cog from the bot and returns it.
 
         All registered commands and event listeners that the
@@ -637,7 +637,7 @@ class BotBase(GroupMixin):
         help_command = self._help_command
         if help_command and help_command.cog is cog:
             help_command.cog = None
-        cog._eject(self)
+        await cog._eject(self)
 
         return cog
 
@@ -648,12 +648,12 @@ class BotBase(GroupMixin):
 
     # extensions
 
-    def _remove_module_references(self, name: str) -> None:
+    async def _remove_module_references(self, name: str) -> None:
         # find all references to the module
         # remove the cogs registered from the module
         for cogname, cog in self.__cogs.copy().items():
             if _is_submodule(name, cog.__module__):
-                self.remove_cog(cogname)
+                await self.remove_cog(cogname)
 
         # remove all the commands from the module
         for cmd in self.all_commands.copy().values():
@@ -714,10 +714,13 @@ class BotBase(GroupMixin):
             raise errors.NoEntryPointError(key)
 
         try:
-            setup(self)
+            if inspect.iscoroutinefunction(setup):
+                await setup(self)
+            else:
+                setup(self)
         except Exception as e:
             del sys.modules[key]
-            self._remove_module_references(lib.__name__)
+            await self._remove_module_references(lib.__name__)
             await self._call_module_finalizers(lib, key)
             raise errors.ExtensionFailed(key, e) from e
         else:
@@ -810,7 +813,7 @@ class BotBase(GroupMixin):
         if lib is None:
             raise errors.ExtensionNotLoaded(name)
 
-        self._remove_module_references(lib.__name__)
+        await self._remove_module_references(lib.__name__)
         await self._call_module_finalizers(lib, name)
 
     async def reload_extension(self, name: str, *, package: Optional[str] = None) -> None:
@@ -860,7 +863,7 @@ class BotBase(GroupMixin):
 
         try:
             # Unload and then load the module...
-            self._remove_module_references(lib.__name__)
+            await self._remove_module_references(lib.__name__)
             await self._call_module_finalizers(lib, name)
             await self.load_extension(name)
         except Exception:

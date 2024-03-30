@@ -191,8 +191,8 @@ class BotStats(vbu.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot: vbu.Bot):
+async def setup(bot: vbu.Bot):
     x = BotStats(bot)
-    bot.add_cog(x)
+    await bot.add_cog(x)
     if bot.config.get("bot_info", {}).get("enabled", False) is False:
         bot.remove_command("info")

@@ -48,6 +48,6 @@ class CommandEvent(vbu.Cog):
         await self.bot.log_command(ctx)
 
 
-def setup(bot: vbu.Bot):
+async def setup(bot: vbu.Bot):
     x = CommandEvent(bot)
-    bot.add_cog(x)
+    await bot.add_cog(x)

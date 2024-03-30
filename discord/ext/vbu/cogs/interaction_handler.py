@@ -125,6 +125,6 @@ class InteractionHandler(
         await ctx.send("Removed slash commands.")
 
 
-def setup(bot: vbu.Bot):
+async def setup(bot: vbu.Bot):
     x = InteractionHandler(bot)
-    bot.add_cog(x)
+    await bot.add_cog(x)

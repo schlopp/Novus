@@ -202,6 +202,6 @@ class Analytics(vbu.Cog):
             stats.decrement("discord.stats.guild_joins")
 
 
-def setup(bot: vbu.Bot):
+async def setup(bot: vbu.Bot):
     x = Analytics(bot)
-    bot.add_cog(x)
+    await bot.add_cog(x)

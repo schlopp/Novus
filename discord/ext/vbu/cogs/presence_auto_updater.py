@@ -224,6 +224,6 @@ class PresenceAutoUpdater(vbu.Cog):
         )  # Let's sleep here so we don't override our on_ready's set default presence
 
 
-def setup(bot: vbu.Bot):
+async def setup(bot: vbu.Bot):
     x = PresenceAutoUpdater(bot)
-    bot.add_cog(x)
+    await bot.add_cog(x)

@@ -14,6 +14,6 @@ class PingCommand(vbu.Cog):
             await ctx.send("Pong!")
 
 
-def setup(bot: vbu.Bot):
+async def setup(bot: vbu.Bot):
     x = PingCommand(bot)
-    bot.add_cog(x)
+    await bot.add_cog(x)

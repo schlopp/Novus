@@ -927,6 +927,6 @@ class OwnerOnly(
             return
 
 
-def setup(bot: vbu.Bot):
+async def setup(bot: vbu.Bot):
     x = OwnerOnly(bot)
-    bot.add_cog(x)
+    await bot.add_cog(x)

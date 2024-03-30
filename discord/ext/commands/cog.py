@@ -471,7 +471,7 @@ class Cog(metaclass=CogMeta):
 
         return self
 
-    def _eject(self, bot: BotBase) -> None:
+    async def _eject(self, bot: BotBase) -> None:
         cls = self.__class__
 
         try:
@@ -489,6 +489,9 @@ class Cog(metaclass=CogMeta):
                 bot.remove_check(self.bot_check_once, call_once=True)
         finally:
             try:
-                self.cog_unload()
+                if inspect.iscoroutinefunction(self.cog_unload):
+                    await self.cog_unload()
+                else:
+                    self.cog_unload()
             except Exception:
                 raise

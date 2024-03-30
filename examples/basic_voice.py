@@ -142,5 +142,5 @@ async def on_ready():
     print("------")
 
 
-bot.add_cog(Music(bot))
+asyncio.run(bot.add_cog(Music(bot)))
 bot.run("token")
