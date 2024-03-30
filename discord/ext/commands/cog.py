@@ -40,6 +40,7 @@ from typing import (
     Tuple,
     TypeVar,
     Type,
+    Coroutine
 )
 
 from ._types import _BaseCommand
@@ -347,11 +348,10 @@ class Cog(metaclass=CogMeta):
         return not hasattr(self.cog_command_error.__func__, "__cog_special_method__")
 
     @_cog_special_method
-    def cog_unload(self) -> None:
+    def cog_unload(self) -> None | Coroutine[None, None, None]:
         """A special method that is called when the cog gets removed.
 
-        This function **cannot** be a coroutine. It must be a regular
-        function.
+        This method can be a coroutine. (optional)
 
         Subclasses must replace this if they want special unloading behaviour.
         """
