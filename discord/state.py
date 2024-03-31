@@ -261,6 +261,9 @@ class ConnectionState:
             if attr.startswith("parse_"):
                 parsers[attr[6:].upper()] = func
 
+        # Should be True if ready has been dispatched before
+        self._previous_ready = False
+
         self.clear()
 
     def clear(self) -> None:
@@ -606,6 +609,9 @@ class ConnectionState:
             # dispatch the event
             self.call_handlers("ready")
             self.dispatch("ready")
+            if not self._previous_ready:
+                self.dispatch("first_ready")
+                self._previous_ready = True
         finally:
             self._ready_task = None
 
@@ -1748,6 +1754,9 @@ class AutoShardedConnectionState(ConnectionState):
         # dispatch the event
         self.call_handlers("ready")
         self.dispatch("ready")
+        if not self._previous_ready:
+            self.dispatch("first_ready")
+            self._previous_ready = True
 
     def parse_ready(self, data) -> None:
         if not hasattr(self, "_ready_state"):
