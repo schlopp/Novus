@@ -587,7 +587,7 @@ class DiscordWebSocket:
                     self.session_id,
                 )
             else:
-                _log.info(
+                _log.debug(
                     "Shard ID %s has connected to Gateway: %s (Session ID: %s).",
                     self.shard_id,
                     ", ".join(trace),
