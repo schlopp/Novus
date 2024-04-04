@@ -19,7 +19,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from ..enums import AuditLogEventType
 from ..models import AuditLog, Object
 from ._route import Route
 
@@ -42,7 +41,7 @@ class AuditLogHTTPConnection:
             guild_id: int,
             *,
             user_id: int | None = None,
-            action_type: AuditLogEventType | None = None,
+            action_type: int | None = None,
             before: int | None = None,
             after: int | None = None,
             limit: int = 50) -> AuditLog:
@@ -54,7 +53,7 @@ class AuditLogHTTPConnection:
         if user_id is not None:
             params['user_id'] = user_id
         if action_type is not None:
-            params['action_type'] = action_type.value
+            params['action_type'] = action_type
         if before is not None:
             params['before'] = before
         if after is not None:

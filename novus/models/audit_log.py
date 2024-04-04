@@ -19,7 +19,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Generator
 
-from ..enums import AuditLogEventType
 from ..utils import cached_slot_property, generate_repr, try_snowflake
 from .auto_moderation import AutoModerationRule
 from .channel import Channel
@@ -126,7 +125,7 @@ class AuditLogEntry:
         self.reason = data.get('reason', None)
         self.target_id = try_snowflake(data.get('target_id'))
         self.user_id = try_snowflake(data.get('user_id'))
-        self.action_type = AuditLogEventType(data['action_type'])
+        self.action_type = int(data['action_type'])
 
         self.options: AuditLogContainer | None = None
         if 'options' in data:
@@ -195,40 +194,41 @@ class AuditLogEntry:
             return None
         if self.target_id is None:
             return None
-        action_base = "_".join(self.action_type.name.split("_")[:-1])
-        match action_base:
-            case "guild":
-                return None
-            case "channel":
-                return None
-            case "member" | "bot":
-                return self.log._get_user(self.target_id)
-            case "role":
-                return None
-            case "invite":
-                return None
-            case "webhook":
-                return self.log._get_webhook(self.target_id)
-            case "emoji":
-                return None
-            case "message":
-                return None
-            case "integration":
-                return self.log._get_integration(self.target_id)
-            case "stage_instance":
-                return None
-            case "sticker":
-                return None
-            case "guild_scheduled_event":
-                return self.log._get_guild_scheduled_event(self.target_id)
-            case "thread":
-                return self.log._get_thread(self.target_id)
-            case "application_command_permission":
-                return self.log._get_application_command(self.target_id)
-            case "auto_moderation_rule":
-                return self.log._get_auto_moderation_rule(self.target_id)
-            case _:
-                return None
+
+        a = self.action_type  # Just to make the line shorter
+        if 1 <= a < 10:
+            return None
+        elif 10 <= a < 20:
+            return None
+        elif 20 <= a < 30:
+            return self.log._get_user(self.target_id)
+        elif 30 <= a < 40:
+            return None
+        elif 40 <= a < 50:
+            return None
+        elif 50 <= a < 60:
+            return self.log._get_webhook(self.target_id)
+        elif 60 <= a < 70:
+            return None  # TODO emojis
+        elif 70 <= a < 80:
+            return None  # TODO messages
+        elif 80 <= a < 83:
+            return self.log._get_integration(self.target_id)
+        elif 83 <= a < 90:
+            return None  # TODO stage instance
+        elif 90 <= a < 100:
+            return None  # TODO stickers
+        elif 100 <= a < 110:
+            return self.log._get_guild_scheduled_event(self.target_id)
+        elif 110 <= a < 120:
+            return self.log._get_thread(self.target_id)
+        elif 120 <= a < 130:
+            return None  # TODO application command permissions
+        elif 130 <= a < 140:
+            return None  # seemingly reserved
+        elif 140 <= a < 150:
+            return self.log._get_auto_moderation_rule(self.target_id)
+        return None
 
 
 class AuditLog:
@@ -343,7 +343,7 @@ class AuditLog:
             guild_id: int,
             *,
             user_id: int | None = None,
-            action_type: AuditLogEventType | None = None,
+            action_type: int | None = None,
             before: int | None = None,
             after: int | None = None,
             limit: int = 50) -> AuditLog:
@@ -358,8 +358,10 @@ class AuditLog:
             The ID associated with the user you want to get.
         user_id: Optional[int]
             The ID of the moderator you want to to filter by.
-        action_type: Optional[novus.AuditLogEventType]
-            The ID of an action to filter by.
+        action_type: Optional[int]
+            The type of action that you want to filter by.
+
+            .. seealso:: `novus.AuditLogEventType`
         before: Optional[int]
             The snowflake before which to get entries.
         after: Optional[int]

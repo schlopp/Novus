@@ -61,7 +61,6 @@ if TYPE_CHECKING:
     from .. import payloads
     from ..api import HTTPConnection
     from ..enums import (
-        AuditLogEventType,
         AutoModerationEventType,
         AutoModerationTriggerType,
         EventEntityType,
@@ -444,7 +443,7 @@ class BaseGuild:
             self: abc.StateSnowflake,
             *,
             user_id: int | None = None,
-            action_type: AuditLogEventType | None = None,
+            action_type: int | None = None,
             before: int | None = None,
             after: int | None = None,
             limit: int = 50) -> AuditLog:
@@ -455,8 +454,10 @@ class BaseGuild:
         ----------
         user_id: int | None
             The ID of the moderator you want to to filter by.
-        action_type: AuditLogEventType | None
+        action_type: int | None
             The ID of an action to filter by.
+
+            .. seealso:: `novus.AuditLogEventType`
         before: int | None
             The snowflake before which to get entries.
         after: int | None
