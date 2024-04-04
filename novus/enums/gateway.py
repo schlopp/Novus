@@ -23,16 +23,16 @@ __all__ = (
 
 
 class GatewayOpcode(Enum):
-    dispatch = 0
-    heartbeat = 1
-    identify = 2
-    presence = 3
-    voice_state = 4
-    voice_ping = 5
-    resume = 6
-    reconnect = 7
-    request_members = 8
-    invalidate_session = 9
-    hello = 10
-    heartbeat_ack = 11
-    guild_sync = 12
+    DISPATCH = 0
+    HEARTBEAT = 1
+    IDENTIFY = 2
+    PRESENCE = 3
+    VOICE_STATE = 4
+    VOICE_PING = 5
+    RESUME = 6
+    RECONNECT = 7
+    REQUEST_MEMBERS = 8
+    INVALIDATE_SESSION = 9
+    HELLO = 10
+    HEARTBEAT_ACK = 11
+    GUILD_SYNC = 12

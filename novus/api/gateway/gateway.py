@@ -303,7 +303,7 @@ class GatewayShard:
         return False
 
     async def messages(
-            self) -> AG[tuple[GatewayOpcode, str | None, int | None, Any], None]:
+            self) -> AG[tuple[int, str | None, int | None, Any], None]:
         """
         Deal with getting and receiving messages.
         """
@@ -346,7 +346,7 @@ class GatewayShard:
                 continue
             yield d
 
-    async def send(self, opcode: GatewayOpcode, data: Any = MISSING) -> None:
+    async def send(self, opcode: int, data: Any = MISSING) -> None:
         """
         Send a heartbeat to the connected socket.
         Will raise if there is no valid connected socket.
@@ -357,7 +357,7 @@ class GatewayShard:
         elif self.socket.closed:
             raise ValueError("Cannot receive messages from closed socket")
         sendable: dict[Any, Any] = {
-            "op": opcode.value,
+            "op": opcode,
         }
         if data is not MISSING:
             sendable["d"] = data
@@ -374,7 +374,7 @@ class GatewayShard:
         await self.socket.send_str(dumped)
 
     async def receive(
-            self) -> tuple[GatewayOpcode, str | None, int | None, dict[Any, Any]] | None:
+            self) -> tuple[int, str | None, int | None, dict[Any, Any]] | None:
         """
         Receive a message from the gateway.
         """
@@ -475,7 +475,7 @@ class GatewayShard:
             )
             self._buffer.clear()
             return (
-                GatewayOpcode(parsed["op"]),
+                int(parsed["op"]),
                 parsed.get("t"),
                 parsed.get("s"),
                 parsed.get("d"),
@@ -710,7 +710,7 @@ class GatewayShard:
                 return
             for beat_attempt in range(1_000):
                 try:
-                    await self.send(GatewayOpcode.heartbeat, self.sequence)
+                    await self.send(GatewayOpcode.HEARTBEAT, self.sequence)
                     await asyncio.wait_for(self.heartbeat_received.wait(), timeout=10)
                 except asyncio.CancelledError:
                     if beat_attempt <= 5:
@@ -757,7 +757,7 @@ class GatewayShard:
         log.debug("[%s] Sending identify", self.shard_id)
         token = cast(str, self.parent._token)
         await self.send(
-            GatewayOpcode.identify,
+            GatewayOpcode.IDENTIFY,
             {
                 "token": token,
                 "properties": {
@@ -797,7 +797,7 @@ class GatewayShard:
             self.chunk_event[nonce] = event = asyncio.Event()
             self.chunk_groups[nonce] = []
         await self.send(
-            GatewayOpcode.request_members,
+            GatewayOpcode.REQUEST_MEMBERS,
             data,
         )
         return event
@@ -810,7 +810,7 @@ class GatewayShard:
         log.debug("[%s] Sending resume", self.shard_id)
         token = cast(str, self.parent._token)
         await self.send(
-            GatewayOpcode.resume,
+            GatewayOpcode.RESUME,
             {
                 "token": token,
                 "session_id": self.session_id,
@@ -838,7 +838,7 @@ class GatewayShard:
             return
         log.debug("[%s] Sending change presence", self.shard_id)
         await self.send(
-            GatewayOpcode.presence,
+            GatewayOpcode.PRESENCE,
             {
                 "activities": [i._to_data() for i in activities],
                 "status": status.value,
@@ -866,11 +866,11 @@ class GatewayShard:
             match opcode:
 
                 # Ignore heartbeat acks
-                case GatewayOpcode.heartbeat_ack:
+                case GatewayOpcode.HEARTBEAT_ACK:
                     self.heartbeat_received.set()
 
                 # Sometimes Discord may ask for heartbeats explicitly
-                case GatewayOpcode.heartbeat:
+                case GatewayOpcode.HEARTBEAT:
                     if self.heartbeat_task:
                         self.heartbeat_task.cancel()
                     self.heartbeat_task = asyncio.create_task(
@@ -879,7 +879,7 @@ class GatewayShard:
                     )
 
                 # Deal with dispatch
-                case GatewayOpcode.dispatch:
+                case GatewayOpcode.DISPATCH:
                     event_name = cast(str, event_name)
                     sequence = cast(int, sequence)
                     if event_name == "READY" or event_name == "RESUMED":
@@ -894,14 +894,14 @@ class GatewayShard:
                     t.add_done_callback(self.running_tasks.discard)
 
                 # Deal with reconnects
-                case GatewayOpcode.reconnect:
+                case GatewayOpcode.RECONNECT:
                     t = asyncio.create_task(self.reconnect())
                     self.running_tasks.add(t)
                     t.add_done_callback(self.running_tasks.discard)
                     return
 
                 # Deal with invalid sesions
-                case GatewayOpcode.invalidate_session:
+                case GatewayOpcode.INVALIDATE_SESSION:
                     log.info(
                         (
                             "[%s] Session invalidated (resumable: %s) - "
