@@ -22,7 +22,6 @@ Enums
 .. autoclass:: GatewayOpcode
 .. autoclass:: InteractionResponseType
 .. autoclass:: InteractionType
-.. autoclass:: Locale
 .. autoclass:: MFALevel
 .. autoclass:: MessageType
 .. autoclass:: NSFWLevel

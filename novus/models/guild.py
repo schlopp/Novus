@@ -26,7 +26,6 @@ from typing import TYPE_CHECKING, Any, Literal, NoReturn, overload
 
 from typing_extensions import Self
 
-from ..enums import Locale
 from ..flags import Permissions, SystemChannelFlags
 from ..utils import (
     MISSING,
@@ -175,7 +174,7 @@ class BaseGuild:
             system_channel: AnySnowflake | None = MISSING,
             system_channel_flags: SystemChannelFlags | None = MISSING,
             rules_channel: AnySnowflake | None = MISSING,
-            preferred_locale: Locale | None = MISSING,
+            preferred_locale: str | None = MISSING,
             public_updates_channel: AnySnowflake = MISSING,
             features: list[str] = MISSING,
             description: str | None = MISSING,
@@ -230,7 +229,7 @@ class BaseGuild:
             The system channel flags you want to set.
         rules_channel : int | novus.abc.Snowflake | None
             The channel you want to set as the rules channel.
-        preferred_locale : Locale | None
+        preferred_locale : str | None
             The locale you want to set as the guild's preferred.
         public_updates_channel : int | novus.abc.Snowflake
             The channel you want to set as the updates channel for the guild.
@@ -1726,7 +1725,7 @@ class Guild(Hashable, BaseGuild):
         .. seealso:: `novus.PremiumTier`
     premium_subscription_count : int
         The number of boosts the guild currently has.
-    preferred_locale : novus.Locale
+    preferred_locale : str
         The locale for the guild, if set. Defaults to US English.
     public_updates_channel_id : int | None
         The ID of the channel when admins and moderators of community guilds
@@ -1824,7 +1823,7 @@ class Guild(Hashable, BaseGuild):
     description: str | None
     banner_hash: str | None
     premium_tier: int
-    preferred_locale: Locale
+    preferred_locale: str
     public_updates_channel_id: int | None
     nsfw_level: int
     premium_progress_bar_enabled: bool

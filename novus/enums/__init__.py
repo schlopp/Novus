@@ -23,7 +23,6 @@ from .components import *
 from .gateway import *
 from .guild import *
 from .interaction import *
-from .locale import *
 from .message import *
 from .presence import *
 from .scheduled_event import *
@@ -52,7 +51,6 @@ __all__: tuple[str, ...] = (
     'GatewayOpcode',
     'InteractionResponseType',
     'InteractionType',
-    'Locale',
     'MFALevel',
     'MessageType',
     'NSFWLevel',

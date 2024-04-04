@@ -22,11 +22,10 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 
 from typing_extensions import Self
 
-from ..enums import Locale
 from .missing import MISSING
 
 if TYPE_CHECKING:
-    from .. import Interaction, payloads
+    from .. import Interaction
 
 __all__ = (
     'Localization',
@@ -46,6 +45,44 @@ def flatten_localization(d: LocType) -> Localization:
         raise TypeError()
 
 
+_LOCALES = [
+    "id",
+    "da",
+    "de",
+    "en-GB",
+    "en-US",
+    "es-ES",
+    "fr",
+    "hr",
+    "it",
+    "lt",
+    "hu",
+    "nl",
+    "no",
+    "pl",
+    "pt-BR",
+    "ro",
+    "fi",
+    "sv-SE",
+    "vi",
+    "tr",
+    "cs",
+    "el",
+    "bg",
+    "ru",
+    "uk",
+    "hi",
+    "th",
+    "zh-CN",
+    "ja",
+    "zh-TW",
+    "ko",
+    "en-US",
+    "zh-CN",
+    "pt-BR",
+]
+
+
 class Localization:
     """
     A localizations class.
@@ -53,9 +90,9 @@ class Localization:
 
     def __init__(
             self,
-            current: dict[str, str] | dict[Locale, str] | None = None,
+            current: dict[str, str] | dict[str, str] | None = None,
             **language_strings: str):
-        self.localizations: dict[Locale, str] = {}
+        self.localizations: dict[str, str] = {}
         if current:
             for k, v in current.items():
                 self.__setitem__(k, v)
@@ -65,24 +102,17 @@ class Localization:
     def __bool__(self) -> bool:
         return bool(self.localizations)
 
-    def __getitem__(self, key: str | Locale) -> str | None:
-        if isinstance(key, str):
-            key = Locale(key)
+    def __getitem__(self, key: str) -> str | None:
         return self.localizations.get(key)
 
-    def __setitem__(self, key: str | Locale, value: str | None) -> None:
-        if isinstance(key, str):
-            key = Locale(key)
+    def __setitem__(self, key: str, value: str | None) -> None:
         if not value:
             self.localizations.pop(key, None)
         else:
             self.localizations[key] = value
 
-    def _to_data(self) -> dict[payloads.Locale, str]:
-        return {
-            i.value: o
-            for i, o in self.localizations.items()
-        }
+    def _to_data(self) -> dict[str, str]:
+        return self.localizations
 
     @classmethod
     def _(cls, text: str) -> Self:
@@ -90,11 +120,11 @@ class Localization:
         Return a generic localisation class for the given text.
         """
 
-        created: dict[Locale, str] = {}
-        for lc in Locale:
-            languages = [lc.value]
-            if "-" in lc.value:
-                languages.append(lc.value.split("-")[0])
+        created: dict[str, str] = {}
+        for lc in _LOCALES:
+            languages = [lc]
+            if "-" in lc:
+                languages.append(lc.split("-")[0])
             translated = TranslatedString.translate(text, languages, fallback=False)
             if translated is not None:
                 created[lc] = translated
@@ -102,7 +132,7 @@ class Localization:
 
 
 # any valid localisation type
-LocType = dict[str, str] | dict[Locale, str] | Localization | None
+LocType = dict[str, str] | Localization | None
 
 
 class TranslatedString:
@@ -145,14 +175,14 @@ class TranslatedString:
 
         # Work out what languages we even have available
         user_languages: list[str] = [
-            ctx.locale.value,
-            ctx.locale.value.split("-")[0],
+            ctx.locale,
+            ctx.locale.split("-")[0],
         ]
         guild_languages: list[str] = []
         if guild and ctx.guild and ctx.guild_locale:
             guild_languages = [
-                ctx.guild_locale.value,
-                ctx.guild_locale.value.split("-")[0],
+                ctx.guild_locale,
+                ctx.guild_locale.split("-")[0],
             ]
 
         # Work out what we can return

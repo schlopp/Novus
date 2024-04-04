@@ -124,12 +124,12 @@ class GuildHTTPConnection:
                     'afk_timeout',
                     'description',
                     'premium_progress_bar_enabled',
+                    'preferred_locale',
                 ),
                 "enum": (
                     'verification_level',
                     'default_message_notifications',
                     'explicit_content_filter',
-                    'preferred_locale',
                     'system_channel_flags',
                 ),
                 "snowflake": (

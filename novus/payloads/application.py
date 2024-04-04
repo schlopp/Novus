@@ -23,7 +23,6 @@ from typing_extensions import NotRequired
 
 if TYPE_CHECKING:
     from ._util import Snowflake
-    from .locale import Locale
     from .user import PartialUser
 
 __all__ = (
@@ -91,8 +90,8 @@ ApplicationRoleConnectionMetadataType = Literal[
 
 
 class _ApplicationRoleCommandMetadataOptional(TypedDict, total=False):
-    name_localizations: dict[Locale, str]
-    description_localizations: dict[Locale, str]
+    name_localizations: dict[str, str]
+    description_localizations: dict[str, str]
 
 
 class ApplicationRoleCommandMetadata(_ApplicationRoleCommandMetadataOptional):

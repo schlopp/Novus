@@ -20,12 +20,7 @@ from __future__ import annotations
 import functools
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Generic, TypeVar
 
-from ..enums import (
-    ApplicationCommandType,
-    InteractionResponseType,
-    InteractionType,
-    Locale,
-)
+from ..enums import ApplicationCommandType, InteractionResponseType, InteractionType
 from ..flags import MessageFlags, Permissions
 from ..utils import (
     MISSING,
@@ -458,9 +453,9 @@ class Interaction(Generic[IData]):
     app_permissions: novus.Permissions
         The application's permissions within the channel where the interaction
         was called.
-    locale: novus.Locale
+    locale: str
         The user's locale.
-    guild_locale: novus.Locale | None
+    guild_locale: str | None
         The locale of the guild where the interaction was run.
     """
 
@@ -494,8 +489,8 @@ class Interaction(Generic[IData]):
     token: str
     message: Message | None
     app_permissions: Permissions
-    locale: Locale
-    guild_locale: Locale | None
+    locale: str
+    guild_locale: str | None
     _stream: web.StreamResponse | None
     _stream_request: web.Request | None
 
@@ -537,11 +532,8 @@ class Interaction(Generic[IData]):
             self.app_permissions = Permissions(int(data["app_permissions"]))
         else:
             self.app_permissions = Permissions.all()
-        self.locale = Locale(data["locale"])
-        if "guild_locale" in data:
-            self.guild_locale = Locale(data["guild_locale"])
-        else:
-            self.guild_locale = None
+        self.locale = data["locale"]
+        self.guild_locale = data.get("guild_locale")
         data_object = None
         if "data" in data:
             data_dict = data["data"]

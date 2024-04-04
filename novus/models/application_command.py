@@ -32,10 +32,10 @@ from ..utils import (
 )
 
 if TYPE_CHECKING:
-    from .. import enums, flags, payloads
+    from .. import flags, payloads
     from ..api import HTTPConnection
 
-    LocType: TypeAlias = dict[str, str] | dict[enums.Locale, str] | Localization | None
+    LocType: TypeAlias = dict[str, str] | Localization | None
 
 __all__ = (
     'ApplicationCommandOption',
@@ -59,9 +59,9 @@ class ApplicationCommandOption:
         The type of the option.
 
         .. seealso:: `novus.ApplicationOptionType`
-    name_localizations : dict[str | novus.Locale, str] | novus.Localization
+    name_localizations : dict[str, str] | novus.Localization
         Localizations for the option's name.
-    description_localizations : dict[str | novus.Locale, str] | novus.Localization
+    description_localizations : dict[str, str] | novus.Localization
         Localizations for the option's description.
     required: bool
         Whether or not the option is required.
@@ -263,7 +263,7 @@ class ApplicationCommandChoice:
             Large numbers (those in BIGINT range, including IDs) will be
             truncated by Discord - it's recommended that you use a string in
             their place.
-    name_localizations : dict[str | novus.Locale, str] | novus.Localization
+    name_localizations : dict[str, str] | novus.Localization
         Localizations for the choice name.
 
     Attributes
@@ -315,9 +315,9 @@ class PartialApplicationCommand:
         The command type.
 
         .. seealso:: `novus.ApplicationCommandType`
-    name_localizations : dict[str | novus.Locale, str] | novus.Localization
+    name_localizations : dict[str, str] | novus.Localization
         Localizations for the command name.
-    description_localizations : dict[str | novus.Locale, str] | novus.Localization
+    description_localizations : dict[str, str] | novus.Localization
         Localizations for the description.
     options : list[novus.ApplicationCommandOption]
         Thje options for the command.
@@ -338,9 +338,9 @@ class PartialApplicationCommand:
         The command type.
 
         .. seealso:: `novus.ApplicationCommandType`
-    name_localizations : dict[str | novus.Locale, str] | novus.Localization
+    name_localizations : dict[str, str] | novus.Localization
         Localizations for the command.
-    description_localizations : dict[str | novus.Locale, str] | novus.Localization
+    description_localizations : dict[str, str] | novus.Localization
         Localizations for the description.
     options : list[novus.ApplicationCommandOption]
         Thje options for the command.

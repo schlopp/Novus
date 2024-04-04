@@ -86,7 +86,7 @@ if TYPE_CHECKING:
         ],
     ]
 
-    LocType: TypeAlias = dict[str, str] | dict[n.Locale, str] | n.utils.Localization | None
+    LocType: TypeAlias = dict[str, str] | n.utils.Localization | None
 
 
 __all__ = (

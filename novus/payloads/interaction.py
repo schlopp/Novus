@@ -28,7 +28,6 @@ if TYPE_CHECKING:
         Attachment,
         Channel,
         GuildMember,
-        Locale,
         Message,
         Role,
         SelectOption,
@@ -105,5 +104,5 @@ class Interaction(TypedDict):
     version: Literal[1]
     message: NotRequired[Message]
     app_permissions: NotRequired[str]
-    locale: Locale
-    guild_locale: NotRequired[Locale]
+    locale: str
+    guild_locale: NotRequired[str]

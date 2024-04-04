@@ -28,7 +28,6 @@ if TYPE_CHECKING:
     from .components import Button
     from .emoji import PartialEmoji
     from .guild import Integration
-    from .locale import Locale
 
 __all__ = (
     'PartialUser',
@@ -57,7 +56,7 @@ class _UserOptional(TypedDict, total=False):
     mfa_enabled: bool
     banner: Optional[str]
     accent_color: Optional[int]
-    locale: Locale
+    locale: str
     verified: bool
     email: Optional[str]
     flags: int

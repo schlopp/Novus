@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING, Literal, TypedDict
 from typing_extensions import NotRequired
 
 if TYPE_CHECKING:
-    from . import Locale, Snowflake
+    from . import Snowflake
 
 __all__ = (
     'ApplicationCommandOptionType',
@@ -50,16 +50,16 @@ ApplicationCommandOptionType = Literal[
 
 class ApplicationCommandChoice(TypedDict):
     name: str
-    name_localizations: NotRequired[dict[Locale, str] | None]
+    name_localizations: NotRequired[dict[str, str] | None]
     value: str | int | float
 
 
 class ApplicationCommandOption(TypedDict):
     type: ApplicationCommandOptionType
     name: str
-    name_localizations: NotRequired[dict[Locale, str] | None]
+    name_localizations: NotRequired[dict[str, str] | None]
     description: str
-    description_localizations: NotRequired[dict[Locale, str] | None]
+    description_localizations: NotRequired[dict[str, str] | None]
     required: NotRequired[bool]
     choices: NotRequired[list[ApplicationCommandChoice]]
     options: NotRequired[list[ApplicationCommandOption]]
@@ -74,9 +74,9 @@ class ApplicationCommandOption(TypedDict):
 class PartialApplicationCommand(TypedDict):
     type: NotRequired[int]
     name: str
-    name_localizations: NotRequired[dict[Locale, str] | None]
+    name_localizations: NotRequired[dict[str, str] | None]
     description: str | None
-    description_localizations: NotRequired[dict[Locale, str] | None]
+    description_localizations: NotRequired[dict[str, str] | None]
     options: NotRequired[list[ApplicationCommandOption]]
     default_member_permissions: str | None
     dm_permission: NotRequired[bool]

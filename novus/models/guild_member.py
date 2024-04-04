@@ -83,7 +83,7 @@ class GuildMember(Hashable, Messageable):
         The asset for the user banner.
     accent_color : int
         The color associated with the user's accent color.
-    locale : novus.Locale | None
+    locale : str | None
         The locale for the user. Only set properly for when you're receiving
         your own user via an Oauth2 application.
     verified : bool
@@ -174,7 +174,7 @@ class GuildMember(Hashable, Messageable):
     mfa_enabled: bool
     banner_hash: str | None
     accent_color: int | None
-    locale: enums.Locale | None
+    locale: str | None
     verified: bool
     email: str | None
     flags: UserFlags
