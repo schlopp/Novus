@@ -85,7 +85,7 @@ class Oauth2HTTPConnection:
         post_data = {
             "token": token,
         }
-        data: payloads.OauthToken = await self.parent.request(
+        await self.parent.request(
             route,
             data=post_data,
             auth=True,

@@ -109,9 +109,11 @@ class Twitch(client.Plugin):
         # Store and score
         self._access_token = data["access_token"]
         expiry = data["expires_in"]
+
         async def get_new_token():
             await asyncio.sleep(expiry - 30)
             await self.get_access_token()
+
         asyncio.create_task(get_new_token())
         return self._access_token
 
