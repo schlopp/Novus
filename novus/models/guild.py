@@ -26,15 +26,7 @@ from typing import TYPE_CHECKING, Any, Literal, NoReturn, overload
 
 from typing_extensions import Self
 
-from ..enums import (
-    ContentFilterLevel,
-    Locale,
-    MFALevel,
-    NotificationLevel,
-    NSFWLevel,
-    PremiumTier,
-    VerificationLevel,
-)
+from ..enums import Locale
 from ..flags import Permissions, SystemChannelFlags
 from ..utils import (
     MISSING,
@@ -171,9 +163,9 @@ class BaseGuild:
             self: abc.StateSnowflake,
             *,
             name: str = MISSING,
-            verification_level: VerificationLevel | None = MISSING,
-            default_message_notifications: NotificationLevel | None = MISSING,
-            explicit_content_filter: ContentFilterLevel | None = MISSING,
+            verification_level: int | None = MISSING,
+            default_message_notifications: int | None = MISSING,
+            explicit_content_filter: int | None = MISSING,
             afk_channel: AnySnowflake | None = MISSING,
             icon: FileT | None = MISSING,
             owner: AnySnowflake = MISSING,
@@ -203,12 +195,18 @@ class BaseGuild:
         ----------
         name : str
             The name you want to set the guild to.
-        verification_level : novus.guild.VerificationLevel | None
+        verification_level : int | None
             The verification level you want to set the guild to.
-        default_message_notifications : novus.guild.NotificationLevel | None
+
+            .. seealso:: `novus.VerificationLevel`
+        default_message_notifications : int | None
             The default message notification level you want to set the guild to.
-        explicit_content_filter : novus.guild.ContentFilterLevel | None
+
+            .. seealso:: `novus.NotificationLevel`
+        explicit_content_filter : int | None
             The content filter level you want to set the guild to.
+
+            .. seealso:: `novus.guild.ContentFilterLevel`
         afk_channel : int | novus.abc.Snowflake | None
             The channel you want to set as the guild's AFK channel.
         icon : str | bytes | io.IOBase | None
@@ -1560,12 +1558,14 @@ class PartialGuild(BaseGuild):
         An icon asset for the guild.
     features : list[str]
         A list of features the guild implements.
-    verification_level : novus.VerificationLevel
+    verification_level : int
         The guild's verification level.
     vainity_url_code : str | None
         The guild's vainity URL code.
-    nsfw_level : novus.NSFWLevel
+    nsfw_level : int
         The guild's NSFW level.
+
+        .. seealso:: `novus.NSFWLevel`
     premium_subscription_count : int
         The number of nitro boosts the guild has.
     """
@@ -1598,9 +1598,9 @@ class PartialGuild(BaseGuild):
         self.description: str | None = data.get('description')
         self.icon_hash: str | None = data.get('icon')
         self.features: list[str] = data['features']  # pyright: ignore
-        self.verification_level: VerificationLevel = VerificationLevel(data.get('verification_level', 0))
+        self.verification_level: int = data.get('verification_level', 0)
         self.vainity_url_code: str | None = data.get('vainity_url_code')
-        self.nsfw_level: NSFWLevel = NSFWLevel(data.get('nsfw_level', 0))
+        self.nsfw_level: int = int(data.get('nsfw_level', 0))
         self.premium_subscription_count: int = data.get('premium_subscription_count', 0)
 
     __repr__ = generate_repr(('id', 'name',))
@@ -1676,20 +1676,28 @@ class Guild(Hashable, BaseGuild):
         Whether or not the widget for the guild is enabled.
     widget_channel_id : int | None
         If the widget is enabled, this will be the ID of the widget's channel.
-    verification_level : novus.VerificationLevel
+    verification_level : int
         The verification level required for the guild.
-    default_message_notifications : novus.NotificationLevel
+
+        .. seealso:: `novus.VerificationLevel`
+    default_message_notifications : int
         The default message notification level.
-    explicit_content_filter : novus.ContentFilterLevel
+
+        .. seealso:: `novus.NotificationLevel`
+    explicit_content_filter : int
         The explicit content filter level.
+
+        .. seealso:: `novus.guild.ContentFilterLevel`
     roles : list[novus.Role]
         The roles associated with the guild, as returned from the cache.
     emojis : list[novus.Emoji]
         The emojis associated with the guild, as returned from the cache.
     features : list[str]
         A list of guild features.
-    mfa_level : novus.MFALevel
+    mfa_level : int
         The required MFA level for the guild.
+
+        .. seealso:: `novus.MFALevel`
     application_id : int | None
         The application ID of the guild creator, if the guild is bot-created.
     system_channel_id: int | None
@@ -1712,8 +1720,10 @@ class Guild(Hashable, BaseGuild):
         The hash associated with the guild's banner splash.
     banner : novus.Asset | None
         The asset associated with the guild's banner splash hash.
-    premium_tier : novus.PremiumTier
+    premium_tier : int
         The premium tier of the guild.
+
+        .. seealso:: `novus.PremiumTier`
     premium_subscription_count : int
         The number of boosts the guild currently has.
     preferred_locale : novus.Locale
@@ -1731,8 +1741,10 @@ class Guild(Hashable, BaseGuild):
         in guild GET requests when ``with_counts`` is ``True``.
     welcome_screen : novus.WelcomeScreen | None
         The welcome screen of a community guild.
-    nsfw_level : novus.NSFWLevel
+    nsfw_level : int
         The guild NSFW level.
+
+        .. seealso:: `novus.NSFWLevel`
     stickers : list[novus.Sticker]
         The list of stickers added to the guild.
     premium_progress_bar_enabled : bool
@@ -1799,11 +1811,11 @@ class Guild(Hashable, BaseGuild):
     owner_id: int
     afk_channel_id: int | None
     afk_timeout: int | None
-    verification_level: VerificationLevel
-    default_message_notifications: NotificationLevel
-    explicit_content_filter: ContentFilterLevel
+    verification_level: int
+    default_message_notifications: int
+    explicit_content_filter: int
     features: list[str]
-    mfa_level: MFALevel
+    mfa_level: int
     application_id: int | None
     system_channel_id: int | None
     system_channel_flags: SystemChannelFlags
@@ -1811,10 +1823,10 @@ class Guild(Hashable, BaseGuild):
     vanity_url_code: str | None
     description: str | None
     banner_hash: str | None
-    premium_tier: PremiumTier
+    premium_tier: int
     preferred_locale: Locale
     public_updates_channel_id: int | None
-    nsfw_level: NSFWLevel
+    nsfw_level: int
     premium_progress_bar_enabled: bool
 
     widget_enabled: bool
@@ -1847,11 +1859,11 @@ class Guild(Hashable, BaseGuild):
         self.owner_id = try_snowflake(data['owner_id'])
         self.afk_channel_id = try_snowflake(data['afk_channel_id'])
         self.afk_timeout = data['afk_timeout']
-        self.verification_level = VerificationLevel(data['verification_level'])
-        self.default_message_notifications = NotificationLevel(data['default_message_notifications'])
-        self.explicit_content_filter = ContentFilterLevel(data['explicit_content_filter'])
+        self.verification_level = data['verification_level']
+        self.default_message_notifications = data['default_message_notifications']
+        self.explicit_content_filter = data['explicit_content_filter']
         self.features = data['features']
-        self.mfa_level = MFALevel(data['mfa_level'])
+        self.mfa_level = int(data['mfa_level'])
         self.application_id = try_snowflake(data['application_id'])
         self.system_channel_id = try_snowflake(data['system_channel_id'])
         self.system_channel_flags = SystemChannelFlags(data['system_channel_flags'])
@@ -1859,10 +1871,10 @@ class Guild(Hashable, BaseGuild):
         self.vanity_url_code = data['vanity_url_code']
         self.description = data['description']
         self.banner_hash = data['banner']
-        self.premium_tier = PremiumTier(data['premium_tier'])
-        self.preferred_locale = Locale(data['preferred_locale'])
+        self.premium_tier = int(data['premium_tier'])
+        self.preferred_locale = data['preferred_locale']
         self.public_updates_channel_id = try_snowflake(data['public_updates_channel_id'])
-        self.nsfw_level = NSFWLevel(data.get('nsfw_level', 0))
+        self.nsfw_level = int(data.get('nsfw_level', 0))
         self.premium_progress_bar_enabled = data.get('premium_progress_bar_enabled', False)
 
         # Optional attrs
