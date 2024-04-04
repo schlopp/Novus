@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from typing_extensions import Self, override
 
-from .. import enums, flags
+from .. import flags
 from ..utils import (
     MISSING,
     DiscordDatetime,
@@ -145,8 +145,10 @@ class Message(Hashable):
         If the message is pinned.
     webhook_id : int | None
         If the message was sent by a webhook, this would be the webhook's ID.
-    type : novus.MessageType
+    type : int
         The type of the message.
+
+        .. seealso:: `novus.MessageType`
     activity : novus.MessageActivity | None
         The message activity attached to the object.
     application : novus.Application | None
@@ -231,7 +233,7 @@ class Message(Hashable):
     reactions: list[Reaction]
     pinned: bool
     webhook_id: int | None
-    type: enums.MessageType
+    type: int
     application_id: int | None
     interaction: MessageInteraction | None
     flags: flags.MessageFlags
@@ -330,7 +332,7 @@ class Message(Hashable):
         ]
         self.pinned = data.get("pinned")
         self.webhook_id = try_snowflake(data.get("webhook_id"))
-        self.type = enums.MessageType(data.get("type", 0))
+        self.type = data.get("type", 0)
         # self.activity = data["activity"]
         # self.application = data["application"]
         self.application_id = try_snowflake(data.get("application_id"))
