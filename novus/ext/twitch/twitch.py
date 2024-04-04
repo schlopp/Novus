@@ -176,7 +176,7 @@ class Twitch(client.Plugin):
             activities=[
                 n.Activity(
                     f"{check.title} ({check.game_name})",
-                    type=n.ActivityType.streaming,
+                    type=n.ActivityType.STREAMING,
                     url=f"https://twitch.tv/{check.user_name}",
                 )
             ]

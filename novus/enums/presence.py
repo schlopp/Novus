@@ -26,19 +26,19 @@ __all__ = (
 
 
 class ActivityType(Enum):
-    game = 0
-    streaming = 1
-    listening = 2
-    watching = 3
-    custom = 4
-    competing = 5
+    GAME = 0
+    STREAMING = 1
+    LISTENING = 2
+    WATCHING = 3
+    CUSTOM = 4
+    COMPETING = 5
 
 
 class Status(Enum):
-    online = "online"
-    dnd = "dnd"
-    do_not_disturb = "dnd"
-    idle = "idle"
-    afk = "idle"
-    invisible = "invisible"
-    offline = "offline"
+    ONLINE = "ONLINE"
+    DND = "DND"
+    DO_NOT_DISTURB = "DND"
+    IDLE = "IDLE"
+    AFK = "IDLE"
+    INVISIBLE = "INVISIBLE"
+    OFFLINE = "OFFLINE"

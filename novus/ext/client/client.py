@@ -197,7 +197,7 @@ class Client:
     async def change_presence(
             self,
             activities: list[n.Activity] | None = None,
-            status: n.Status = n.Status.online) -> None:
+            status: str = n.Status.ONLINE) -> None:
         """
         Change the presence of the client.
 
@@ -205,8 +205,10 @@ class Client:
         ----------
         activities : list[novus.Activity]
             The activities that you want to set the client as displaying.
-        status : novus.Status
+        status : str
             The status of the client.
+
+            .. seealso:: `novus.Status`
         """
 
         for shard in self.state.gateway.shards.values():

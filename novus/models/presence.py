@@ -21,8 +21,6 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import Self
 
-from ..enums import ActivityType, Status
-
 if TYPE_CHECKING:
     from .. import payloads
 
@@ -40,8 +38,10 @@ class Activity:
     ----------
     name : str
         The name of the activity
-    type : novus.ActivityType | int
+    type : int
         The type of activity.
+
+        .. seealso:: `novus.ActivityType`
     state : str | None
         The state of the activity. Used for custom status text.
     url : str | None
@@ -51,8 +51,10 @@ class Activity:
     ----------
     name : str
         The name of the activity
-    type : novus.ActivityType
+    type : int
         The type of activity.
+
+        .. seealso:: `novus.ActivityType`
     state : str | None
         The state of the activity. Used for custom status text.
     url : str | None
@@ -70,11 +72,11 @@ class Activity:
     def __init__(
             self,
             name: str,
-            type: ActivityType | int,
+            type: int,
             state: str | None = None,
             url: str | None = None) -> None:
         self.name: str = name
-        self.type: ActivityType = type
+        self.type: int = type
         self.url: str | None = url
         self.state = state
         self.emoji = None
@@ -92,7 +94,7 @@ class Activity:
     def _to_data(self) -> payloads.gateway.GatewayActivity:
         return {
             "name": self.name,
-            "type": self.type.value,
+            "type": self.type,
             "state": self.state,
             "url": self.url,
         }
@@ -106,15 +108,19 @@ class Presence:
     ----------
     activities : list[novus.Activity] | None
         A list of the user's activities.
-    status : novus.Status
+    status : str
         The status of the user.
+
+        .. seealso:: `novus.Status`
 
     Attributes
     ----------
     activities : list[novus.Activity]
         A list of the user's activities.
-    status : novus.Status
+    status : str
         The status of the user.
+
+        .. seealso:: `novus.Status`
     """
 
     __slots__ = (
@@ -125,7 +131,7 @@ class Presence:
     def __init__(
             self,
             activities: list[Activity] | None,
-            status: Status) -> None:
+            status: str) -> None:
         self.activities = activities or []
         self.status = status
 
@@ -133,6 +139,6 @@ class Presence:
         return {
             "since": None,
             "activities": [i._to_data() for i in self.activities],
-            "status": self.status.value,
+            "status": self.status,
             "afk": False,
         }
