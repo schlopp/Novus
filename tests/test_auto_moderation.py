@@ -48,14 +48,14 @@ async def test_create_rule(run: int) -> None:
     created = await novus.Guild.create_auto_moderation_rule(
         fake_guild,
         name="Test Case",
-        event_type=novus.AutoModerationEventType.message_send,
-        trigger_type=novus.AutoModerationTriggerType.keyword,
+        event_type=novus.AutoModerationEventType.MESSAGE_SEND,
+        trigger_type=novus.AutoModerationTriggerType.KEYWORD,
         trigger_metadata=novus.AutoModerationTriggerMetadata(
             keyword_filters=["testCaseCreatedAutomodRule"],
         ),
         actions=[
             novus.AutoModerationAction(
-                type=novus.AutoModerationActionType.block_message,
+                type=novus.AutoModerationActionType.BLOCK_MESSAGE,
             ),
         ],
     )

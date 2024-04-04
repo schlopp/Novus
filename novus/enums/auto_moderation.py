@@ -26,23 +26,23 @@ __all__ = (
 
 
 class AutoModerationKeywordPresetType(Enum):
-    profanity = 1
-    sexual_content = 2
-    slurs = 3
+    PROFANITY = 1
+    SEXUAL_CONTENT = 2
+    SLURS = 3
 
 
 class AutoModerationTriggerType(Enum):
-    keyword = 1
-    spam = 3
-    keyword_preset = 4
-    mention_spam = 5
+    KEYWORD = 1
+    SPAM = 3
+    KEYWORD_PRESET = 4
+    MENTION_SPAM = 5
 
 
 class AutoModerationEventType(Enum):
-    message_send = 1
+    MESSAGE_SEND = 1
 
 
 class AutoModerationActionType(Enum):
-    block_message = 1
-    send_alert_message = 2
-    timeout = 3
+    BLOCK_MESSAGE = 1
+    SEND_ALERT_MESSAGE = 2
+    TIMEOUT = 3

@@ -23,42 +23,11 @@ if TYPE_CHECKING:
     from ._util import Snowflake
 
 __all__ = (
-    'AutoModerationTriggerType',
-    'AutoModerationKeywordPresetType',
-    'AutoModeratorEventType',
-    'AutoModerationActionType',
     'AutoModerationActionMetadata',
     'AutoModerationTriggerMetadata',
     'AutoModerationAction',
     'AutoModerationRule',
 )
-
-
-AutoModerationTriggerType = Literal[
-    1,  # Keyword
-    3,  # Spam
-    4,  # Keyword preset
-    5,  # Mention spam
-]
-
-
-AutoModerationKeywordPresetType = Literal[
-    1,  # Profanity
-    2,  # Sexual content
-    3,  # Slurs
-]
-
-
-AutoModeratorEventType = Literal[
-    1,  # Message send
-]
-
-
-AutoModerationActionType = Literal[
-    1,  # Block message
-    2,  # Send alert message
-    3,  # Timeout
-]
 
 
 class AutoModerationActionMetadata(TypedDict):
@@ -69,7 +38,7 @@ class AutoModerationActionMetadata(TypedDict):
 class AutoModerationTriggerMetadata(TypedDict, total=False):
     keyword_filter: list[str]
     regex_patterns: list[str]
-    presets: list[AutoModerationKeywordPresetType]
+    presets: list[int]
     allow_list: list[str]
     mention_total_limit: int
 
@@ -79,7 +48,7 @@ class _AutoModerationActionOptional(TypedDict, total=False):
 
 
 class AutoModerationAction(_AutoModerationActionOptional):
-    type: AutoModerationActionType
+    type: int
 
 
 class AutoModerationRule(TypedDict):
@@ -87,8 +56,8 @@ class AutoModerationRule(TypedDict):
     guild_id: Snowflake
     name: str
     creator_id: Snowflake
-    event_type: AutoModeratorEventType
-    trigger_type: AutoModerationTriggerType
+    event_type: int
+    trigger_type: int
     trigger_metadata: AutoModerationTriggerMetadata
     actions: list[AutoModerationAction]
     enabled: bool

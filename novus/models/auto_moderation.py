@@ -19,12 +19,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Optional
 
-from ..enums import (
-    AutoModerationActionType,
-    AutoModerationEventType,
-    AutoModerationKeywordPresetType,
-    AutoModerationTriggerType,
-)
+from ..enums import AutoModerationActionType
 from ..utils import MISSING, generate_repr, try_id, try_object, try_snowflake
 from .guild import BaseGuild, Guild
 
@@ -60,8 +55,10 @@ class AutoModerationTriggerMetadata:
         A list of regular expression patterns that will be matched against
         the content.
         Only rust flavored regex is supported.
-    presets : list[novus.AutoModerationKeywordPresetType] | None
+    presets : list[int] | None
         A list of preset word lists that you want to match against.
+
+        .. seealso:: `novus.AutoModerationKeywordPresetType`
     allow_list : list[str] | None
         A list of substrings which should not trigger the rule.
     mention_total_limit : int | None
@@ -73,7 +70,7 @@ class AutoModerationTriggerMetadata:
             *,
             keyword_filters: list[str] | None = None,
             regex_patterns: list[str] | None = None,
-            presets: list[AutoModerationKeywordPresetType] | None = None,
+            presets: list[int] | None = None,
             allow_list: list[str] | None = None,
             mention_total_limit: int | None = None):
         self.keyword_filters = keyword_filters or list()
@@ -117,7 +114,7 @@ class AutoModerationTriggerMetadata:
         if self.regex_patterns is not None:
             ret['regex_patterns'] = self.regex_patterns
         if self.presets is not None:
-            ret['presets'] = [i.value for i in self.presets]
+            ret['presets'] = self.presets
         if self.allow_list is not None:
             ret['allow_list'] = self.allow_list
         if self.mention_total_limit is not None:
@@ -131,25 +128,29 @@ class AutoModerationAction:
 
     Parameters
     ----------
-    type : novus.AutoModerationActionType
+    type : int
         The type of action to be taken.
+
+        .. seealso:: `novus.AutoModerationActionType`
     channel : int | novus.abc.Snowflake | None
         The channel associated with the action. Can only be set if
-        the action type is `AutoModerationActionType.send_alert_message`.
+        the action type is `AutoModerationActionType.SEND_ALERT_MESSAGE`.
     duration : int | None
         The duration (in seconds) associated with the action. Can only be set
-        if the action type is `AutoModerationActionType.timeout`.
+        if the action type is `AutoModerationActionType.TIMEOUT`.
 
     Attributes
     ----------
-    type : novus.AutoModerationActionType
+    type : int
         The type of action to be taken.
+
+        .. seealso:: `novus.AutoModerationActionType`
     channel_id : int | None
         The channel ID associated with the action. Will only be set if
-        the action type is `AutoModerationActionType.send_alert_message`.
+        the action type is `AutoModerationActionType.SEND_ALERT_MESSAGE`.
     duration : int | None
         The duration (in seconds) associated with the action. Will only be set
-        if the action type is `AutoModerationActionType.timeout`.
+        if the action type is `AutoModerationActionType.TIMEOUT`.
     """
 
     __slots__ = (
@@ -160,19 +161,19 @@ class AutoModerationAction:
 
     def __init__(
             self,
-            type: AutoModerationActionType,
+            type: int,
             *,
             channel: int | abc.Snowflake | None = None,
             duration: int | None = None):
         self.type = type
         self.channel_id = None
         if channel is not None:
-            if self.type != AutoModerationActionType.send_alert_message:
+            if self.type != AutoModerationActionType.SEND_ALERT_MESSAGE:
                 raise ValueError("Cannot set channel for action type %s" % self.type)
             self.channel_id = channel if isinstance(channel, int) else channel.id
         self.duration = None
         if duration is not None:
-            if self.type != AutoModerationActionType.timeout:
+            if self.type != AutoModerationActionType.TIMEOUT:
                 raise ValueError("Cannot set duration for action type %s" % self.type)
             self.duration = duration
 
@@ -188,7 +189,7 @@ class AutoModerationAction:
 
     def _to_data(self) -> ActionPayload:
         data: ActionPayload = {}  # pyright: ignore
-        data['type'] = self.type.value
+        data['type'] = self.type
         metadata: ActionMetaPayload = {}  # pyright: ignore
         if self.channel_id is not None:
             metadata['channel_id'] = str(self.channel_id)
@@ -213,10 +214,14 @@ class AutoModerationRule:
         The name given to the rule.
     creator_id : int
         The ID of the user that created the rule.
-    event_type : novus.AutoModerationEventType
+    event_type : int
         The event type.
-    trigger_type : novus.AutoModerationTriggerType
+
+        .. seealso:: `novus.AutoModerationEventType`
+    trigger_type : int
         The trigger type for the rule.
+
+        .. seealso:: `novus.AutoModerationTriggerType`
     trigger_metadata : novus.AutoModerationTriggerMetadata
         The metadata associated with the rule.
     actions : list[novus.AutoModerationAction]
@@ -249,8 +254,8 @@ class AutoModerationRule:
     id: int
     name: str
     creator: GuildMember | User
-    event_type: AutoModerationEventType
-    trigger_type: AutoModerationTriggerType
+    event_type: int
+    trigger_type: int
     trigger_metadata: AutoModerationTriggerMetadata
     actions: list[AutoModerationAction]
     enabled: bool
@@ -363,8 +368,8 @@ class AutoModerationRule:
             *,
             reason: str | None = None,
             name: str = MISSING,
-            event_type: AutoModerationEventType = MISSING,
-            trigger_type: AutoModerationTriggerType = MISSING,
+            event_type: int = MISSING,
+            trigger_type: int = MISSING,
             trigger_metadata: AutoModerationTriggerMetadata = MISSING,
             actions: list[AutoModerationAction] = MISSING,
             enabled: bool = MISSING,
@@ -377,10 +382,14 @@ class AutoModerationRule:
         ----------
         name : str
             The new name for the role.
-        event_type : novus.AutoModerationEventType
+        event_type : int
             The event type.
-        trigger_type : novus.AutoModerationTriggerType
+
+            .. seealso:: `novus.AutoModerationEventType`
+        trigger_type : int
             The trigger type.
+
+            .. seealso:: `novus.AutoModerationTriggerType`
         trigger_metadata : novus.AutoModerationTriggerMetadata
             The trigger metadata.
         actions : list[novus.AutoModerationAction]
@@ -454,8 +463,8 @@ class AutoModerationRule:
             *,
             reason: str | None = None,
             name: str,
-            event_type: AutoModerationEventType,
-            trigger_type: AutoModerationTriggerType,
+            event_type: int,
+            trigger_type: int,
             actions: list[AutoModerationAction],
             trigger_metadata: AutoModerationTriggerMetadata | None = None,
             enabled: bool = False,
@@ -472,10 +481,14 @@ class AutoModerationRule:
             The ID of the guild to create the object in.
         name : str
             The new name for the role.
-        event_type : novus.AutoModerationEventType
+        event_type : int
             The event type.
-        trigger_type : novus.AutoModerationTriggerType
+
+            .. seealso:: `novus.AutoModerationEventType`
+        trigger_type : int
             The trigger type.
+
+            .. seealso:: `novus.AutoModerationTriggerType`
         actions : list[novus.AutoModerationAction]
             The actions to be taken on trigger.
         trigger_metadata : novus.AutoModerationTriggerMetadata | None

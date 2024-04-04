@@ -60,13 +60,7 @@ from .welcome_screen import WelcomeScreen
 if TYPE_CHECKING:
     from .. import payloads
     from ..api import HTTPConnection
-    from ..enums import (
-        AutoModerationEventType,
-        AutoModerationTriggerType,
-        EventEntityType,
-        EventPrivacyLevel,
-        EventStatus,
-    )
+    from ..enums import EventEntityType, EventPrivacyLevel, EventStatus
     from ..utils import DiscordDatetime
     from ..utils.types import AnySnowflake, FileT
     from . import abc
@@ -501,8 +495,8 @@ class BaseGuild:
             *,
             reason: str | None = None,
             name: str,
-            event_type: AutoModerationEventType,
-            trigger_type: AutoModerationTriggerType,
+            event_type: int,
+            trigger_type: int,
             actions: list[AutoModerationAction],
             trigger_metadata: AutoModerationTriggerMetadata | None = None,
             enabled: bool = False,
@@ -515,10 +509,14 @@ class BaseGuild:
         ----------
         name : str
             The new name for the role.
-        event_type : novus.AutoModerationEventType
+        event_type : int
             The event type.
-        trigger_type : novus.AutoModerationTriggerType
+
+            .. seealso:: `novus.AutoModerationEventType`
+        trigger_type : int
             The trigger type.
+
+            .. seealso:: `novus.AutoModerationTriggerType`
         actions : list[novus.AutoModerationAction]
             The actions to be taken on trigger.
         trigger_metadata : novus.AutoModerationTriggerMetadata | None
