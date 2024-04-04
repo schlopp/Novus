@@ -27,7 +27,6 @@ if TYPE_CHECKING:
     from aiohttp import web
 
     from .. import WebhookMessage, payloads
-    from ..enums import InteractionResponseType
     from ._http import HTTPConnection
 
 __all__ = (
@@ -434,7 +433,7 @@ class InteractionHTTPConnection:
             self,
             interaction_id: int | str,
             token: str,
-            type: InteractionResponseType,
+            type: int,
             interaction_data: dict[str, Any] | None = None) -> None:
         """
         Respond to an interaction.
@@ -470,7 +469,7 @@ class InteractionHTTPConnection:
         assert interaction_data is not None
         files = interaction_data.pop("files", [])
 
-        post_data = {"type": type.value}
+        post_data = {"type": type}
         if interaction_data:
             post_data["data"] = interaction_data
 
@@ -484,7 +483,7 @@ class InteractionHTTPConnection:
             self,
             writer: web.StreamResponse,
             request: web.Request,
-            type: InteractionResponseType,
+            type: int,
             interaction_data: dict[str, Any] | None = None) -> None:
         """
         Respond to an interaction.
@@ -513,7 +512,7 @@ class InteractionHTTPConnection:
         assert interaction_data is not None
         files = interaction_data.pop("files", [])
 
-        post_data = {"type": type.value}
+        post_data = {"type": type}
         if interaction_data:
             post_data["data"] = interaction_data
 

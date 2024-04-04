@@ -69,8 +69,10 @@ class MessageInteraction:
     ----------
     id : int
         The ID of the interaction.
-    type : novus.InteractionType
+    type : int
         The type of the interaction.
+
+        .. seealso:: `novus.InteractionType`
     name : str
         The name of the invoked application command.
     user : novus.GuildMember | novus.User
@@ -79,7 +81,7 @@ class MessageInteraction:
 
     def __init__(self, *, state: HTTPConnection, data: payloads.MessageInteraction, guild: Guild | None):
         self.id = try_snowflake(data["id"])
-        self.type = enums.InteractionType(data["type"])
+        self.type = data["type"]
         self.name = data["name"]
         cached_user = state.cache.get_user(data["user"]["id"])
         if cached_user is not None:

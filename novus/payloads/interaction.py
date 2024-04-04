@@ -37,7 +37,6 @@ if TYPE_CHECKING:
     from ._util import Snowflake
 
 __all__ = (
-    'InteractionType',
     'CommandType',
     'InteractionResolved',
     'InteractionDataOption',
@@ -46,15 +45,6 @@ __all__ = (
     'ModalSubmitData',
     'Interaction',
 )
-
-
-InteractionType = Literal[
-    1,  # PING
-    2,  # APPLICATION_COMMAND
-    3,  # MESSAGE_COMPONENT
-    4,  # APPLICATION_COMMAND_AUTOCOMPLETE
-    5,  # MODAL_SUBMIT
-]
 
 
 CommandType = Literal[
@@ -105,7 +95,7 @@ class ModalSubmitData(TypedDict):
 class Interaction(TypedDict):
     id: Snowflake
     application_id: Snowflake
-    type: InteractionType
+    type: int
     data: ApplicationComandData | MessageComponentData | ModalSubmitData
     guild_id: NotRequired[Snowflake]
     channel_id: Snowflake

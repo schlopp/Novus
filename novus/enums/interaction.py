@@ -24,18 +24,18 @@ __all__ = (
 
 
 class InteractionType(Enum):
-    ping = 1
-    application_command = 2
-    message_component = 3
-    autocomplete = 4
-    modal_submit = 5
+    PING = 1
+    APPLICATION_COMMAND = 2
+    MESSAGE_COMPONENT = 3
+    AUTOCOMPLETE = 4
+    MODAL_SUBMIT = 5
 
 
 class InteractionResponseType(Enum):
-    pong = 1
-    channel_message_with_source = 4
-    deferred_channel_message_with_source = 5
-    deferred_update_message = 6
-    update_message = 7
-    application_command_autocomplete_result = 8
-    modal = 9
+    PONG = 1
+    CHANNEL_MESSAGE_WITH_SOURCE = 4
+    DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE = 5
+    DEFERRED_UPDATE_MESSAGE = 6
+    UPDATE_MESSAGE = 7
+    APPLICATION_COMMAND_AUTOCOMPLETE_RESULT = 8
+    MODAL = 9

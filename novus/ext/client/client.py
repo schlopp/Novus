@@ -505,8 +505,8 @@ class Client:
         if event_name == "INTERACTION_CREATE":
             interaction: n.Interaction = args[0]
             if interaction.type in [
-                    n.InteractionType.application_command,
-                    n.InteractionType.autocomplete]:
+                    n.InteractionType.APPLICATION_COMMAND,
+                    n.InteractionType.AUTOCOMPLETE]:
                 interaction = cast(n.Interaction[n.ApplicationCommandData], interaction)
                 try:
                     command = self._commands_by_id[interaction.data.id]
@@ -516,12 +516,12 @@ class Client:
                         % (interaction.data.id, interaction)
                     )
                 else:
-                    if interaction.type == n.InteractionType.application_command:
+                    if interaction.type == n.InteractionType.APPLICATION_COMMAND:
                         asyncio.create_task(
                             command.run(interaction),
                             name=f"Command invoke from interaction ({interaction.id})"
                         )
-                    elif interaction.type == n.InteractionType.autocomplete:
+                    elif interaction.type == n.InteractionType.AUTOCOMPLETE:
                         asyncio.create_task(
                             command.run_autocomplete(interaction),
                             name=f"Command invoke from interaction ({interaction.id})"
@@ -726,7 +726,7 @@ class Client:
                 return web.Response(text="Invalid signature", status=401)
 
             data: n.payloads.Interaction = await request.json()
-            if data["type"] == n.InteractionType.ping.value:
+            if data["type"] == n.InteractionType.PING:
                 return web.json_response({"type": 1})
             interaction = n.Interaction(state=self.state, data=data)
             stream = web.StreamResponse()

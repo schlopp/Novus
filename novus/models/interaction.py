@@ -438,8 +438,10 @@ class Interaction(Generic[IData]):
     application_id: int
         The ID of the application receiving the interaction. Usually your bot's
         ID.
-    type: novus.InteractionType
+    type: int
         The type of the interaction.
+
+        .. seealso:: `novus.InteractionType`
     data: ApplicationComandData | ContextComandData | MessageComponentData | ModalSubmitData | None
         The data associated with the interaction.
     guild: novus.Guild | None
@@ -484,7 +486,7 @@ class Interaction(Generic[IData]):
 
     id: int
     application_id: int
-    type: InteractionType
+    type: int
     data: IData
     guild: BaseGuild | None
     channel: Channel
@@ -503,7 +505,7 @@ class Interaction(Generic[IData]):
         self._stream = None
         self._stream_request = None
         self.application_id = try_snowflake(data["application_id"])
-        self.type = InteractionType(data["type"])
+        self.type = data["type"]
         self.guild = self.state.cache.get_guild(data.get("guild_id"))
         if self.guild is None and data.get("guild_id"):
             self.guild = BaseGuild(state=state, data={"id": data["guild_id"]})  # pyright: ignore
@@ -543,7 +545,7 @@ class Interaction(Generic[IData]):
         data_object = None
         if "data" in data:
             data_dict = data["data"]
-            if self.type == InteractionType.application_command:
+            if self.type == InteractionType.APPLICATION_COMMAND:
                 assert "type" in data_dict
                 command_type = data_dict.get("type", 1)
                 if command_type == ApplicationCommandType.CHAT_INPUT:
@@ -556,17 +558,17 @@ class Interaction(Generic[IData]):
                         parent=self,
                         data=data_dict,  # pyright: ignore
                     )
-            if self.type == InteractionType.message_component:
+            if self.type == InteractionType.MESSAGE_COMPONENT:
                 data_object = MessageComponentData(  # type: ignore
                     parent=self,
                     data=data_dict,  # pyright: ignore
                 )
-            if self.type == InteractionType.autocomplete:
+            if self.type == InteractionType.AUTOCOMPLETE:
                 data_object = ApplicationCommandData(
                     parent=self,
                     data=data_dict,  # pyright: ignore
                 )
-            if self.type == InteractionType.modal_submit:
+            if self.type == InteractionType.MODAL_SUBMIT:
                 data_object = ModalSubmitData(  # type: ignore
                     parent=self,
                     data=data_dict,  # pyright: ignore
@@ -618,7 +620,7 @@ class Interaction(Generic[IData]):
         Send a pong interaction response.
         """
 
-        await self._get_response_partial()(InteractionResponseType.pong)
+        await self._get_response_partial()(InteractionResponseType.PONG)
 
     async def send(
             self: Interaction,
@@ -690,7 +692,7 @@ class Interaction(Generic[IData]):
 
         if self._responded is False:
             await self._get_response_partial()(
-                InteractionResponseType.channel_message_with_source,
+                InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                 data,
             )
             self._responded = True
@@ -785,7 +787,7 @@ class Interaction(Generic[IData]):
         if ephemeral:
             data = {"flags": MessageFlags(ephemeral=True)}
         await self._get_response_partial()(
-            InteractionResponseType.deferred_channel_message_with_source,
+            InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
             data,
         )
         self._responded = True
@@ -795,9 +797,9 @@ class Interaction(Generic[IData]):
         Send a defer update response.
         """
 
-        t = InteractionResponseType.deferred_channel_message_with_source
-        if self.type == InteractionType.message_component:
-            t = InteractionResponseType.deferred_update_message
+        t = InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE
+        if self.type == InteractionType.MESSAGE_COMPONENT:
+            t = InteractionResponseType.DEFERRED_UPDATE_MESSAGE
         await self._get_response_partial()(t)
         self._responded = True
 
@@ -860,7 +862,7 @@ class Interaction(Generic[IData]):
             data["flags"] = flags
 
         await self._get_response_partial()(
-            InteractionResponseType.update_message,
+            InteractionResponseType.UPDATE_MESSAGE,
             data,
         )
         self._responded = True
@@ -878,7 +880,7 @@ class Interaction(Generic[IData]):
         """
 
         await self._get_response_partial()(
-            InteractionResponseType.application_command_autocomplete_result,
+            InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT,
             {"choices": options},
         )
         self._responded = True
@@ -903,7 +905,7 @@ class Interaction(Generic[IData]):
         """
 
         await self._get_response_partial()(
-            InteractionResponseType.modal,
+            InteractionResponseType.MODAL,
             {
                 "title": title,
                 "custom_id": custom_id,

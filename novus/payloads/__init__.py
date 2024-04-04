@@ -97,7 +97,6 @@ __all__: tuple[str, ...] = (
     'Interaction',
     'InteractionDataOption',
     'InteractionResolved',
-    'InteractionType',
     'Invite',
     'InviteWithMetadata',
     'IteractableComponent',

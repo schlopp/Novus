@@ -123,8 +123,8 @@ class EventBuilder:
                 func,
                 lambda i: bool(
                     i.type in [
-                        novus.InteractionType.message_component,
-                        novus.InteractionType.modal_submit,
+                        novus.InteractionType.MESSAGE_COMPONENT,
+                        novus.InteractionType.MODAL_SUBMIT,
                     ]
                     and i.custom_id
                     and re.search(match_string, i.custom_id)
@@ -141,7 +141,7 @@ class EventBuilder:
         return EventListener(
             "INTERACTION_CREATE",
             func,
-            lambda i: i.type == novus.InteractionType.message_component,
+            lambda i: i.type == novus.InteractionType.MESSAGE_COMPONENT,
         )
 
     @classmethod
@@ -149,7 +149,7 @@ class EventBuilder:
         return EventListener(
             "INTERACTION_CREATE",
             func,
-            lambda i: i.type == novus.InteractionType.modal_submit,
+            lambda i: i.type == novus.InteractionType.MODAL_SUBMIT,
         )
 
     @classmethod
@@ -162,7 +162,7 @@ class EventBuilder:
         return EventListener(
             "INTERACTION_CREATE",
             func,
-            lambda i: i.type == novus.InteractionType.application_command,
+            lambda i: i.type == novus.InteractionType.APPLICATION_COMMAND,
         )
 
     @classmethod
@@ -170,7 +170,7 @@ class EventBuilder:
         return EventListener(
             "INTERACTION_CREATE",
             func,
-            lambda i: i.type == novus.InteractionType.autocomplete,
+            lambda i: i.type == novus.InteractionType.AUTOCOMPLETE,
         )
 
     @classmethod
