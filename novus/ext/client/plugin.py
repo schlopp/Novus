@@ -113,13 +113,13 @@ class Plugin(metaclass=PluginMeta):
     def __new__(cls, *args: Any, **kwargs: Any) -> Any:
         created = super().__new__(cls)
         created.__name__ = cls.__name__
-        for i in cls._commands:
-            i.owner = created
-        for i in cls._event_listeners.values():
-            for i2 in i:
-                i2.owner = created
-        for i in cls._loops:
-            i.owner = created
+        for a in cls._commands:
+            a.owner = created
+        for b in cls._event_listeners.values():
+            for b2 in b:
+                b2.owner = created
+        for c in cls._loops:
+            c.owner = created
         return created
 
     def __init__(self, bot: Client) -> None:
