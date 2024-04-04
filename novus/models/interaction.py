@@ -236,8 +236,10 @@ class ApplicationCommandData(InteractionData):
         The ID of the command that was run.
     name : str
         The name of the command that was run.
-    type : CommandType
+    type : int
         The type of the command that was run.
+
+        .. seealso:: `novus.ApplicationCommandType`
     resolved : InteractionResolved
         A resolved set of models for the interaction.
     options : list[novus.ApplicationCommandOption]
@@ -248,7 +250,7 @@ class ApplicationCommandData(InteractionData):
 
     id: int
     name: str
-    type: ApplicationCommandType
+    type: int
     resolved: InteractionResolved
     options: list[InteractionOption]
     guild: BaseGuild | None
@@ -261,7 +263,7 @@ class ApplicationCommandData(InteractionData):
         self.parent = parent
         self.id = try_snowflake(data["id"])
         self.name = data["name"]
-        self.type = ApplicationCommandType(data["type"])
+        self.type = int(data["type"])
         self.guild = self.parent.guild
         self.resolved = InteractionResolved(
             state=self.parent.state,
@@ -286,8 +288,10 @@ class ContextComandData(ApplicationCommandData):
         The ID of the command that was run.
     name : str
         The name of the command that was run.
-    type : CommandType
+    type : int
         The type of the command that was run.
+
+        .. seealso:: `novus.ApplicationCommandType`
     resolved : InteractionResolved
         A resolved set of models for the interaction.
     options : list[novus.ApplicationCommandOption]
@@ -300,7 +304,7 @@ class ContextComandData(ApplicationCommandData):
 
     id: int
     name: str
-    type: ApplicationCommandType
+    type: int
     resolved: InteractionResolved
     options: list[ApplicationCommandOption]  # type: ignore  # Incompatible with supertype
     guild: BaseGuild | None
@@ -314,7 +318,7 @@ class ContextComandData(ApplicationCommandData):
         self.parent = parent
         self.id = try_snowflake(data["id"])
         self.name = data["name"]
-        self.type = ApplicationCommandType(data["type"])
+        self.type = int(data["type"])
         self.guild = self.parent.guild
         self.resolved = InteractionResolved(
             state=self.parent.state,
@@ -328,12 +332,12 @@ class ContextComandData(ApplicationCommandData):
         self.guild = self.parent.state.cache.get_guild(data.get("guild_id"))
         target_id = try_snowflake(data.get("target_id"))
         self.target = None  # pyright: ignore
-        if self.type == ApplicationCommandType.message:
+        if self.type == ApplicationCommandType.MESSAGE:
             for k, v in self.resolved.messages.items():
                 if k == target_id:
                     self.target = v
                     break
-        elif self.type == ApplicationCommandType.user:
+        elif self.type == ApplicationCommandType.USER:
             for k, v in self.resolved.members.items():
                 if k == target_id:
                     self.target = v
@@ -543,7 +547,7 @@ class Interaction(Generic[IData]):
             if self.type == InteractionType.application_command:
                 assert "type" in data_dict
                 command_type = data_dict.get("type", 1)
-                if command_type == ApplicationCommandType.chat_input.value:
+                if command_type == ApplicationCommandType.CHAT_INPUT:
                     data_object = ApplicationCommandData(
                         parent=self,
                         data=data_dict,  # pyright: ignore

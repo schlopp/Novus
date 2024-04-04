@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING, TypeAlias
 
 from typing_extensions import Self
 
-from ..enums.application_command import ApplicationCommandType, ApplicationOptionType
+from ..enums.application_command import ApplicationOptionType
 from ..enums.channel import ChannelType
 from ..flags.permissions import Permissions
 from ..utils import (
@@ -307,8 +307,10 @@ class PartialApplicationCommand:
         The name of the command.
     description : str
         The description of the command.
-    type : novus.ApplicationCommandType
+    type : int
         The command type.
+
+        .. seealso:: `novus.ApplicationCommandType`
     name_localizations : dict[str | novus.Locale, str] | novus.Localization
         Localizations for the command name.
     description_localizations : dict[str | novus.Locale, str] | novus.Localization
@@ -328,8 +330,10 @@ class PartialApplicationCommand:
         The name of the command.
     description : str
         The description of the command.
-    type : novus.ApplicationCommandType
+    type : int
         The command type.
+
+        .. seealso:: `novus.ApplicationCommandType`
     name_localizations : dict[str | novus.Locale, str] | novus.Localization
         Localizations for the command.
     description_localizations : dict[str | novus.Locale, str] | novus.Localization
@@ -345,7 +349,7 @@ class PartialApplicationCommand:
     """
 
     if TYPE_CHECKING:
-        type: ApplicationCommandType
+        type: int
         name: str
         name_localizations: Localization
         description: str | None
@@ -359,7 +363,7 @@ class PartialApplicationCommand:
             self,
             name: str,
             description: str | None,
-            type: ApplicationCommandType,
+            type: int,
             *,
             name_localizations: LocType = MISSING,
             description_localizations: LocType = MISSING,
@@ -398,7 +402,7 @@ class PartialApplicationCommand:
         d: payloads.PartialApplicationCommand = {
             "name": self.name,
             "description": self.description or None,
-            "type": self.type.value,
+            "type": self.type,
             "name_localizations": self.name_localizations._to_data(),
             "description_localizations": self.description_localizations._to_data(),
             "dm_permission": self.dm_permission,
@@ -415,7 +419,7 @@ class PartialApplicationCommand:
     def _from_data(cls, data: payloads.ApplicationCommand) -> Self:
         permissions = Permissions(int(data.get("default_member_permissions") or 0))
         return cls(
-            type=ApplicationCommandType(data.get("type", 1)),
+            type=int(data.get("type", 1)),
             name=data["name"],
             name_localizations=data.get("name_localizations"),
             description=data["description"],
@@ -440,8 +444,10 @@ class ApplicationCommand(PartialApplicationCommand):
     ----------
     id : int
         The ID of the command.
-    type : novus.ApplicationCommandType
+    type : int
         The type of the command.
+
+        .. seealso:: `novus.ApplicationCommandType`
     application_id : int
         The ID of the application that the command is registered to.
     guild_id : int | None
@@ -468,7 +474,7 @@ class ApplicationCommand(PartialApplicationCommand):
 
     if TYPE_CHECKING:
         id: int
-        type: ApplicationCommandType
+        type: int
         application_id: int
         guild_id: int | None
         name: str
@@ -492,7 +498,7 @@ class ApplicationCommand(PartialApplicationCommand):
         super().__init__(
             name=data["name"],
             description=data.get("description"),
-            type=ApplicationCommandType(data.get("type", 1)),
+            type=int(data.get("type", 1)),
             name_localizations=data.get("name_localizations"),
             description_localizations=data.get("description_localizations"),
             default_member_permissions=permissions,

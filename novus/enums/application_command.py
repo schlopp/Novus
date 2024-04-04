@@ -28,9 +28,9 @@ class ApplicationCommandType(Enum):
     Types of application command.
     """
 
-    chat_input = 1
-    user = 2
-    message = 3
+    CHAT_INPUT = 1
+    USER = 2
+    MESSAGE = 3
 
 
 class ApplicationOptionType(Enum):

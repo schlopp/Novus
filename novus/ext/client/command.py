@@ -24,7 +24,7 @@ import logging
 from collections.abc import Callable, Coroutine, Iterable
 from typing import TYPE_CHECKING, Any, Awaitable, Type, TypeAlias, Union, cast
 
-from typing_extensions import Self, TypeVarTuple, Unpack, override
+from typing_extensions import Self, TypeVarTuple, override
 
 import novus as n
 
@@ -108,8 +108,10 @@ class Command:
     ----------
     name: str
         The name of the command
-    type : novus.ApplicationCommandType
+    type : int
         The type of the command.
+
+        .. seealso:: `novus.ApplicationCommandType`
     callback
         The function that acts as the command.
     application_command: novus.PartialApplicationCommand
@@ -121,8 +123,10 @@ class Command:
     ----------
     name: str
         The name of the command
-    type : novus.ApplicationCommandType
+    type : int
         The type of the command.
+
+        .. seealso:: `novus.ApplicationCommandType`
     callback
         The function that acts as the command.
     application_command: novus.PartialApplicationCommand
@@ -136,7 +140,7 @@ class Command:
     """
 
     name: str
-    type: n.ApplicationCommandType
+    type: int
     callback: CommandCallback
     application_command: n.PartialApplicationCommand
     guild_ids: list[int]
@@ -146,7 +150,7 @@ class Command:
     def __init__(
             self,
             name: str,
-            type: n.ApplicationCommandType,
+            type: int,
             application_command: n.PartialApplicationCommand,
             callback: CommandCallback,
             guild_ids: list[int]):
@@ -157,14 +161,14 @@ class Command:
         self.guild_ids = guild_ids
         self.command_ids = {}
         self.is_subcommand = (
-            self.type == n.ApplicationCommandType.chat_input
+            self.type == n.ApplicationCommandType.CHAT_INPUT
             and " " in self.name
         )
         self.owner: Any = None
         self._autocomplete: AutocompleteCallback | None = None
 
         # Make sure our callback and app command have similar options
-        if self.type == n.ApplicationCommandType.chat_input:
+        if self.type == n.ApplicationCommandType.CHAT_INPUT:
             sig = inspect.signature(self.callback)
             skip = 2
             option_iter = iter(self.application_command.options)
@@ -297,7 +301,7 @@ class Command:
         log.info("Command invoked, %s %s", self, interaction)
         partial = functools.partial(self.callback, self.owner, interaction)
         match self.application_command.type:
-            case n.ApplicationCommandType.user | n.ApplicationCommandType.message:
+            case n.ApplicationCommandType.USER | n.ApplicationCommandType.MESSAGE:
                 await partial(interaction.data.target)  # pyright: ignore
             case _:
                 await partial(**kwargs)
@@ -547,7 +551,7 @@ class CommandGroup(Command):
         app = n.PartialApplicationCommand(
             name=list(names[0])[0],
             description="...",
-            type=n.ApplicationCommandType.chat_input,
+            type=n.ApplicationCommandType.CHAT_INPUT,
             default_member_permissions=list(permission_set)[0],
             dm_permission=list(dm_permission_set)[0],
             nsfw=list(nsfw_set)[0],
@@ -649,7 +653,7 @@ class CommandDescription:
 def command(
         name: str | None = None,
         description: str | None = None,
-        type: n.ApplicationCommandType = n.ApplicationCommandType.chat_input,
+        type: int = n.ApplicationCommandType.CHAT_INPUT,
         *,
         options: list[n.ApplicationCommandOption] | None = None,
         default_member_permissions: n.Permissions | None = None,
@@ -674,8 +678,10 @@ def command(
         If the command is built as a subcommand, you can give descriptions and
         localizations using the :class:`novus.ext.client.CommandDescription`
         class.
-    type : novus.ApplicationCommandType
+    type : int
         The type of the command that you want to create.
+
+        .. seealso:: `novus.ApplicationCommandType`
     options : list[novus.ApplicationCommandOption]
         A list of options to be added to the slash command.
         If the option names and the function parameter names don't match up, an
@@ -727,7 +733,7 @@ def command(
     def wrapper(func: CommandCallback) -> Command:
         cname = name or func.__name__
         dname = description or func.__doc__ or ""
-        if type != n.ApplicationCommandType.chat_input:
+        if type != n.ApplicationCommandType.CHAT_INPUT:
             dname = None  # type: ignore
         else:
             dname = dname.strip()

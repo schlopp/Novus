@@ -74,7 +74,7 @@ class PluginMeta(type):
             # Add commands to cache
             if isinstance(val, Command):
                 val.owner = cls
-                if val.type == n.ApplicationCommandType.chat_input and " " in val.name:
+                if val.type == n.ApplicationCommandType.CHAT_INPUT and " " in val.name:
                     subcommands[val.name.split(" ")[0]].add(val)
                 cls._commands.add(val)
                 continue

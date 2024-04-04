@@ -25,20 +25,12 @@ if TYPE_CHECKING:
     from . import ChannelType, Locale, Snowflake
 
 __all__ = (
-    'ApplicationCommandType',
     'ApplicationCommandOptionType',
     'ApplicationCommandChoice',
     'ApplicationCommandOption',
     'PartialApplicationCommand',
     'ApplicationCommand',
 )
-
-
-ApplicationCommandType = Literal[
-    1,  # CHAT_INPUT
-    2,  # USER
-    3,  # MESSAGE
-]
 
 
 ApplicationCommandOptionType = Literal[
@@ -80,7 +72,7 @@ class ApplicationCommandOption(TypedDict):
 
 
 class PartialApplicationCommand(TypedDict):
-    type: NotRequired[ApplicationCommandType]
+    type: NotRequired[int]
     name: str
     name_localizations: NotRequired[dict[Locale, str] | None]
     description: str | None

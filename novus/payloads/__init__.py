@@ -49,7 +49,6 @@ __all__: tuple[str, ...] = (
     'ApplicationCommandChoice',
     'ApplicationCommandOption',
     'ApplicationCommandOptionType',
-    'ApplicationCommandType',
     'ApplicationRoleConnection',
     'ApplicationRoleConnectionMetadata',
     'ApplicationTeam',
