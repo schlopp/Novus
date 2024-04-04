@@ -25,17 +25,17 @@ __all__ = (
 
 
 class EventPrivacyLevel(Enum):
-    guild_only = 2
+    GUILD_ONLY = 2
 
 
 class EventStatus(Enum):
-    scheduled = 1
-    active = 2
-    completed = 3
-    cancelled = 4
+    SCHEDULED = 1
+    ACTIVE = 2
+    COMPLETED = 3
+    CANCELLED = 4
 
 
 class EventEntityType(Enum):
-    stage_instance = 1
-    voice = 2
-    external = 3
+    STAGE_INSTANCE = 1
+    VOICE = 2
+    EXTERNAL = 3

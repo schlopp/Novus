@@ -50,7 +50,6 @@ from .welcome_screen import WelcomeScreen
 if TYPE_CHECKING:
     from .. import payloads
     from ..api import HTTPConnection
-    from ..enums import EventEntityType, EventPrivacyLevel, EventStatus
     from ..utils import DiscordDatetime
     from ..utils.types import AnySnowflake, FileT
     from . import abc
@@ -932,14 +931,14 @@ class BaseGuild:
             *,
             name: str,
             start_time: DiscordDatetime,
-            entity_type: EventEntityType,
-            privacy_level: EventPrivacyLevel,
+            entity_type: int,
+            privacy_level: int,
             reason: str | None = None,
             channel: AnySnowflake | None = MISSING,
             location: str = MISSING,
             end_time: DiscordDatetime = MISSING,
             description: str | None = MISSING,
-            status: EventStatus = MISSING,
+            status: int = MISSING,
             image: FileT | None = MISSING) -> ScheduledEvent:
         """
         Create a new scheduled event.
@@ -952,10 +951,14 @@ class BaseGuild:
             The name of the event.
         start_time : datetime.datetime
             The time to schedule the event start.
-        entity_type : novus.EventEntityType
+        entity_type : int
             The type of the event.
-        privacy_level : novus.EventPrivacyLevel
+
+            .. seealso: `novus.EventEntityType`
+        privacy_level : int
             The privacy level of the event.
+
+            .. seealso:: `novus.EventPrivacyLevel`
         channel : int | Snowflake | None
             The channel of the scheduled event. Set to ``None`` if the event
             type is being set to external.
@@ -965,8 +968,10 @@ class BaseGuild:
             The time to schedule the event end.
         description : str | None
             The description of the event.
-        status : novus.EventStatus
+        status : int
             The status of the event.
+
+            .. seealso:: `novus.EventStatus`
         image : str | bytes | io.IOBase | None
             The cover image of the scheduled event.
         reason : str | None

@@ -64,8 +64,8 @@ async def test_create_event(run: int) -> None:
         name="Test Event",
         start_time=dt.utcnow() + timedelta(days=run),
         end_time=dt.utcnow() + timedelta(days=run + 1),  # required for external
-        entity_type=novus.EventEntityType.external,
-        privacy_level=novus.EventPrivacyLevel.guild_only,
+        entity_type=novus.EventEntityType.EXTERNAL,
+        privacy_level=novus.EventPrivacyLevel.GUILD_ONLY,
         location="https://voxelfox.co.uk",
     )
     cache.scheduled_event_id = (created.id, guild.id,)

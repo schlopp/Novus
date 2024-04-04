@@ -22,7 +22,6 @@ from typing import TYPE_CHECKING, Any
 
 from typing_extensions import Self
 
-from ..enums import EventEntityType, EventPrivacyLevel, EventStatus
 from ..utils import (
     MISSING,
     DiscordDatetime,
@@ -74,12 +73,18 @@ class ScheduledEvent(Hashable):
         The scheduled start time of the event.
     end_time : datetime.datetime | None
         The time the event will end. Required if the event type is external.
-    privacy_level : novus.EventPrivacyLevel
+    privacy_level : int
         The privacy level of the event.
-    status : novus.EventStatus
+
+        .. seealso:: `novus.EventPrivacyLevel`
+    status : int
         The status of the event.
-    entity_type : novus.EventEntityType
+
+        .. seealso:: `novus.EventStatus`
+    entity_type : int
         The tye of the scheduled event.
+
+        .. seealso: `novus.EventEntityType`
     entity_id : int | None
         The ID of an entity associated with the event. Will not be set if the
         type is external.
@@ -122,9 +127,9 @@ class ScheduledEvent(Hashable):
     description: str | None
     start_time: DiscordDatetime
     end_time: DiscordDatetime | None
-    privacy_level: EventPrivacyLevel
-    status: EventStatus
-    entity_type: EventEntityType
+    privacy_level: int
+    status: int
+    entity_type: int
     entity_id: int | None
     location: str | None
     user_count: int
@@ -154,9 +159,9 @@ class ScheduledEvent(Hashable):
         self.description = data.get('description')
         self.start_time = parse_timestamp(data['scheduled_start_time'])
         self.end_time = parse_timestamp(data.get('scheduled_end_time'))
-        self.privacy_level = EventPrivacyLevel(data['privacy_level'])
-        self.status = EventStatus(data['status'])
-        self.entity_type = EventEntityType(data['entity_type'])
+        self.privacy_level = data['privacy_level']
+        self.status = data['status']
+        self.entity_type = data['entity_type']
         self.entity_id = try_snowflake(data.get('entity_id'))
         self.location = (data.get('entity_metadata') or {}).get('location')
         self.creator = None
@@ -176,9 +181,9 @@ class ScheduledEvent(Hashable):
         self.description = data.get("description")
         self.start_time = parse_timestamp(data["scheduled_start_time"])
         self.end_time = parse_timestamp(data.get("scheduled_end_time"))
-        self.privacy_level = EventPrivacyLevel(data["privacy_level"])
-        self.status = EventStatus(data["status"])
-        self.entity_type = EventEntityType(data["entity_type"])
+        self.privacy_level = data["privacy_level"]
+        self.status = data["status"]
+        self.entity_type = data["entity_type"]
         self.entity_id = try_snowflake(data.get('entity_id'))
         self.location = (data.get('entity_metadata') or {}).get('location')
         self.image_hash = data.get("image")
@@ -195,14 +200,14 @@ class ScheduledEvent(Hashable):
             *,
             name: str,
             start_time: dt,
-            entity_type: EventEntityType,
-            privacy_level: EventPrivacyLevel,
+            entity_type: int,
+            privacy_level: int,
             reason: str | None = None,
             channel: int | abc.Snowflake | None = MISSING,
             location: str = MISSING,
             end_time: dt = MISSING,
             description: str | None = MISSING,
-            status: EventStatus = MISSING,
+            status: int = MISSING,
             image: FileT | None = MISSING) -> ScheduledEvent:
         """
         Create a new scheduled event.
@@ -219,10 +224,14 @@ class ScheduledEvent(Hashable):
             The name of the event.
         start_time : datetime.datetime
             The time to schedule the event start.
-        entity_type : novus.EventEntityType
+        entity_type : int
             The type of the event.
-        privacy_level : novus.EventPrivacyLevel
+
+            .. seealso: `novus.EventEntityType`
+        privacy_level : int
             The privacy level of the event.
+
+            .. seealso:: `novus.EventPrivacyLevel`
         channel : int | Snowflake | None
             The channel of the scheduled event. Set to ``None`` if the event
             type is being set to external.
@@ -232,8 +241,10 @@ class ScheduledEvent(Hashable):
             The time to schedule the event end.
         description : str | None
             The description of the event.
-        status : novus.EventStatus
+        status : int
             The status of the event.
+
+            .. seealso:: `novus.EventStatus`
         image : str | bytes | io.IOBase | None
             The cover image of the scheduled event.
         reason : str | None
@@ -357,12 +368,12 @@ class ScheduledEvent(Hashable):
             channel: int | abc.Snowflake | None = MISSING,
             location: str = MISSING,
             name: str = MISSING,
-            privacy_level: EventPrivacyLevel = MISSING,
+            privacy_level: int = MISSING,
             start_time: dt = MISSING,
             end_time: dt = MISSING,
             description: str | None = MISSING,
-            entity_type: EventEntityType | None = MISSING,
-            status: EventStatus = MISSING,
+            entity_type: int | None = MISSING,
+            status: int = MISSING,
             image: FileT | None = MISSING) -> ScheduledEvent:
         """
         Edit the scheduled event.
@@ -376,18 +387,24 @@ class ScheduledEvent(Hashable):
             The location of the event.
         name : str
             The name of the event.
-        privacy_level : novus.EventPrivacyLevel
+        privacy_level : int
             The privacy level of the event.
+
+            .. seealso:: `novus.EventPrivacyLevel`
         start_time : datetime.datetime
             The time to schedule the event start.
         end_time : datetime.datetime
             The time to schedule the event end.
         description : str | None
             The description of the event.
-        entity_type : novus.EventEntityType | None
+        entity_type : int | None
             The type of the event.
-        status : novus.EventStatus
+
+            .. seealso: `novus.EventEntityType`
+        status : int
             The status of the event.
+
+            .. seealso:: `novus.EventStatus`
         image : str | bytes | io.IOBase | None
             The cover image of the scheduled event.
         reason : str | None

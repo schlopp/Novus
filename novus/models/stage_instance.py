@@ -19,7 +19,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from ..enums import EventPrivacyLevel
 from ..utils import MISSING, try_object, try_snowflake
 
 if TYPE_CHECKING:
@@ -46,7 +45,7 @@ class StageInstance:
         The ID of the associated stage channel.
     topic : str
         The topic of the stage instance.
-    privacy_level : novus.EventPrivacyLevel
+    privacy_level : int
         The privacy level of the stage instance.
     event_id : int | None
         The ID of the scheduled event for this stage instance.
@@ -58,7 +57,7 @@ class StageInstance:
         self.guild_id: int = try_snowflake(data['guild_id'])
         self.channel_id: int = try_snowflake(data['channel_id'])
         self.topic: str = data['topic']
-        self.privacy_level: EventPrivacyLevel = EventPrivacyLevel(data['privacy_level'])
+        self.privacy_level: int = data['privacy_level']
         self.event_id: int | None = try_snowflake(data.get('guild_scheduled_event_id'))
 
     # API methods
@@ -71,7 +70,7 @@ class StageInstance:
             reason: str | None = None,
             channel: int | abc.Snowflake,
             topic: str,
-            privacy_level: EventPrivacyLevel = MISSING,
+            privacy_level: int = MISSING,
             send_start_notification: bool = MISSING) -> StageInstance:
         """
         Create a stage instance.
@@ -84,8 +83,10 @@ class StageInstance:
             The stage channel to be added to.
         topic : str
             The topic assigned to the stage.
-        privacy_level : EventPrivacyLevel
+        privacy_level : int
             The privacy level of the instance.
+
+            .. seealso:: `novus.EventPrivacyLevel`
         send_start_notification : bool
             Notify @everyone that a stage instance has started.
         reason : str | None
@@ -135,7 +136,7 @@ class StageInstance:
             self: abc.StateSnowflake,
             *,
             topic: str = MISSING,
-            privacy_level: EventPrivacyLevel = MISSING) -> StageInstance:
+            privacy_level: int = MISSING) -> StageInstance:
         """
         Update an existing stage instance.
 
@@ -143,8 +144,10 @@ class StageInstance:
         ----------
         topic : str
             The topic of the stage instance.
-        privacy_level : novus.EventPrivacyLevel
+        privacy_level : int
             The privacy level of the stage instance.
+
+            .. seealso:: `novus.EventPrivacyLevel`
 
         Returns
         -------
