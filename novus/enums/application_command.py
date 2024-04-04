@@ -38,14 +38,14 @@ class ApplicationOptionType(Enum):
     Types of option supported in application commands.
     """
 
-    sub_command = 1
-    sub_command_group = 2
-    string = 3
-    integer = 4
-    boolean = 5
-    user = 6
-    channel = 7
-    role = 8
-    menionable = 9
-    number = 10
-    attachment = 11
+    SUB_COMMAND = 1
+    SUB_COMMAND_GROUP = 2
+    STRING = 3
+    INTEGER = 4
+    BOOLEAN = 5
+    USER = 6
+    CHANNEL = 7
+    ROLE = 8
+    MENIONABLE = 9
+    NUMBER = 10
+    ATTACHMENT = 11

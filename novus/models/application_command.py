@@ -56,8 +56,10 @@ class ApplicationCommandOption:
         The name of the option.
     description: str
         The description of the option.
-    type: novus.ApplicationOptionType
+    type: int
         The type of the option.
+
+        .. seealso:: `novus.ApplicationOptionType`
     name_localizations : dict[str | novus.Locale, str] | novus.Localization
         Localizations for the option's name.
     description_localizations : dict[str | novus.Locale, str] | novus.Localization
@@ -92,8 +94,10 @@ class ApplicationCommandOption:
         The name of the option.
     description: str
         The description of the option.
-    type: novus.ApplicationOptionType
+    type: int
         The type of the option.
+
+        .. seealso:: `novus.ApplicationOptionType`
     name_localizations : novus.Localization
         Localizations for the option's name.
     description_localizations : novus.Localization
@@ -124,7 +128,7 @@ class ApplicationCommandOption:
     """
 
     if TYPE_CHECKING:
-        type: ApplicationOptionType
+        type: int
         name: str
         name_localizations: Localization
         description: str
@@ -143,7 +147,7 @@ class ApplicationCommandOption:
             self,
             name: str,
             description: str,
-            type: ApplicationOptionType,
+            type: int,
             *,
             name_localizations: LocType = MISSING,
             description_localizations: LocType = MISSING,
@@ -179,7 +183,7 @@ class ApplicationCommandOption:
 
     def _to_data(self) -> payloads.ApplicationCommandOption:
         d: payloads.ApplicationCommandOption = {
-            "type": self.type.value,
+            "type": self.type,
             "name": self.name,
             "description": self.description,
         }
@@ -191,9 +195,9 @@ class ApplicationCommandOption:
             d["options"] = [i._to_data() for i in self.options]
 
         # Only add options valid for the type
-        if self.type == ApplicationOptionType.sub_command:
+        if self.type == ApplicationOptionType.SUB_COMMAND:
             pass
-        elif self.type == ApplicationOptionType.sub_command_group:
+        elif self.type == ApplicationOptionType.SUB_COMMAND_GROUP:
             pass
         else:
             d["required"] = self.required
@@ -218,7 +222,7 @@ class ApplicationCommandOption:
         return cls(
             name=data["name"],
             description=data["description"],
-            type=ApplicationOptionType(data["type"]),
+            type=int(data["type"]),
             name_localizations=data.get("name_localizations"),
             description_localizations=data.get("description_localizations"),
             required=data.get("required", False),

@@ -203,7 +203,7 @@ class Command:
         return n.ApplicationCommandOption(
             name=self.name.split(" ")[-1],
             description=self.application_command.description,
-            type=n.ApplicationOptionType.sub_command,
+            type=n.ApplicationOptionType.SUB_COMMAND,
             name_localizations=self.application_command.name_localizations,
             description_localizations=self.application_command.description_localizations,
             options=self.application_command.options,
@@ -275,21 +275,21 @@ class Command:
         assert options is not None
         for option in options:
             data: Any = option.value
-            if option.type == n.ApplicationOptionType.channel:
+            if option.type == n.ApplicationOptionType.CHANNEL:
                 data_id = int(data)
                 data = interaction.data.resolved.channels.get(data_id)
-            elif option.type == n.ApplicationOptionType.attachment:
+            elif option.type == n.ApplicationOptionType.ATTACHMENT:
                 data_id = int(data)
                 data = interaction.data.resolved.attachments.get(data_id)
-            elif option.type == n.ApplicationOptionType.user:
+            elif option.type == n.ApplicationOptionType.USER:
                 data_id = int(data)
                 data = interaction.data.resolved.members.get(data_id)
                 if data is None:
                     data = interaction.data.resolved.users.get(data_id)
-            elif option.type == n.ApplicationOptionType.role:
+            elif option.type == n.ApplicationOptionType.ROLE:
                 data_id = int(data)
                 data = interaction.data.resolved.roles.get(data_id)
-            elif option.type == n.ApplicationOptionType.menionable:
+            elif option.type == n.ApplicationOptionType.MENIONABLE:
                 data_id = int(data)
                 data = interaction.data.resolved.roles.get(data_id)
                 if data is None:
@@ -567,7 +567,7 @@ class CommandGroup(Command):
                     built_options[group_tuple] = new = n.ApplicationCommandOption(
                         name=group_name,
                         description="...",
-                        type=n.ApplicationOptionType.sub_command_group,
+                        type=n.ApplicationOptionType.SUB_COMMAND_GROUP,
                     )
                     parent_group = tuple(group[:group_index - 1])
                     built_options[parent_group].add_option(new)
@@ -594,7 +594,7 @@ class CommandGroup(Command):
 
         command_name_parts = [self.name]
         option = interaction.data.options[0]
-        while option.type == n.ApplicationOptionType.sub_command_group:
+        while option.type == n.ApplicationOptionType.SUB_COMMAND_GROUP:
             command_name_parts.append(option.name)
             option = option.options[0]
         command = self.commands[" ".join([*command_name_parts, option.name])]
@@ -615,7 +615,7 @@ class CommandGroup(Command):
 
         command_name_parts = [self.name]
         option = interaction.data.options[0]
-        while option.type == n.ApplicationOptionType.sub_command_group:
+        while option.type == n.ApplicationOptionType.SUB_COMMAND_GROUP:
             command_name_parts.append(option.name)
             option = option.options[0]
         command = self.commands[" ".join([*command_name_parts, option.name])]
@@ -720,7 +720,7 @@ def command(
             options=[
                 novus.ApplicationCommandOption(
                     name="user",
-                    type=novus.ApplicationOptionType.user,
+                    type=novus.ApplicationOptionType.USER,
                     description="The user you want to mention.",
                 )
             ]

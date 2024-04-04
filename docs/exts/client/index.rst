@@ -19,7 +19,7 @@ it processes.
            options=[
                novus.ApplicationCommandOption(
                    name="user",
-                   type=novus.ApplicationOptionType.user,
+                   type=novus.ApplicationOptionType.USER,
                    description="The user you want to ping.",
                )
            ]

@@ -22,7 +22,6 @@ from typing import TYPE_CHECKING, Any, Awaitable, Callable, Generic, TypeVar
 
 from ..enums import (
     ApplicationCommandType,
-    ApplicationOptionType,
     InteractionResponseType,
     InteractionType,
     Locale,
@@ -202,14 +201,14 @@ class InteractionOption:
     """
 
     name: str
-    type: ApplicationOptionType
+    type: int
     value: str | int | bool | None
     options: list[InteractionOption]
     focused: bool
 
     def __init__(self, *, data: payloads.InteractionDataOption):
         self.name = data['name']
-        self.type = ApplicationOptionType(data['type'])
+        self.type = int(data['type'])
         self.value = data.get('value')
         self.options = [
             InteractionOption(data=d)
@@ -306,7 +305,7 @@ class ContextComandData(ApplicationCommandData):
     name: str
     type: int
     resolved: InteractionResolved
-    options: list[ApplicationCommandOption]  # type: ignore  # Incompatible with supertype
+    options: list[ApplicationCommandOption]
     guild: BaseGuild | None
     target: Message | User | GuildMember
 
