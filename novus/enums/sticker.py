@@ -24,12 +24,12 @@ __all__ = (
 
 
 class StickerType(Enum):
-    standard = 1
-    guild = 2
+    STANDARD = 1
+    GUILD = 2
 
 
 class StickerFormat(Enum):
-    png = 1
-    apng = 2
-    lottie = 3
-    gif = 4
+    PNG = 1
+    APNG = 2
+    LOTTIE = 3
+    GIF = 4

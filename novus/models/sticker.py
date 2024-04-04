@@ -21,7 +21,6 @@ from typing import TYPE_CHECKING, Any
 
 from typing_extensions import Self
 
-from ..enums import StickerFormat
 from ..utils import MISSING, cached_slot_property, try_id, try_snowflake
 from .abc import Hashable
 from .asset import Asset
@@ -52,8 +51,14 @@ class Sticker(Hashable):
         The name of the sticker.
     description : str
         The description of the sticker.
-    format_type : novus.StickerFormat
+    type : int
+        The type of the sticker.
+
+        .. seealso:: `novus.StickerType`
+    format_type : int
         The format for the sticker.
+
+        .. seealso:: `novus.StickerFormat`
     available : bool
         Whether or not the sticker can be used. May be ``False`` due to loss of
         nitro boosts.
@@ -70,7 +75,7 @@ class Sticker(Hashable):
         'pack_id',
         'name',
         'description',
-        # 'type',
+        'type',
         'format_type',
         'available',
         'guild',
@@ -82,7 +87,8 @@ class Sticker(Hashable):
     pack_id: int | None
     name: str
     description: str | None
-    format_type: StickerFormat
+    type: int
+    format_type: int
     available: bool
     guild: BaseGuild | None
 
@@ -96,8 +102,8 @@ class Sticker(Hashable):
         self.pack_id: int | None = try_snowflake(data.get('pack_id'))
         self.name: str = data['name']
         self.description: str | None = data.get('description', None)
-        # self.type: StickerType = StickerType(data['type'])
-        self.format_type: StickerFormat = StickerFormat(data['format_type'])
+        self.type: int = data['type']
+        self.format_type: int = data['format_type']
         self.available: bool = data.get('available', True)
         self.guild = None
         guild_id = data.get("guild_id")
