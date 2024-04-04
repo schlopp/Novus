@@ -81,7 +81,7 @@ class Button(InteractableComponent, ComponentEmojiMixin):
         'disabled',
     )
 
-    type = ComponentType.button
+    type = ComponentType.BUTTON
     styles: ClassVar[Type[ButtonStyle]] = ButtonStyle
 
     label: str | None
@@ -109,8 +109,8 @@ class Button(InteractableComponent, ComponentEmojiMixin):
 
     def _to_data(self) -> payloads.Button:
         d: payloads.Button = {
-            "type": self.type.value,
-            "style": self.style.value,
+            "type": self.type,
+            "style": self.style,
             "custom_id": self.custom_id,
             "disabled": self.disabled,
         }

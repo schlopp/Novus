@@ -39,21 +39,21 @@ if TYPE_CHECKING:
 def component_builder(data: payloads.Component) -> Component:
     factory: type
     match data["type"]:
-        case ComponentType.action_row.value:
+        case ComponentType.ACTION_ROW:
             factory = ActionRow
-        case ComponentType.button.value:
+        case ComponentType.BUTTON:
             factory = Button
-        case ComponentType.string_select.value:
+        case ComponentType.STRING_SELECT:
             factory = StringSelectMenu
-        case ComponentType.text_input.value:
+        case ComponentType.TEXT_INPUT:
             factory = TextInput
-        case ComponentType.user_select.value:
+        case ComponentType.USER_SELECT:
             factory = UserSelectMenu
-        case ComponentType.role_select.value:
+        case ComponentType.ROLE_SELECT:
             factory = RoleSelectMenu
-        case ComponentType.mentionable_select.value:
+        case ComponentType.MENTIONABLE_SELECT:
             factory = MentionableSelectMenu
-        case ComponentType.channel_select.value:
+        case ComponentType.CHANNEL_SELECT:
             factory = ChannelSelectMenu
         case _:
             raise ValueError()

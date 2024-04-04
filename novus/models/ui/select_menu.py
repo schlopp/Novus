@@ -73,7 +73,7 @@ class SelectMenu(InteractableComponent):
 
     def _to_data(self) -> payloads.SelectMenu:
         v: payloads.SelectMenu = {
-            "type": self.type.value,
+            "type": self.type,
             "custom_id": self.custom_id,
             "min_values": self.min_values,
             "max_values": self.max_values,
@@ -256,7 +256,7 @@ class StringSelectMenu(SelectMenu):
         'disabled',
     )
 
-    type = ComponentType.string_select
+    type = ComponentType.STRING_SELECT
     options: list[SelectOption | None]
 
     def __init__(
@@ -445,7 +445,7 @@ class UserSelectMenu(SelectMenu):
         If the component is disabled.
     """
 
-    type = ComponentType.user_select
+    type = ComponentType.USER_SELECT
 
 
 class RoleSelectMenu(SelectMenu):
@@ -479,7 +479,7 @@ class RoleSelectMenu(SelectMenu):
         If the component is disabled.
     """
 
-    type = ComponentType.role_select
+    type = ComponentType.ROLE_SELECT
 
 
 class MentionableSelectMenu(SelectMenu):
@@ -513,7 +513,7 @@ class MentionableSelectMenu(SelectMenu):
         If the component is disabled.
     """
 
-    type = ComponentType.mentionable_select
+    type = ComponentType.MENTIONABLE_SELECT
 
 
 class ChannelSelectMenu(SelectMenu):
@@ -547,7 +547,7 @@ class ChannelSelectMenu(SelectMenu):
         If the component is disabled.
     """
 
-    type = ComponentType.channel_select
+    type = ComponentType.CHANNEL_SELECT
     channel_types: list[int]
 
     def __init__(
@@ -576,8 +576,6 @@ class ChannelSelectMenu(SelectMenu):
         v = super()._to_data()
         channel_types: list[int] = []
         for i in self.channel_types:
-            if i is None:
-                continue
             channel_types.append(i)
         if channel_types:
             v["channel_types"] = channel_types

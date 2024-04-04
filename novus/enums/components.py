@@ -27,36 +27,36 @@ __all__ = (
 class ComponentType(Enum):
     """All of the Discord component types."""
 
-    action_row = 1
-    button = 2
-    string_select = 3
-    text_input = 4
-    user_select = 5
-    role_select = 6
-    mentionable_select = 7
-    channel_select = 8
+    ACTION_ROW = 1
+    BUTTON = 2
+    STRING_SELECT = 3
+    TEXT_INPUT = 4
+    USER_SELECT = 5
+    ROLE_SELECT = 6
+    MENTIONABLE_SELECT = 7
+    CHANNEL_SELECT = 8
 
 
 class ButtonStyle(Enum):
     """The different styles that can be applied to a button."""
 
-    primary = 1
-    blurple = 1
-    cta = 1
-    secondary = 2
-    grey = 2
-    gray = 2
-    success = 3
-    green = 3
-    danger = 4
-    red = 4
-    link = 5
-    url = 5
+    PRIMARY = 1
+    BLURPLE = 1
+    CTA = 1
+    SECONDARY = 2
+    GREY = 2
+    GRAY = 2
+    SUCCESS = 3
+    GREEN = 3
+    DANGER = 4
+    RED = 4
+    LINK = 5
+    URL = 5
 
 
 class TextInputStyle(Enum):
     """Different styles of text input component."""
 
-    short = 1
-    paragraph = 2
-    long = 2
+    SHORT = 1
+    PARAGRAPH = 2
+    LONG = 2

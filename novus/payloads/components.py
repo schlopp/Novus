@@ -25,7 +25,6 @@ if TYPE_CHECKING:
     from .emoji import PartialEmoji
 
 __all__ = (
-    'ComponentType',
     'Button',
     'SelectOption',
     'SelectMenu',
@@ -35,18 +34,6 @@ __all__ = (
     'LayoutComponent',
     'Component',
 )
-
-
-ComponentType = Literal[
-    1,  # Action row
-    2,  # Button
-    3,  # String select
-    4,  # Text input
-    5,  # User select
-    6,  # Role select
-    7,  # Mentionable select
-    8,  # Channel select
-]
 
 
 class _ButtonOptional(TypedDict, total=False):
@@ -59,7 +46,7 @@ class _ButtonOptional(TypedDict, total=False):
 class Button(_ButtonOptional):
     custom_id: str
     type: Literal[2]
-    style: Literal[1, 2, 3, 4, 5]
+    style: int
 
 
 class _SelectOptionOptional(TypedDict, total=False):
@@ -83,14 +70,14 @@ class _SelectMenuOptional(TypedDict, total=False):
 
 
 class SelectMenu(_SelectMenuOptional):
-    type: Literal[3, 5, 6, 7, 8]
+    type: int
     custom_id: str
 
 
 class TextInput(TypedDict):
     type: Literal[4]
     custom_id: str
-    style: Literal[1, 2]
+    style: int
     label: str
     min_length: NotRequired[int]
     max_length: NotRequired[int]

@@ -89,7 +89,7 @@ class TextInput(InteractableComponent):
         'placeholder',
     )
 
-    type = ComponentType.text_input
+    type = ComponentType.TEXT_INPUT
     label: str
     style: TextInputStyle
     custom_id: str
@@ -123,9 +123,9 @@ class TextInput(InteractableComponent):
 
     def _to_data(self) -> payloads.TextInput:
         v: payloads.TextInput = {
-            "type": self.type.value,
+            "type": self.type,
             "label": self.label,
-            "style": self.style.value,
+            "style": self.style,
             "custom_id": self.custom_id,
             "min_length": self.min_length,
             "max_length": self.max_length,

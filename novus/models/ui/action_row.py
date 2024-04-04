@@ -75,7 +75,7 @@ class ActionRow(LayoutComponent):
         The components inside of the action row.
     """
 
-    type = ComponentType.action_row
+    type = ComponentType.ACTION_ROW
 
     components: list[InteractableComponent | None]
 
@@ -197,7 +197,7 @@ class ActionRow(LayoutComponent):
 
     def _to_data(self) -> payloads.ActionRow:
         return {
-            "type": self.type.value,
+            "type": self.type,
             "components": [
                 i._to_data()
                 for i in self.components

@@ -27,7 +27,6 @@ if TYPE_CHECKING:
         ApplicationCommandOptionType,
         Attachment,
         Channel,
-        ComponentType,
         GuildMember,
         Locale,
         Message,
@@ -94,7 +93,7 @@ class ApplicationComandData(TypedDict):
 
 class MessageComponentData(TypedDict):
     custom_id: str
-    component_type: ComponentType
+    component_type: int
     values: NotRequired[list[SelectOption]]
 
 

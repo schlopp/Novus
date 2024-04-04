@@ -71,7 +71,6 @@ __all__: tuple[str, ...] = (
     'ChannelOverwrite',
     'CommandType',
     'Component',
-    'ComponentType',
     'Embed',
     'EmbedType',
     'Emoji',

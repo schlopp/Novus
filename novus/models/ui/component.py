@@ -17,15 +17,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import Any, ClassVar
 
 from typing_extensions import Self
 
 from ...utils import generate_repr
 from ..emoji import PartialEmoji
-
-if TYPE_CHECKING:
-    from ...enums import ComponentType
 
 __all__ = (
     'Component',
@@ -41,7 +38,7 @@ class Component:
 
     __slots__ = ()
 
-    type: ClassVar[ComponentType]
+    type: ClassVar[int]
 
     def _to_data(self) -> Any:
         raise NotImplementedError()
