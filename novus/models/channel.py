@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING, Any, Literal, Type
 
 from typing_extensions import Self
 
-from ..enums import ChannelType, ForumLayout, ForumSortOrder, PermissionOverwriteType
+from ..enums import ChannelType, PermissionOverwriteType
 from ..flags import ChannelFlags, Permissions
 from ..utils import (
     MISSING,
@@ -81,8 +81,10 @@ class PermissionOverwrite:
     ----------
     id : int
         The ID of the target.
-    type : novus.PermissionOverwriteType
+    type : int
         The type of the target.
+
+        .. seealso:: `novus.PermissionOverwriteType`
     allow : novus.Permissions
         The permissions that the target is explicitly allowed.
     deny : novus.Permissions
@@ -92,8 +94,10 @@ class PermissionOverwrite:
     ----------
     id : int
         The ID of the target.
-    type : novus.PermissionOverwriteType
+    type : int
         The type of the target.
+
+        .. seealso:: `novus.PermissionOverwriteType`
     allow : novus.Permissions
         The permissions that the target is explicitly allowed.
     deny : novus.Permissions
@@ -110,26 +114,28 @@ class PermissionOverwrite:
     def __init__(
             self,
             id: AnySnowflake,
-            type: PermissionOverwriteType | type[Role] | type[User] | None = None,
+            type: int | type[Role] | type[User] | None = None,
             *,
             allow: Permissions | None = None,
             deny: Permissions | None = None):
         self.id = try_id(id)
-        self.type: PermissionOverwriteType
+        self.type: int
         from .guild import BaseGuild
         from .guild_member import GuildMember
         from .role import Role
-        if type:
+        if type is not None:
             if type is Role:
-                self.type = PermissionOverwriteType.role
+                self.type = PermissionOverwriteType.ROLE
             elif type is User:
-                self.type = PermissionOverwriteType.member
-            else:
+                self.type = PermissionOverwriteType.MEMBER
+            elif isinstance(type, int):
                 self.type = type
+            else:
+                raise ValueError
         elif isinstance(id, (BaseGuild, Role)):
-            self.type = PermissionOverwriteType.role
+            self.type = PermissionOverwriteType.ROLE
         elif isinstance(id, (User, GuildMember)):
-            self.type = PermissionOverwriteType.member
+            self.type = PermissionOverwriteType.MEMBER
         else:
             raise TypeError("Type cannot be set implicitly from a non guild/role/user type.")
         self.allow: Permissions = allow or Permissions()
@@ -140,7 +146,7 @@ class PermissionOverwrite:
     def _to_data(self) -> payloads.ChannelOverwrite:
         return {
             "id": str(self.id),
-            "type": self.type.value,
+            "type": self.type,
             "allow": str(self.allow.value),
             "deny": str(self.deny.value),
         }
@@ -273,8 +279,8 @@ class Channel(Hashable, Messageable):
     applied_tags: list[ForumTag] | None
     default_reaction_emoji: PartialEmoji | None
     default_thread_rate_limit_per_user: int | None
-    default_sort_order: ForumSortOrder | None
-    default_forum_layout: ForumLayout | None
+    default_sort_order: int | None
+    default_forum_layout: int | None
 
     def __init__(
             self,
@@ -304,8 +310,11 @@ class Channel(Hashable, Messageable):
             PermissionOverwrite(
                 id=int(d['id']),
                 type=(
-                    PermissionOverwriteType(d['type']) if isinstance(d["type"], int)
-                    else PermissionOverwriteType[d["type"]]
+                    d['type'] if isinstance(d["type"], int)
+                    else {
+                        "role": PermissionOverwriteType.ROLE,
+                        "member": PermissionOverwriteType.MEMBER,
+                    }[d["type"].casefold()]
                 ),
                 allow=Permissions(int(d['allow'])),
                 deny=Permissions(int(d['deny'])),
@@ -367,9 +376,9 @@ class Channel(Hashable, Messageable):
         self.default_reaction_emoji = PartialEmoji(data=emoji) if emoji else None
         self.default_thread_rate_limit_per_user = data.get("default_thread_rate_limit_per_user")
         dso = data.get("default_sort_order")
-        self.default_sort_order = ForumSortOrder(dso) if dso is not None else None
+        self.default_sort_order = int(dso) if dso is not None else None
         dfl = data.get("default_forum_layout")
-        self.default_forum_layout = ForumLayout(dfl) if dfl is not None else None
+        self.default_forum_layout = int(dfl) if dfl is not None else None
         return self
 
     @property
@@ -482,8 +491,8 @@ class Channel(Hashable, Messageable):
             locked: bool = MISSING,
             invitable: bool = MISSING,
             flags: ChannelFlags = MISSING,
-            default_sort_order: ForumSortOrder = MISSING,
-            default_forum_layout: ForumLayout = MISSING,
+            default_sort_order: int = MISSING,
+            default_forum_layout: int = MISSING,
             parent: abc.Snowflake | Channel = MISSING,
             overwrites: list[PermissionOverwrite] = MISSING,
             available_tags: list[ForumTag] = MISSING,
@@ -539,12 +548,16 @@ class Channel(Hashable, Messageable):
         flags : novus.ChannelFlags
             The flags applied to the channel.
             Only applies to forum channels and threads within forum channels.
-        default_sort_order : novus.ForumSortOrder
+        default_sort_order : int
             The sort order of the forum.
             Only applies to forum channels.
-        default_forum_layout : novus.ForumLayout
+
+            .. seealso:: `novus.ForumSortOrder`
+        default_forum_layout : int
             The layout of the forum.
             Only applies to forum channels.
+
+            .. seealso:: `novus.ForumLayout`
         parent : novus.abc.Snowflake
             A parent channel.
         overwrites : list[novus.PermissionOverwrite]

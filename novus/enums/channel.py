@@ -41,16 +41,16 @@ class ChannelType(Enum):
 
 
 class PermissionOverwriteType(Enum):
-    role = 0
-    member = 1
+    ROLE = 0
+    MEMBER = 1
 
 
 class ForumSortOrder(Enum):
-    latest_activity = 0
-    creation_date = 1
+    LATEST_ACTIVITY = 0
+    CREATION_DATE = 1
 
 
 class ForumLayout(Enum):
-    not_set = 0
-    list_view = 1
-    gallery_view = 2
+    NOT_SET = 0
+    LIST_VIEW = 1
+    GALLERY_VIEW = 2
