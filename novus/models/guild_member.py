@@ -36,7 +36,7 @@ from .user import User
 if TYPE_CHECKING:
     from datetime import datetime as dt
 
-    from .. import abc, enums, payloads
+    from .. import abc, payloads
     from ..api import HTTPConnection
     from ..utils.types import AnySnowflake
     from .guild import BaseGuild
@@ -96,8 +96,10 @@ class GuildMember(Hashable, Messageable):
     flags : novus.UserFlags
         The flags associated with the user account. A combination of public and
         private.
-    premium_type : novus.UserPremiumType
+    premium_type : int
         The premium type associated with the account.
+
+        .. seealso:: `novus.UserPremiumType`
     nick : str | None
         The nickname for the user.
     guild_avatar_hash : str | None
@@ -178,7 +180,7 @@ class GuildMember(Hashable, Messageable):
     verified: bool
     email: str | None
     flags: UserFlags
-    premium_type: enums.UserPremiumType
+    premium_type: int
     avatar: Asset | None
     banner: Asset | None
 

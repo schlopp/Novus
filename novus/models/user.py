@@ -79,8 +79,10 @@ class User(Hashable, Messageable):
     flags : novus.UserFlags
         The flags associated with the user account. A combination of public and
         private.
-    premium_type : novus.UserPremiumType
+    premium_type : int
         The premium type associated with the account.
+
+        .. seealso:: `novus.UserPremiumType`
     """
 
     __slots__ = (

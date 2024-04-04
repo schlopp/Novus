@@ -23,7 +23,7 @@ __all__ = (
 
 
 class UserPremiumType(Enum):
-    none = 0
-    nitro_classic = 1
-    nitro = 2
-    nitro_basic = 3
+    NONE = 0
+    NITRO_CLASSIC = 1
+    NITRO = 2
+    NITRO_BASIC = 3
