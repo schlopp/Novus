@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, Optional, TypedDict
+from typing import TYPE_CHECKING, Optional, TypedDict
 
 if TYPE_CHECKING:
     from ._util import Snowflake
@@ -33,7 +33,7 @@ __all__ = (
 class PartialSticker(TypedDict):  # Called "StickerItem" in the API
     id: Snowflake
     name: str
-    format_type: str
+    format_type: int
 
 
 class _StickerOptional(TypedDict, total=False):
@@ -49,8 +49,8 @@ class Sticker(_StickerOptional):
     name: str
     description: Optional[str]
     tags: str
-    type: Literal[1, 2]
-    format_type: Literal[1, 2, 3, 4]
+    type: int
+    format_type: int
 
 
 class _StickerPackOptional(TypedDict, total=False):

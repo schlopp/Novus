@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING, Any
 
 from typing_extensions import Self
 
+from ..enums import StickerFormat, StickerType
 from ..utils import MISSING, cached_slot_property, try_id, try_snowflake
 from .abc import Hashable
 from .asset import Asset
@@ -102,8 +103,8 @@ class Sticker(Hashable):
         self.pack_id: int | None = try_snowflake(data.get('pack_id'))
         self.name: str = data['name']
         self.description: str | None = data.get('description', None)
-        self.type: int = data['type']
-        self.format_type: int = data['format_type']
+        self.type: int = data.get('type', StickerType.GUILD)
+        self.format_type: int = data.get('format_type', StickerFormat.PNG)
         self.available: bool = data.get('available', True)
         self.guild = None
         guild_id = data.get("guild_id")
