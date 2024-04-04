@@ -19,15 +19,7 @@ from __future__ import annotations
 
 from datetime import datetime as dt
 from datetime import timezone
-from typing import TYPE_CHECKING, Protocol, overload
-
-if TYPE_CHECKING:
-    from ..enums.time import TimestampFormat
-
-    # from ..models.abc import Snowflake
-    # mypy doesn't like this ^ so we will make a new in-class protocol used for
-    # just here
-
+from typing import Protocol, overload
 
 __all__ = (
     'DiscordDatetime',
@@ -38,6 +30,8 @@ __all__ = (
 )
 
 
+# mypy doesn't like the protocol we have in models.abc so we will make a new
+# in-class protocol for just here
 class Snowflake(Protocol):
     id: int
 
@@ -73,7 +67,7 @@ class DiscordDatetime(dt):
     def mention(self) -> str:
         return format_timestamp(self)
 
-    def format(self, style: TimestampFormat | str | None = None) -> str:
+    def format(self, style: str | None = None) -> str:
         return format_timestamp(self, style)
 
 
@@ -141,7 +135,7 @@ def parse_timestamp(timestamp: dt | str | int | Snowflake | None) -> DiscordDate
 
 def format_timestamp(
         timestamp: dt,
-        style: TimestampFormat | str | None = None) -> str:
+        style: str | None = None) -> str:
     """
     Format a timestamp into a rendered timestamp string.
 
@@ -149,8 +143,10 @@ def format_timestamp(
     ----------
     timestamp : datetime.datetime
         The timestamp that you want to format.
-    style : novus.TimestampFormat | str
+    style : str
         The format that you want to style the timestamp as.
+
+        .. seealso:: `novus.TimestampFormat`
 
     Returns
     -------
@@ -163,8 +159,6 @@ def format_timestamp(
         style_str = None
     elif isinstance(style, str):
         style_str = style
-    else:
-        style_str = style.value
 
     if style_str is None:
         return f"<t:{int(timestamp.timestamp())}>"

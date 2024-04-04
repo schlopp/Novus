@@ -25,10 +25,10 @@ __all__ = (
 
 
 class TimestampFormat(Enum):
-    short_time = "t"
-    long_time = "T"
-    short_date = "d"
-    long_date = "D"
-    short_datetime = "f"
-    long_datetime = "F"
-    relative = "R"
+    SHORT_TIME = "T"
+    LONG_TIME = "T"
+    SHORT_DATE = "D"
+    LONG_DATE = "D"
+    SHORT_DATETIME = "F"
+    LONG_DATETIME = "F"
+    RELATIVE = "R"
