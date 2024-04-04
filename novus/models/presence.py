@@ -22,7 +22,6 @@ from typing import TYPE_CHECKING
 from typing_extensions import Self
 
 from ..enums import ActivityType, Status
-from ..utils import try_enum
 
 if TYPE_CHECKING:
     from .. import payloads
@@ -75,7 +74,7 @@ class Activity:
             state: str | None = None,
             url: str | None = None) -> None:
         self.name: str = name
-        self.type: ActivityType = try_enum(ActivityType, type)
+        self.type: ActivityType = type
         self.url: str | None = url
         self.state = state
         self.emoji = None

@@ -22,9 +22,8 @@ from typing import TYPE_CHECKING, Any, Awaitable, Callable
 
 from typing_extensions import Self
 
-from ..enums import Locale, UserPremiumType
 from ..flags import UserFlags
-from ..utils import cached_slot_property, generate_repr, try_enum, try_snowflake
+from ..utils import cached_slot_property, generate_repr, try_snowflake
 from .abc import Hashable, Messageable
 from .asset import Asset
 
@@ -183,7 +182,7 @@ class User(Hashable, Messageable):
         self.banner_hash = data.get('banner')
         del self.banner
         self.accent_color = data.get('accent_color')
-        self.locale = try_enum(Locale, data.get('locale'))
+        self.locale = data.get('locale')
         self.verified = data.get('verified', False)
         self.email = data.get('email')
         self.flags = UserFlags(0)
@@ -191,7 +190,7 @@ class User(Hashable, Messageable):
             self.flags = UserFlags(
                 data.get('flags', 0) | data.get('public_flags', 0)
             )
-        self.premium_type = try_enum(UserPremiumType, data.get('premium_type', 0))
+        self.premium_type = data.get('premium_type', 0)
         return self
 
     # API methods

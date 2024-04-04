@@ -17,8 +17,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
-from enum import Enum as E
-from enum import EnumMeta as EM
 from typing import Any
 
 __all__ = (
@@ -26,7 +24,7 @@ __all__ = (
 )
 
 
-class EnumMeta(EM):
+class EnumMeta(type):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -38,12 +36,12 @@ class EnumMeta(EM):
             return
         self.__doc__ = "Attributes\n---------"
         for attr in dir(self):
+            if not attr.isupper():
+                continue
             if attr.startswith("_"):
                 continue
             self.__doc__ += "\n" + attr
 
 
-class Enum(E, metaclass=EnumMeta):
-
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}.{self.name}'
+class Enum(int, metaclass=EnumMeta):
+    ...

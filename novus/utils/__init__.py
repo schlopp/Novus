@@ -18,7 +18,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from . import types
 from .cached_slots import *
 from .components import *
-from .enums import *
 from .files import *
 from .localization import *
 from .missing import *
@@ -42,7 +41,6 @@ __all__: tuple[str, ...] = (
     'get_mime_type_for_image',
     'now',
     'parse_timestamp',
-    'try_enum',
     'try_id',
     'try_object',
     'try_snowflake',

@@ -25,7 +25,7 @@ from ..enums import (
     AutoModerationKeywordPresetType,
     AutoModerationTriggerType,
 )
-from ..utils import MISSING, generate_repr, try_enum, try_id, try_object, try_snowflake
+from ..utils import MISSING, generate_repr, try_id, try_object, try_snowflake
 from .guild import BaseGuild, Guild
 
 if TYPE_CHECKING:
@@ -103,7 +103,7 @@ class AutoModerationTriggerMetadata:
             keyword_filters=data.get('keyword_filter'),
             regex_patterns=data.get('regex_patterns'),
             presets=[
-                try_enum(AutoModerationKeywordPresetType, i)
+                i
                 for i in data.get('presets', [])
             ] or None,
             allow_list=data.get('allow_list'),
@@ -181,7 +181,7 @@ class AutoModerationAction:
     @classmethod
     def _from_data(cls, *, data: ActionPayload) -> AutoModerationAction:
         return cls(
-            type=try_enum(AutoModerationActionType, data['type']),
+            type=data['type'],
             channel=try_snowflake(data.get('metadata', {}).get('channel_id')),
             duration=data.get('metadata', {}).get('duration_seconds'),
         )
@@ -274,8 +274,8 @@ class AutoModerationRule:
         if creator is None:
             creator = self.state.cache.get_user(creator_id)
         self.creator = creator
-        self.event_type = try_enum(AutoModerationEventType, data['event_type'])
-        self.trigger_type = try_enum(AutoModerationTriggerType, data['trigger_type'])
+        self.event_type = data['event_type']
+        self.trigger_type = data['trigger_type']
         self.trigger_metadata = AutoModerationTriggerMetadata._from_data(data=data['trigger_metadata'])
         self.actions: list[AutoModerationAction] = [
             AutoModerationAction._from_data(data=d)
