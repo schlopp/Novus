@@ -25,7 +25,6 @@ if TYPE_CHECKING:
 
 __all__ = (
     'Channel',
-    'ChannelType',
     'ChannelOverwrite',
     'ThreadMetadata',
     'ThreadMember',
@@ -111,22 +110,6 @@ class _ChannelOptional(TypedDict, total=False):
     default_forum_layout: Literal[0, 1, 2]
 
 
-ChannelType = Literal[
-    0,  # GUILD_TEXT
-    1,  # DM
-    2,  # GUILD_VOICE
-    3,  # GROUP_DM
-    4,  # GUILD_CATEGORY
-    5,  # GUILD_ANNOUNCEMENT
-    10,  # ANNOUNCEMENT_THREAD
-    11,  # PUBLIC_THREAD
-    12,  # PRIVATE_THREAD
-    13,  # GUILD_STAGE_VOICE
-    14,  # GUILD_DIRECTOR
-    15,  # GUILD_FORUM
-]
-
-
 class Channel(_ChannelOptional):
     id: Snowflake
-    type: ChannelType
+    type: int

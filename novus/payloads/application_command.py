@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING, Literal, TypedDict
 from typing_extensions import NotRequired
 
 if TYPE_CHECKING:
-    from . import ChannelType, Locale, Snowflake
+    from . import Locale, Snowflake
 
 __all__ = (
     'ApplicationCommandOptionType',
@@ -63,7 +63,7 @@ class ApplicationCommandOption(TypedDict):
     required: NotRequired[bool]
     choices: NotRequired[list[ApplicationCommandChoice]]
     options: NotRequired[list[ApplicationCommandOption]]
-    channel_types: NotRequired[list[ChannelType]]
+    channel_types: NotRequired[list[int]]
     min_value: NotRequired[int | float]
     max_value: NotRequired[int | float]
     min_length: NotRequired[int]

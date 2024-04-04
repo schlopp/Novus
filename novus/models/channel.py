@@ -180,8 +180,10 @@ class Channel(Hashable, Messageable):
     ----------
     id : int
         The ID of the channel.
-    type : novus.ChannelType
+    type : int
         The type of the channel.
+
+        .. seealso:: `novus.ChannelType`
     guild : novus.abc.Snowflake | None
         The guild that the channel is attached to.
     """
@@ -228,7 +230,7 @@ class Channel(Hashable, Messageable):
     )
 
     id: int
-    type: ChannelType
+    type: int
     guild_id: int | None
     # guild: BaseGuild | None
     position: int | None
@@ -282,7 +284,7 @@ class Channel(Hashable, Messageable):
             guild_id: int | str | None = None):
         self.state = state
         self.id = try_snowflake(data['id'])
-        self.type = ChannelType(data.get('type', 0))
+        self.type = int(data.get('type', 0))
         self.guild_id = (
             try_snowflake(data.get("guild_id"))
             or try_snowflake(guild_id)
@@ -379,7 +381,7 @@ class Channel(Hashable, Messageable):
             cls,
             state: HTTPConnection,
             id: int | str,
-            type: ChannelType = ChannelType.guild_text) -> Self:
+            type: int = ChannelType.GUILD_TEXT) -> Self:
         """
         Create a partial channel object that you can use to run API methods on.
 
@@ -392,13 +394,13 @@ class Channel(Hashable, Messageable):
 
         Returns
         -------
-        novus.TextChannel
+        novus.Channel
             A created channel object.
         """
 
         return cls(
             state=state,
-            data={"id": id, "type": type.value}  # pyright: ignore
+            data={"id": id, "type": type}  # pyright: ignore
         )
 
     # @cached_slot_property("_cs_guild")
@@ -483,7 +485,6 @@ class Channel(Hashable, Messageable):
             default_sort_order: ForumSortOrder = MISSING,
             default_forum_layout: ForumLayout = MISSING,
             parent: abc.Snowflake | Channel = MISSING,
-            type: ChannelType = MISSING,
             overwrites: list[PermissionOverwrite] = MISSING,
             available_tags: list[ForumTag] = MISSING,
             default_reaction_emoji: str | PartialEmoji = MISSING,
@@ -883,7 +884,7 @@ class Channel(Hashable, Messageable):
     async def create_thread(
             self: abc.StateSnowflake,
             name: str,
-            type: ChannelType,
+            type: int,
             *,
             reason: str | None = None,
             invitable: bool = MISSING,
@@ -895,8 +896,10 @@ class Channel(Hashable, Messageable):
         ----------
         name : str
             The name of the thread.
-        type : novus.enums.ChannelType
+        type : int
             The type of the channel.
+
+            .. seealso:: `novus.ChannelType`
         invitable : bool
             Whether non-moderators can add other non-moderators to a thread -
             only available when creating private threads.
@@ -939,8 +942,10 @@ class Channel(Hashable, Messageable):
         ----------
         name : str
             The name of the thread.
-        type : novus.enums.ChannelType
+        type : int
             The type of the channel.
+
+            .. seealso:: `novus.ChannelType`
         invitable : bool
             Whether non-moderators can add other non-moderators to a thread -
             only available when creating private threads.

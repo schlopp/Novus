@@ -27,7 +27,6 @@ from typing import TYPE_CHECKING, Any, Literal, NoReturn, overload
 from typing_extensions import Self
 
 from ..enums import (
-    ChannelType,
     ContentFilterLevel,
     Locale,
     MFALevel,
@@ -572,7 +571,7 @@ class BaseGuild:
             self: abc.StateSnowflake,
             *,
             name: str,
-            type: ChannelType = MISSING,
+            type: int = MISSING,
             topic: str = MISSING,
             bitrate: int = MISSING,
             user_limit: int = MISSING,
@@ -592,8 +591,10 @@ class BaseGuild:
         ----------
         name : str
             The name of the channel.
-        type : novus.ChannelType
+        type : int
             The type of the channel.
+
+            .. seealso:: `novus.ChannelType`
         bitrate : int
             The bitrate for the channel. Only for use with voice channels.
         user_limit : int

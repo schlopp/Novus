@@ -27,7 +27,7 @@ from ..emoji import PartialEmoji
 from .component import ComponentEmojiMixin, InteractableComponent
 
 if TYPE_CHECKING:
-    from ... import ChannelType, payloads
+    from ... import payloads
 
 __all__ = (
     'SelectOption',
@@ -548,12 +548,12 @@ class ChannelSelectMenu(SelectMenu):
     """
 
     type = ComponentType.channel_select
-    channel_types: list[ChannelType]
+    channel_types: list[int]
 
     def __init__(
             self,
             *,
-            channel_types: Iterable[ChannelType] = MISSING,
+            channel_types: Iterable[int] = MISSING,
             custom_id: str,
             placeholder: str | None = None,
             min_values: int = 1,
@@ -578,7 +578,7 @@ class ChannelSelectMenu(SelectMenu):
         for i in self.channel_types:
             if i is None:
                 continue
-            channel_types.append(i.value)
+            channel_types.append(i)
         if channel_types:
             v["channel_types"] = channel_types
         return v
@@ -587,7 +587,7 @@ class ChannelSelectMenu(SelectMenu):
     def _from_data(cls, data: payloads.SelectMenu) -> Self:
         type_data = data.get("channel_types")
         if type_data:
-            type_object = [ChannelType(d) for d in type_data]
+            type_object = [int(d) for d in type_data]
         else:
             type_object = []
         v = super()._from_data(data)

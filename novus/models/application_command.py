@@ -22,7 +22,6 @@ from typing import TYPE_CHECKING, TypeAlias
 from typing_extensions import Self
 
 from ..enums.application_command import ApplicationOptionType
-from ..enums.channel import ChannelType
 from ..flags.permissions import Permissions
 from ..utils import (
     MISSING,
@@ -72,9 +71,11 @@ class ApplicationCommandOption:
     options: list[novus.ApplicationCommandOption]
         Options for the option. Only valid if the option is a subcommand or
         subcommand group.
-    channel_types: list[novus.ChannelType]
+    channel_types: list[int]
         The channel types that are supported by the option, if the option type
         is a channel.
+
+        .. seealso:: `novus.ChannelType`
     min_value: int
         The minimum allowed value for the option if the option type is an
         integer or number.
@@ -110,9 +111,11 @@ class ApplicationCommandOption:
     options: list[novus.ApplicationCommandOption]
         Options for the option. Only valid if the option is a subcommand or
         subcommand group.
-    channel_types: list[novus.ChannelType]
+    channel_types: list[int]
         The channel types that are supported by the option, if the option type
         is a channel.
+
+        .. seealso:: `novus.ChannelType`
     min_value: int
         The minimum allowed value for the option if the option type is an
         integer or number.
@@ -136,7 +139,7 @@ class ApplicationCommandOption:
         required: bool
         choices: list[ApplicationCommandChoice]
         options: list[ApplicationCommandOption]
-        channel_types: list[ChannelType]
+        channel_types: list[int]
         min_value: int | float | None
         max_value: int | float | None
         min_length: int | None
@@ -154,7 +157,7 @@ class ApplicationCommandOption:
             required: bool = True,
             choices: list[ApplicationCommandChoice] = MISSING,
             options: list[ApplicationCommandOption] = MISSING,
-            channel_types: list[ChannelType] = MISSING,
+            channel_types: list[int] = MISSING,
             min_value: int | float | None = MISSING,
             max_value: int | float | None = MISSING,
             min_length: int | None = MISSING,
@@ -204,7 +207,7 @@ class ApplicationCommandOption:
             if self.choices:
                 d["choices"] = [i._to_data() for i in self.choices]
             if self.channel_types:
-                d["channel_types"] = [i.value for i in self.channel_types]
+                d["channel_types"] = self.channel_types
             if self.min_value is not None:
                 d["min_value"] = self.min_value
             if self.max_value is not None:
@@ -234,10 +237,7 @@ class ApplicationCommandOption:
                 ApplicationCommandOption._from_data(d)
                 for d in data.get("options") or []
             ],
-            channel_types=[
-                ChannelType(d)
-                for d in data.get("channel_types") or []
-            ],
+            channel_types=data.get("channel_types") or [],
             min_value=data.get("min_value"),
             max_value=data.get("max_value"),
             min_length=data.get("min_length"),

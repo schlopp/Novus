@@ -24,7 +24,7 @@ from typing_extensions import NotRequired
 if TYPE_CHECKING:
     from ._util import Snowflake, Timestamp
     from .application import Application
-    from .channel import Channel, ChannelType
+    from .channel import Channel
     from .components import ActionRow
     from .embed import Embed
     from .emoji import Emoji
@@ -69,7 +69,7 @@ class AllowedMentions(TypedDict):
 class ChannelMention(TypedDict):
     id: Snowflake
     guild_id: Snowflake
-    type: ChannelType
+    type: int
     name: str
 
 

@@ -310,7 +310,7 @@ class Message(Hashable):
             Channel.partial(
                 state=self.state,
                 id=d["id"],
-                type=enums.ChannelType(d["type"]),
+                type=int(d["type"]),
             )
             for d in data.get("mention_channels", [])
         ]

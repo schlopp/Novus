@@ -69,7 +69,6 @@ __all__: tuple[str, ...] = (
     'Channel',
     'ChannelMention',
     'ChannelOverwrite',
-    'ChannelType',
     'CommandType',
     'Component',
     'ComponentType',
