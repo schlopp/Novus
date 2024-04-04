@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Type
+from typing import TYPE_CHECKING
 
 from typing_extensions import Self
 
@@ -41,8 +41,10 @@ class Button(InteractableComponent, ComponentEmojiMixin):
     ----------
     label : str
         The label of the button. Either this or ``emoji`` needs to be set.
-    style : novus.ButtonStyle
+    style : int
         The style of the button.
+
+        .. seealso:: `novus.ButtonStyle`
     custom_id : str
         The custom ID of the component.
     emoji : novus.PartialEmoji | novus.Emoji | str
@@ -58,8 +60,10 @@ class Button(InteractableComponent, ComponentEmojiMixin):
     ----------
     label : str | None
         The label of the button. Either this or ``emoji`` needs to be set.
-    style : novus.ButtonStyle
+    style : int
         The style of the button.
+
+        .. seealso:: `novus.ButtonStyle`
     custom_id : str
         The custom ID of the component.
     emoji : novus.PartialEmoji | novus.Emoji | None
@@ -82,10 +86,9 @@ class Button(InteractableComponent, ComponentEmojiMixin):
     )
 
     type = ComponentType.BUTTON
-    styles: ClassVar[Type[ButtonStyle]] = ButtonStyle
 
     label: str | None
-    style: ButtonStyle
+    style: int
     custom_id: str
     url: str | None
     disabled: bool
@@ -95,7 +98,7 @@ class Button(InteractableComponent, ComponentEmojiMixin):
             self,
             label: str | None = None,
             *,
-            style: ButtonStyle = ButtonStyle.secondary,
+            style: int = ButtonStyle.SECONDARY,
             custom_id: str,
             emoji: str | PartialEmoji | None = None,
             url: str | None = None,
@@ -132,7 +135,7 @@ class Button(InteractableComponent, ComponentEmojiMixin):
         return cls(
             label=data.get("label"),
             emoji=emoji_object,
-            style=ButtonStyle(data["style"]),
+            style=data["style"],
             custom_id=data.get("custom_id"),
             url=data.get("url"),
             disabled=data.get("disabled", False),

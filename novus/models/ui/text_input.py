@@ -41,8 +41,10 @@ class TextInput(InteractableComponent):
     ----------
     label : str
         The label on the text component.
-    style : novus.TextInputStyle
+    style : int
         The style of the component.
+
+        .. seealso:: `novus.TextInputStyle`
     custom_id : str
         The custom ID for the input.
     min_length : int
@@ -61,8 +63,10 @@ class TextInput(InteractableComponent):
     ----------
     label : str
         The label on the text component.
-    style : novus.TextInputStyle
+    style : int
         The style of the component.
+
+        .. seealso:: `novus.TextInputStyle`
     custom_id : str
         The custom ID for the input.
     min_length : int
@@ -91,7 +95,7 @@ class TextInput(InteractableComponent):
 
     type = ComponentType.TEXT_INPUT
     label: str
-    style: TextInputStyle
+    style: int
     custom_id: str
     min_length: int
     max_length: int
@@ -103,7 +107,7 @@ class TextInput(InteractableComponent):
             self,
             label: str,
             *,
-            style: TextInputStyle = TextInputStyle.short,
+            style: int = TextInputStyle.SHORT,
             custom_id: str,
             min_length: int = 0,
             max_length: int = 4_000,
@@ -140,7 +144,7 @@ class TextInput(InteractableComponent):
     def _from_data(cls, data: payloads.TextInput) -> Self:
         return cls(
             label=data.get("label", ""),
-            style=TextInputStyle(data.get("style", 1)),
+            style=data.get("style", 1),
             custom_id=data["custom_id"],
             min_length=data.get("min_length", 0),
             max_length=data.get("max_length", 4_000),
