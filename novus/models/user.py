@@ -47,6 +47,8 @@ class User(Hashable, Messageable):
         The ID of the user.
     username : str
         The username of the user.
+    global_name : str | None
+        The global name of the user.
     discriminator : str
         The discriminator of the user.
     avatar_hash : str | None
@@ -89,6 +91,7 @@ class User(Hashable, Messageable):
         'state',
         'id',
         'username',
+        'global_name',
         'discriminator',
         'avatar_hash',
         'bot',
@@ -119,11 +122,11 @@ class User(Hashable, Messageable):
         self._dm_channel: Channel | None = None
         self._update(data)
 
-    __repr__ = generate_repr(('id', 'username', 'bot',))
+    __repr__ = generate_repr(('id', 'global_name', 'bot',))
 
     def __str__(self) -> str:
         if self.discriminator == "0":
-            return self.username
+            return self.global_name or self.username
         return f"{self.username}#{self.discriminator}"
 
     @property
@@ -174,6 +177,7 @@ class User(Hashable, Messageable):
         """
 
         self.username = data['username']
+        self.global_name = data.get('global_name')
         self.discriminator = data['discriminator']
         del self.default_avatar
         self.avatar_hash = data.get('avatar')

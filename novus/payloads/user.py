@@ -67,6 +67,7 @@ class _UserOptional(TypedDict, total=False):
 class User(_UserOptional):
     id: Snowflake
     username: str
+    global_name: Optional[str]
     discriminator: int
     avatar: Optional[str]
 

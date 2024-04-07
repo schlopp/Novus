@@ -64,6 +64,8 @@ class GuildMember(Hashable, Messageable):
         The ID of the user.
     username : str
         The username of the user.
+    global_name : str | None
+        The global name of the user.
     discriminator : str
         The discriminator of the user.
     avatar_hash : str | None
@@ -268,7 +270,7 @@ class GuildMember(Hashable, Messageable):
     __repr__ = generate_repr(("id", "username", "bot", "guild",))
 
     def __str__(self) -> str:
-        return str(self._user)
+        return self.nick or str(self._user)
 
     @property
     def mention(self) -> str:
