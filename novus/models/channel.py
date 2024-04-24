@@ -295,7 +295,7 @@ class Channel(Hashable, Messageable):
             try_snowflake(data.get("guild_id"))
             or try_snowflake(guild_id)
         )
-        self._members: dict[int, GuildMember] = {}
+        self._members: dict[int, ThreadMember] = {}
         self._channels: dict[int, Channel] = {}
         self._update(data)
 
