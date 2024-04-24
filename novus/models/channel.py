@@ -308,18 +308,18 @@ class Channel(Hashable, Messageable):
         self.position = data.get("position")
         self.overwrites = [
             PermissionOverwrite(
-                id=int(d['id']),
+                id=d["id"],
                 type=(
-                    d['type'] if isinstance(d["type"], int)
+                    d["type"] if isinstance(d["type"], int)
                     else {
                         "role": PermissionOverwriteType.ROLE,
                         "member": PermissionOverwriteType.MEMBER,
                     }[d["type"].casefold()]
                 ),
-                allow=Permissions(int(d['allow'])),
-                deny=Permissions(int(d['deny'])),
+                allow=Permissions(int(d["allow"])),
+                deny=Permissions(int(d["deny"])),
             )
-            for d in data.get('permission_overwrites', list())
+            for d in data.get("permission_overwrites", list())
         ]
         self.name = data.get("name")
         self.topic = data.get("topic")
@@ -347,12 +347,6 @@ class Channel(Hashable, Messageable):
         # self.video_quality_mode =  data.get("video_quality_mode")  # TODO make enum class
         self.message_count = data.get("message_count")
         self.member_count = data.get("member_count")
-        self.archived = None
-        self.auto_archive_duration = None
-        self.archive_timestsamp = None
-        self.locked = None
-        self.invitable = None
-        self.create_timestamp = None
         if "thread_metadata" in data:
             tmd = data["thread_metadata"]
             self.archived = tmd["archived"]
@@ -361,6 +355,13 @@ class Channel(Hashable, Messageable):
             self.locked = tmd["locked"]
             self.invitable = tmd.get("invitable")
             self.create_timestamp = parse_timestamp(tmd.get("create_timestamp"))
+        else:
+            self.archived = None
+            self.auto_archive_duration = None
+            self.archive_timestsamp = None
+            self.locked = None
+            self.invitable = None
+            self.create_timestamp = None
         self.default_auto_archive_duration = data.get("default_auto_archive_duration")
         self.flags = ChannelFlags(data.get("flags", 0))
         self.total_messages_sent = data.get("total_messages_sent")
@@ -412,14 +413,12 @@ class Channel(Hashable, Messageable):
             data={"id": id, "type": type}  # pyright: ignore
         )
 
-    # @cached_slot_property("_cs_guild")
     @property
     def guild(self) -> BaseGuild | None:
         if self.guild_id is None:
             return None
         return self.state.cache.get_guild(self.guild_id)
 
-    # @cached_slot_property("_cs_parent")
     @property
     def parent(self) -> Channel | None:
         if self.parent_id is None:
@@ -444,9 +443,6 @@ class Channel(Hashable, Messageable):
     def _remove_channel(self, id: int | str) -> None:
         self._channels.pop(try_snowflake(id), None)
 
-    @property
-    def channel(self) -> list[Channel]:
-        return list(self._channels.values())
 
     # API methods
 
