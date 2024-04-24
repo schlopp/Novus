@@ -57,16 +57,6 @@ __all__ = (
     'PermissionOverwrite',
     'Channel',
     'ForumTag',
-
-    # 'GuildTextChannel',
-    # 'DMChannel',
-    # 'GroupDMChannel',
-    # 'Thread',
-    # 'GuildVoiceChannel',
-    # 'GuildStageChannel',
-    # 'GuildCategory',
-    # 'GuildAnnouncementChannel',
-    # 'GuildForumChannel',
 )
 
 
@@ -366,11 +356,11 @@ class Channel(Hashable, Messageable):
         self.flags = ChannelFlags(data.get("flags", 0))
         self.total_messages_sent = data.get("total_messages_sent")
         self.available_tags = [
-            ForumTag(data=i) for i in
+            ForumTag._from_data(data=i) for i in
             data.get("available_tags", [])
         ]
         self.applied_tags = [
-            ForumTag(data=i) for i in
+            [j for j in self.available_tags if j.id == i["id"]][0] for i in
             data.get("applied_tags", [])
         ]
         emoji = data.get("default_reaction_emoji")
@@ -1084,6 +1074,62 @@ class Channel(Hashable, Messageable):
 
 
 class ForumTag:
+    """
+    Tags that are added to forum posts.
 
-    def __init__(self, *, data: dict):
-        ...  # TODO
+    Attributes
+    ----------
+    id : int
+        The ID of the forum tag.
+    name : str
+        The name of the forum tag.
+    moderated : bool
+        Whether or not the tag can only be added to or removed from threads
+        by members with the MANAGE_THREADS permission.
+    emoji : novus.PartialEmoji
+        The emoji associated with the forum tag.
+    """
+
+    __slots__ = (
+        "id",
+        "name",
+        "moderated",
+        "emoji",
+    )
+
+    def __init__(self, name: str, emoji: str | PartialEmoji, moderated: bool = False):
+        self.id = None
+        self.name = name
+        if isinstance(emoji, str):
+            self.emoji = PartialEmoji.from_str(emoji)
+        else:
+            self.emoji = emoji
+        self.moderated = moderated
+
+    @classmethod
+    def _from_data(cls, data: payloads.ForumTag) -> Self:
+        v = cls(
+            name=data["name"],
+            moderated=data["moderated"],
+            emoji=PartialEmoji(data={
+                "id": data.get("emoji_id"),
+                "name": data.get("emoji_name"),
+            })
+        )
+        v.id = data["id"]
+        return v
+
+    def _to_data(self) -> dict:
+        if self.id:
+            return {"id": self.id}
+        v = {
+            "name": self.name,
+            "moderated": self.moderated,
+        }
+        if self.emoji.id is not None:
+            v["emoji_id"] = str(self.emoji.id)
+            v["emoji_name"] = None
+        else:
+            v["emoji_id"] = None
+            v["emoji_name"] = str(self.emoji)
+        return v

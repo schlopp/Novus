@@ -29,6 +29,7 @@ __all__ = (
     'ThreadMetadata',
     'ThreadMember',
     'ForumDefaultReaction',
+    'ForumTag',
 )
 
 
