@@ -443,6 +443,38 @@ class Channel(Hashable, Messageable):
     def _remove_channel(self, id: int | str) -> None:
         self._channels.pop(try_snowflake(id), None)
 
+    def permissions_for(self, user: GuildMember) -> Permissions:
+        """
+        Get the permissions for a given user in this channel.
+
+        .. note::
+
+            Permissions are only properly calculated when the guild and its
+            roles are cached (ie when the bot is connected to the gateway).
+
+        Parameters
+        ----------
+        user : novus.GuildMember
+            The user whose permissions you want to get.
+
+        Returns
+        -------
+        novus.Permissions
+            The calculated permissions for that user in this channel.
+        """
+
+        all = Permissions.all().value
+        permissions: int = user.permissions.value
+        for overwrite in self.overwrites or []:
+            if overwrite.type == PermissionOverwriteType.ROLE:
+                if overwrite.id in user.role_ids or overwrite.id == self.guild_id:
+                    permissions |= overwrite.allow.value
+                    permissions &= (all ^ overwrite.deny.value)
+            elif overwrite.type == PermissionOverwriteType.MEMBER:
+                if overwrite.id == user.id:
+                    permissions |= overwrite.allow.value
+                    permissions &= (all ^ overwrite.deny.value)
+        return Permissions(permissions)
 
     # API methods
 

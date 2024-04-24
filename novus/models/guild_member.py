@@ -162,7 +162,7 @@ class GuildMember(Hashable, Messageable):
         'deaf',
         'mute',
         'pending',
-        'permissions',
+        '_permissions',  # calculated
         'timeout_until',
         'guild',
         '_cs_guild_avatar',
@@ -195,7 +195,6 @@ class GuildMember(Hashable, Messageable):
     deaf: bool
     mute: bool
     pending: bool
-    permissions: Permissions
     timeout_until: DiscordDatetime | None
     guild: BaseGuild
 
@@ -249,9 +248,9 @@ class GuildMember(Hashable, Messageable):
         self.deaf = data.get('deaf', False)
         self.mute = data.get('mute', False)
         self.pending = data.get('pending', False)
-        self.permissions = Permissions.none()
+        self._permissions = None
         if "permissions" in data:
-            self.permissions = Permissions(int(data["permissions"]))
+            self._permissions = Permissions(int(data["permissions"]))
         self.timeout_until = None
         if "communication_disabled_until" in data:
             self.timeout_until = parse_timestamp(data["communication_disabled_until"])
@@ -317,6 +316,58 @@ class GuildMember(Hashable, Messageable):
             self.pending = False
         self.timeout_until = parse_timestamp(data.get("communication_disabled_until"))
         return self
+
+    @property
+    def permissions(self) -> Permissions:
+        """
+        The calculated permissions for the user based on their roles and the
+        cached guild.
+        If permissions were provided (ie this member was created as part of an
+        interaction payload) then they will not be re-calculated.
+
+        .. note::
+
+            Permissions are only properly calculated when the guild and its
+            roles are cached (ie when the bot is connected to the gateway).
+        """
+
+        if self._permissions is not None:
+            return self._permissions
+
+        permissions = Permissions()
+
+        from .guild import Guild
+        if not isinstance(self.guild, Guild):
+            return permissions
+
+        for role_id in [self.guild.id] + self.role_ids:
+            role = self.guild.get_role(role_id)
+            if role is None:
+                continue
+            permissions = Permissions(permissions.value | role.permissions.value)
+        return permissions
+
+    def permissions_in(self, channel: Channel) -> Permissions:
+        """
+        Get the permissions for this guild member inside of a channel.
+
+        .. note::
+
+            Permissions are only properly calculated when the guild and its
+            roles are cached (ie when the bot is connected to the gateway).
+
+        Parameters
+        ----------
+        channel : novus.Channel
+            The channel that you want to get the user's permissions for.
+
+        Returns
+        -------
+        novus.Permissions
+            The calculated permissions for this user in that channel.
+        """
+
+        return channel.permissions_for(self)
 
     # API methods
 
