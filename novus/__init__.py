@@ -24,6 +24,7 @@ from .models import *
 from .utils import types
 
 __all__: tuple[str, ...] = (
+    'APIIterator',
     'ActionRow',
     'Activity',
     'ActivityType',
@@ -106,7 +107,6 @@ __all__: tuple[str, ...] = (
     'InteractionWebhook',
     'Invite',
     'LayoutComponent',
-    'Locale',
     'MFALevel',
     'MentionableSelectMenu',
     'Message',
@@ -153,6 +153,7 @@ __all__: tuple[str, ...] = (
     'UserPremiumType',
     'UserSelectMenu',
     'VerificationLevel',
+    'VideoQualityMode',
     'VoiceState',
     'Webhook',
     'WebhookMessage',

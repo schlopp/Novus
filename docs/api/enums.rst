@@ -18,6 +18,7 @@ Enums
 .. autoclass:: EventPrivacyLevel
 .. autoclass:: EventStatus
 .. autoclass:: ForumLayout
+.. autoclass:: VideoQualityMode
 .. autoclass:: ForumSortOrder
 .. autoclass:: GatewayOpcode
 .. autoclass:: InteractionResponseType

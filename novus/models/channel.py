@@ -334,7 +334,7 @@ class Channel(Hashable, Messageable):
             self.parent_id = ipid
         self.last_pin_timestamp = parse_timestamp(data.get("last_pin_timestamp"))
         self.rtc_region = data.get("rtc_region")
-        # self.video_quality_mode =  data.get("video_quality_mode")  # TODO make enum class
+        self.video_quality_mode = data.get("video_quality_mode")
         self.message_count = data.get("message_count")
         self.member_count = data.get("member_count")
         if "thread_metadata" in data:

@@ -22,6 +22,7 @@ __all__ = (
     'PermissionOverwriteType',
     'ForumSortOrder',
     'ForumLayout',
+    'VideoQualityMode',
 )
 
 
@@ -54,3 +55,8 @@ class ForumLayout(Enum):
     NOT_SET = 0
     LIST_VIEW = 1
     GALLERY_VIEW = 2
+
+
+class VideoQualityMode(Enum):
+    AUTO = 1
+    FULL = 2

@@ -64,4 +64,5 @@ __all__: tuple[str, ...] = (
     'TimestampFormat',
     'UserPremiumType',
     'VerificationLevel',
+    'VideoQualityMode',
 )
