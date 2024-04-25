@@ -35,10 +35,10 @@ class ActivityType(Enum):
 
 
 class Status(Enum):
-    ONLINE = "ONLINE"
-    DND = "DND"
-    DO_NOT_DISTURB = "DND"
-    IDLE = "IDLE"
-    AFK = "IDLE"
-    INVISIBLE = "INVISIBLE"
-    OFFLINE = "OFFLINE"
+    ONLINE = "online"
+    DND = "dnd"
+    DO_NOT_DISTURB = "dnd"
+    IDLE = "idle"
+    AFK = "idle"
+    INVISIBLE = "invisible"
+    OFFLINE = "offline"

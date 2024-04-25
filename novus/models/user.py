@@ -22,8 +22,9 @@ from typing import TYPE_CHECKING, Any, Awaitable, Callable
 
 from typing_extensions import Self
 
+from ..enums import Status
 from ..flags import UserFlags
-from ..utils import cached_slot_property, generate_repr, try_snowflake
+from ..utils import DiscordDatetime, cached_slot_property, generate_repr, try_snowflake
 from .abc import Hashable, Messageable
 from .asset import Asset
 
@@ -85,6 +86,12 @@ class User(Hashable, Messageable):
         The premium type associated with the account.
 
         .. seealso:: `novus.UserPremiumType`
+    status : str
+        The status of the user.
+
+        .. seealso:: `novus.Status`
+    activities : list[novus.Activity]
+        The activites of the user.
     """
 
     __slots__ = (
@@ -104,6 +111,8 @@ class User(Hashable, Messageable):
         'email',
         'flags',
         'premium_type',
+        'status',
+        'activites',
         '_cs_avatar',
         '_cs_default_avatar',
         '_cs_banner',
@@ -197,6 +206,20 @@ class User(Hashable, Messageable):
                 data.get('flags', 0) | data.get('public_flags', 0)
             )
         self.premium_type = data.get('premium_type', 0)
+        self.status = Status.ONLINE
+        self.activites: list[Activity] = []
+        return self
+
+    def _update_presence(self, data: payloads.Presence) -> Self:
+        """
+        Update the presence for this user.
+        """
+
+        self.status = data.get("status") or Status.ONLINE
+        self.activites = [
+            Activity(data=d)
+            for d in data.get("activities", [])
+        ]
         return self
 
     # API methods
@@ -304,3 +327,14 @@ class User(Hashable, Messageable):
         if self._dm_channel is None:
             self._dm_channel = await self.create_dm_channel()
         return functools.partial(self.state.channel.create_message, self._dm_channel.id)
+
+
+class Activity:
+    """
+    A user activity for their presence.
+    """
+
+    def __init__(self, *, data: payloads.Activity):
+        self.name = data["name"]
+        self.type = data["type"]
+        self.created_at = DiscordDatetime.fromtimestamp(data["created_at"] / 1_000)

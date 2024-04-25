@@ -296,8 +296,6 @@ class GatewayDispatch:
         for id in list(current._threads.keys()):
             try_delete(self.cache.channels, id)
             del current._threads[id]
-        for id in list(current._voice_states.keys()):
-            pass  # TODO
         for id in list(current._channels.keys()):
             try_delete(self.cache.channels, id)
             del current._channels[id]
@@ -430,9 +428,15 @@ class GatewayDispatch:
 
     async def _handle_presence_update(
             self,
-            data: dict[Any, Any]) -> None:
+            data: payloads.Presence) -> None:
         """Handle updating presences for users."""
-        log.debug("Ignoring presence update %s" % dump(data))  # TODO
+
+        user = self.cache.get_user(data["user"]["id"])
+        if user is None:
+            return  # Can't do anything with the presence user object really
+        before = copy(user)
+        user._update_presence(data)
+        self.dispatch("PRESENCE_UPDATE", before, user)
 
     async def _handle_channel_generic(
             self,

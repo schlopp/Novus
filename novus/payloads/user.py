@@ -164,7 +164,7 @@ class _ActivityOptional(TypedDict, total=False):
 
 class Activity(_ActivityOptional):
     name: str
-    type: Literal[0, 1, 2, 3, 4, 5]
+    type: int
     created_at: Timestamp
 
 
