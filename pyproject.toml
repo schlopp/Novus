@@ -5,6 +5,19 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages.find.where = [ ".", "./novus/ext", ]
 
+[tool.pyright]
+reportPrivateUsage = false
+reportImportCycles = false
+reportUnknownMemberType = false
+reportUnknownParameterType = false
+reportUnknownArgumentType = false
+reportUnknownVariableType = false
+reportMissingParameterType = false
+reportMissingTypeArgument = false
+reportMissingTypeStubs = false
+reportUnknownLambdaType = false
+reportIncompatibleVariableOverride = false
+
 [project]
 name = "novus"
 version = "1.0.0"
