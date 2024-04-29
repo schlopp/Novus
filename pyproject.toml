@@ -17,6 +17,7 @@ reportMissingTypeArgument = false
 reportMissingTypeStubs = false
 reportUnknownLambdaType = false
 reportIncompatibleVariableOverride = false
+reportConstantRedefinition = false
 
 [project]
 name = "novus"
