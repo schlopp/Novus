@@ -85,6 +85,7 @@ class _BotInfo(TypedDict):
 
 
 class _HelpCommand(TypedDict):
+    enabled: bool
     use_vbu_implementation: bool
     dm_help: bool
     content: str

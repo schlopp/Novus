@@ -35,11 +35,15 @@ class Help(vbu.Cog):
 
 
 async def setup(bot: vbu.Bot):
-    if not bot.config.get("help_command", {}).get("use_vbu_implementation", True):
+    help_command_config = bot.config.get("help_command", {})
+    if not help_command_config.get("enabled", True):
+        return
+    if not help_command_config.get("use_vbu_implementation", True):
         return
     x = Help(bot)
     if not bot.config.get("default_prefix"):
-        return bot.remove_command("help")
+        bot.remove_command("help")
+        return
     await bot.add_cog(x)
 
 

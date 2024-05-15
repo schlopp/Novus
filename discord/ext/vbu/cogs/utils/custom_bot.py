@@ -297,6 +297,10 @@ class Bot(MinimalBot):
             **kwargs,
         )
 
+        # Remove the ol' help command if disabled
+        if not self.config.get("help_command", {}).get("enabled", True):
+            self.help_command = None
+
         # Set up our default guild settings
         self.DEFAULT_GUILD_SETTINGS = {
             self.config.get("guild_settings_prefix_column", "prefix"): self.config.get(
