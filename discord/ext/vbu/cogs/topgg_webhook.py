@@ -96,9 +96,9 @@ class TopggWebhookCog(
         await asyncio.Future()
 
 
-def setup(bot: vbu.Bot):
+async def setup(bot: vbu.Bot):
     if bot.shard_ids and 0 not in bot.shard_ids:
         return
 
     if bot.config.get("topgg_webhook", {}).get("enabled", False):
-        bot.add_cog(TopggWebhookCog(bot))
+        await bot.add_cog(TopggWebhookCog(bot))
