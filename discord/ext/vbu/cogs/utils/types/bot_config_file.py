@@ -181,6 +181,7 @@ class BotConfig(_BotConfigOptional):
     # guild_settings_prefix_column: str
     ephemeral_error_messages: bool
     owners_ignore_check_failures: bool
+    enable_error_handler: bool
 
     # default_prefix: str
     cached_messages: int

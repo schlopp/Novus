@@ -548,5 +548,8 @@ class ErrorHandler(vbu.Cog):
 
 
 async def setup(bot: vbu.Bot):
+    if not bot.config["enable_error_handler"]:
+        return
+
     x = ErrorHandler(bot)
     await bot.add_cog(x)
