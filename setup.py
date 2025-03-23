@@ -75,7 +75,6 @@ extras_require = {
         "aiohttp_session",
         "jinja2>=3.0.0,<4.0.0",
         "markdown",
-        "htmlmin",
     ],
 }
 
