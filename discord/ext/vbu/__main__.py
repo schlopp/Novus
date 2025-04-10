@@ -5,6 +5,7 @@ import textwrap
 import asyncio
 
 from .runner import (
+    set_event_loop,
     run_bot,
     run_website,
     run_sharder,
@@ -382,6 +383,9 @@ def main():
     # Wew let's see if we want to run a bot
     parser = get_default_program_arguments()
     args = parser.parse_args()
+
+    # Set event loop before using ANYTHING asyncio
+    set_event_loop()
 
     # Let's see if we copyin bois
     if args.subcommand == "create-config":

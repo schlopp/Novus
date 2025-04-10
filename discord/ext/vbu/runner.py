@@ -424,7 +424,6 @@ async def run_bot(args: argparse.Namespace) -> None:
     """
 
     os.chdir(args.bot_directory)
-    set_event_loop()
 
     # And run file
     shard_ids = validate_sharding_information(args)
@@ -487,7 +486,6 @@ async def run_interactions(args: argparse.Namespace) -> None:
     from aiohttp.web import Application, AppRunner, TCPSite
 
     os.chdir(args.bot_directory)
-    set_event_loop()
 
     # And run file
     bot = Bot(config_file=args.config_file, intents=discord.Intents.none())
@@ -588,7 +586,6 @@ async def run_website(args: argparse.Namespace) -> None:
     import markdown
 
     os.chdir(args.website_directory)
-    set_event_loop()
 
     # Read config
     with open(args.config_file) as a:
@@ -755,7 +752,6 @@ async def run_sharder(args: argparse.Namespace) -> None:
         The arguments namespace that wants to be run.
     """
 
-    set_event_loop()
     set_default_log_levels(args)
 
     # Run the bot
@@ -779,7 +775,6 @@ async def run_shell(args: argparse.Namespace) -> None:
     """
 
     os.chdir(args.bot_directory)
-    set_event_loop()
 
     # And run file
     bot = Bot(config_file=args.config_file)
@@ -898,7 +893,6 @@ async def run_modify_commands(args: argparse.Namespace) -> None:
     """
 
     os.chdir(args.bot_directory)
-    set_event_loop()
 
     # And run file
     bot = Bot(config_file=args.config_file)
