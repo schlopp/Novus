@@ -4,7 +4,6 @@ from datetime import datetime, UTC
 from typing import TypedDict, NotRequired, Literal
 
 from aiohttp import web
-from discord.ext import vbu
 
 from . import utils as vbu
 
