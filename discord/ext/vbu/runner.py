@@ -383,8 +383,6 @@ def set_event_loop():
     a callback handler to log exceptions.
     """
 
-    logger.warning("SETTING EVENT LOOP")
-
     # Set up uvloop if we're on Linux
     try:
         import uvloop
@@ -395,9 +393,7 @@ def set_event_loop():
 
     # If we're on Windows, set up a different event loop policy
     if sys.platform.startswith("win32"):
-        logger.warning("WIN32 DETECTED")
         if sys.version_info[0] == 3 and sys.version_info[1] >= 8:
-            logger.warning("SETTING POLICY")
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
         else:
             asyncio.set_event_loop(asyncio.ProactorEventLoop())
