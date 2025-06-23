@@ -196,3 +196,5 @@ async def setup(bot: vbu.Bot):
     await bot.add_cog(x)
     if bot.config.get("bot_info", {}).get("enabled", False) is False:
         bot.remove_command("info")
+    if bot.config.get("bot_listing_api_keys", {}).get("enable_vote_command", False) is False:
+        bot.remove_command("vote")
