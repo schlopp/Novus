@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from datetime import datetime, UTC
-from typing import TypedDict, NotRequired, Literal
+from typing import TypedDict, NotRequired, Literal, Coroutine
 
 from aiohttp import web
 
@@ -34,7 +34,7 @@ class TopggWebhookCog(
         self._runner = web.ServerRunner(self._server)
         self._webhook_task = asyncio.create_task(self._start_webhook())
 
-    def cog_unload(self) -> None:
+    def cog_unload(self) -> None | Coroutine[None, None, None]:
         self.logger.info("Cleaning up webhook runner")
         self._webhook_task.cancel()
         asyncio.create_task(self._runner.cleanup())
