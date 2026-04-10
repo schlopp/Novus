@@ -385,7 +385,10 @@ def main():
     args = parser.parse_args()
 
     # Set event loop before using ANYTHING asyncio
-    set_event_loop()
+    try:
+        asyncio.get_event_loop()
+    except RuntimeError:
+        asyncio.set_event_loop(asyncio.new_event_loop())
 
     # Let's see if we copyin bois
     if args.subcommand == "create-config":
