@@ -1771,8 +1771,12 @@ class PartialMessage(Hashable):
             The new content to replace the message with.
             Could be ``None`` to remove the content.
         embed: Optional[:class:`Embed`]
-            The new embed to replace the original with.
-            Could be ``None`` to remove the embed.
+            The new embed to replace the original(s) with.
+            Could be ``None`` to remove the embeds.
+            Cannot be combined with the ``embeds`` parameter.
+        embeds: list[:class:`Embed`]
+            The new embeds to replace the originals with.
+            Cannot be combined with the ``embed`` parameter.
         suppress: :class:`bool`
             Whether to suppress embeds for the message. This removes
             all the embeds if set to ``True``. If set to ``False``
@@ -1818,12 +1822,28 @@ class PartialMessage(Hashable):
                 fields["content"] = str(content)
 
         try:
-            embed = fields["embed"]
+            embed = fields.pop("embed")
         except KeyError:
-            pass
-        else:
-            if embed is not None:
-                fields["embed"] = embed.to_dict()
+            embed = MISSING
+
+        try:
+            embeds = fields.pop("embeds")
+        except KeyError:
+            embeds = MISSING
+
+        if embed is not MISSING and embeds is not MISSING:
+            raise TypeError(
+                "cannot mix both embed and embeds parameters",
+            )
+
+        if embed is not MISSING:
+            if embed is None:
+                embeds = []
+            else:
+                embeds = [embed]
+
+        if embeds is not MISSING:
+            fields["embeds"] = [e.to_dict() for e in embeds]
 
         try:
             suppress: bool = fields.pop("suppress")
