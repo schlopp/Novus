@@ -1075,3 +1075,62 @@ class ApplicationFlags(BaseFlags):
     def embedded(self):
         """:class:`bool`: Returns ``True`` if the application is embedded within the Discord client."""
         return 1 << 17
+
+@fill_with_flags()
+class AttachmentFlags(BaseFlags):
+    r"""Wraps up the Discord Attachment flags.
+
+    .. container:: operations
+
+        .. describe:: x == y
+
+            Checks if two ApplicationFlags are equal.
+        .. describe:: x != y
+
+            Checks if two ApplicationFlags are not equal.
+        .. describe:: hash(x)
+
+            Return the flag's hash.
+        .. describe:: iter(x)
+
+            Returns an iterator of ``(name, value)`` pairs. This allows it
+            to be, for example, constructed as a dict or a list of pairs.
+            Note that aliases are not shown.
+
+    Attributes
+    -----------
+    value: :class:`int`
+        The raw value. You should query flags via the properties
+        rather than using this raw value.
+    """
+
+    @flag_value
+    def is_clip(self):
+        """:class:`bool`: Returns ``True`` if this attachment is a Clip from a stream.
+        """
+        return 1 << 0
+
+    @flag_value
+    def is_thumbnail(self):
+        """:class:`bool`: Returns ``True`` if this attachment is the thumbnail of a thread in
+        a media channel, displayed in the grid but not on the message.
+        """
+        return 1 << 1
+
+    @flag_value
+    def is_remix(self):
+        """:class:`bool`: Returns ``True`` if this attachment has been edited using the remix feature on mobile (deprecated).
+        """
+        return 1 << 2
+
+    @flag_value
+    def is_spoiler(self):
+        """:class:`bool`: Returns ``True`` if this attachment was marked as a spoiler and is blurred until clicked.
+        """
+        return 1 << 3
+
+    @flag_value
+    def verification_pending_guild_limit(self):
+        """:class:`bool`: Returns ``True`` if this attachment is an animated image
+        """
+        return 1 << 5

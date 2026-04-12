@@ -55,7 +55,7 @@ from .errors import InvalidArgument, HTTPException
 from .components import _component_factory
 from .embeds import Embed
 from .member import Member
-from .flags import MessageFlags
+from .flags import MessageFlags, AttachmentFlags
 from .file import File
 from .utils import escape_mentions, MISSING
 from .guild import Guild
@@ -165,6 +165,10 @@ class Attachment(Hashable):
         The attachment's `media type <https://en.wikipedia.org/wiki/Media_type>`_
     ephemeral: :class:`bool`
         Whether or not the attachment is ephemeral.
+    description Optional[:class:`str`]
+        The attachment's description (alt text).
+    flags: :class:`AttachmentFlags`
+        Extra features of the attachment.
 
         .. versionadded:: 0.0.7
     """
@@ -180,6 +184,9 @@ class Attachment(Hashable):
         "_http",
         "content_type",
         "ephemeral",
+        # new shit for v10
+        "description",
+        "flags",
     )
 
     def __init__(self, *, data: AttachmentPayload, state: ConnectionState):
@@ -193,6 +200,10 @@ class Attachment(Hashable):
         self.ephemeral: bool = data.get("ephemeral", False)
         self._http = state.http
         self.content_type: Optional[str] = data.get("content_type")
+
+        #v10 stuff (only added stuff i think id use here)
+        self.description: str | None = data.get("description")
+        self.flags: AttachmentFlags = AttachmentFlags._from_value(data.get("flags", 0))
 
     def is_spoiler(self) -> bool:
         """:class:`bool`: Whether this attachment contains a spoiler."""
@@ -324,6 +335,8 @@ class Attachment(Hashable):
         return File(io.BytesIO(data), filename=self.filename, spoiler=spoiler)
 
     def to_dict(self) -> AttachmentPayload:
+        # self.description: str | None = data.get("description")
+        # self.flags: AttachmentFlags = AttachmentFlags._from_value(data.get("flags", 0))
         result: AttachmentPayload = {
             "filename": self.filename,
             "id": self.id,
@@ -331,6 +344,7 @@ class Attachment(Hashable):
             "size": self.size,
             "url": self.url,
             "spoiler": self.is_spoiler(),
+            "ephemeral": self.ephemeral,
         }
         if self.height:
             result["height"] = self.height
@@ -338,6 +352,14 @@ class Attachment(Hashable):
             result["width"] = self.width
         if self.content_type:
             result["content_type"] = self.content_type
+        if self.description:
+            result["description"] = self.description
+
+        if self.is_spoiler():
+            flags = AttachmentFlags._from_value(self.flags.value)
+            flags.is_spoiler = True
+            result["flags"] = flags.value
+
         return result
 
 

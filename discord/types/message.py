@@ -24,7 +24,7 @@ DEALINGS IN THE SOFTWARE.
 
 from __future__ import annotations
 
-from typing import List, Literal, Optional, TypedDict, Union
+from typing import List, Literal, Optional, TypedDict, Union, Any
 from .snowflake import Snowflake, SnowflakeList
 from .member import Member, UserWithMember
 from .user import User
@@ -50,11 +50,21 @@ class Reaction(TypedDict):
 
 
 class _AttachmentOptional(TypedDict, total=False):
+    title: str
+    description:str
+    content_type: str
     height: Optional[int]
     width: Optional[int]
-    content_type: str
-    spoiler: bool
+    placeholder: str
+    placeholder_version: int
     ephemeral: bool
+    duration_secs: float
+    waveform: str
+    flags: int
+    clip_participants: list[User]
+    clip_created_at: str
+    application: Any | None
+    spoiler: bool
 
 
 class Attachment(_AttachmentOptional):
