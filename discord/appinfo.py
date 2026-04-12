@@ -135,7 +135,6 @@ class AppInfo:
         team: Optional[TeamPayload] = data.get("team")
         self.team: Optional[Team] = Team(state, team) if team else None
 
-        self.summary: str = data["summary"]
         self.verify_key: str = data["verify_key"]
 
         self.guild_id: Optional[int] = utils._get_as_snowflake(data, "guild_id")
@@ -225,7 +224,6 @@ class PartialAppInfo:
         self._icon: Optional[str] = data.get("icon")
         self.description: str = data["description"]
         self.rpc_origins: Optional[List[str]] = data.get("rpc_origins")
-        self.summary: str = data["summary"]
         self.verify_key: str = data["verify_key"]
         self.terms_of_service_url: Optional[str] = data.get("terms_of_service_url")
         self.privacy_policy_url: Optional[str] = data.get("privacy_policy_url")

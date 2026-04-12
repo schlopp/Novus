@@ -314,7 +314,6 @@ class IntegrationApplication:
         self.name: str = data["name"]
         self.icon: Optional[str] = data["icon"]
         self.description: str = data["description"]
-        self.summary: str = data["summary"]
         user = data.get("bot")
         self.user: Optional[User] = User(state=state, data=user) if user else None
 

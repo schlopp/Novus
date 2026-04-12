@@ -98,7 +98,7 @@ class ShardManagerServer(object):
             int: The maximum concurrency for the given bot.
         """
 
-        url = "https://discord.com/api/v9/gateway/bot"
+        url = "https://discord.com/api/v10/gateway/bot"
         headers = {
             "Authorization": f"Bot {token}",
         }
